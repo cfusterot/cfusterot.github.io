@@ -11,105 +11,96 @@
         :root {
             --text-color: #1a1a1a;
             --light-grey: #666;
-            --border-color: #eee;
+            --bg-color: #ffffff;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
+            background-color: var(--bg-color);
             color: var(--text-color);
-            background-color: #fff;
         }
 
         header {
             padding: 3rem 2rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .logo {
-            text-decoration: none;
-            color: #000;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+        .logo { text-decoration: none; color: #000; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        nav a { text-decoration: none; color: var(--light-grey); font-size: 0.8rem; text-transform: uppercase; font-weight: 600; }
+
+        main { padding: 0 1rem 5rem 1rem; max-width: 1400px; margin: 0 auto; }
+
+        /* MASONRY LAYOUT (Estilo Erica Fustero) */
+        .masonry-gallery {
+            column-count: 3; /* 3 columnas en desktop */
+            column-gap: 15px;
         }
 
-        nav a {
-            text-decoration: none;
-            color: var(--light-grey);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 5rem 2rem;
-        }
-
-        h1 {
-            font-weight: 300;
-            font-size: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        /* Cuadrícula tipo Portfolio */
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-item {
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 15px;
+            cursor: pointer;
+            overflow: hidden;
             background-color: #f9f9f9;
-            margin-bottom: 10px;
         }
 
-        .grid-item img {
+        .gallery-item img {
             width: 100%;
-            height: auto;
             display: block;
-            transition: opacity 0.3s ease;
+            transition: transform 0.4s ease, opacity 0.3s ease;
         }
 
-        .grid-item img:hover {
-            opacity: 0.8;
+        .gallery-item:hover img {
+            transform: scale(1.03);
+            opacity: 0.9;
         }
 
-        footer {
-            padding: 3rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.75rem;
-            color: var(--light-grey);
+        /* LIGHTBOX (Imagen ampliada) */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); /* Fondo blanco casi opaco, muy limpio */
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            cursor: zoom-out;
         }
 
-        @media (max-width: 768px) {
-            .portfolio-grid { grid-template-columns: 1fr; }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+
+        .close-lightbox {
+            position: absolute;
+            top: 30px; right: 40px;
+            font-size: 2rem;
+            font-weight: 200;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1000px) { .masonry-gallery { column-count: 2; } }
+        @media (max-width: 600px) { .masonry-gallery { column-count: 1; } }
     </style>
 </head>
 <body>
 
     <header>
         <a href="index.html" class="logo">Coral Fustero-Torre</a>
-        <nav>
-            <a href="index.html">← Back to Research</a>
-        </nav>
+        <nav><a href="index.html">← Back to Research</a></nav>
     </header>
 
     <main>
-        <h1>Photography & Collages</h1>
-        
-        <div class="portfolio-grid">
+        <div class="masonry-gallery">
             <div class="gallery-item"><img src="img/R1-04013-0007" alt=""></div>
             <div class="gallery-item"><img src="img/R1-04013-0010" alt=""></div>
             <div class="gallery-item"><img src="img/R1-04013-0012" alt=""></div>
@@ -143,9 +134,33 @@
         </div>
     </main>
 
-    <footer>
-        &copy; 2025 Coral Fustero-Torre
-    </footer>
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
+    <script>
+        // Lógica para abrir/cerrar el lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+
+        galleryItems.forEach(img => {
+            img.parentElement.onclick = () => {
+                lightbox.style.display = 'flex';
+                lightboxImg.src = img.src;
+            };
+        });
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+        }
+
+        // Cerrar con la tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
 
 </body>
 </html>
