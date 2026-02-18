@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,6 @@
             --text-color: #1a1a1a;
             --light-grey: #666;
             --border-color: #eee;
-            --spacing: 4rem;
         }
 
         body {
@@ -24,30 +23,30 @@
             line-height: 1.6;
         }
 
-        /* --- NAVEGACIÓN Y HEADER --- */
         header {
-            padding: var(--spacing) 2rem 2rem 2rem;
-            max-width: 1100px;
+            padding: 5rem 2rem 2rem 2rem;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         h1 {
             font-weight: 600;
-            font-size: 1.4rem;
-            letter-spacing: -0.5px;
+            font-size: 1.5rem;
             margin: 0;
             text-transform: uppercase;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
             font-size: 0.9rem;
             color: var(--light-grey);
             margin-top: 0.5rem;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         nav {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1rem;
         }
@@ -56,100 +55,99 @@
             text-decoration: none;
             color: var(--text-color);
             margin-right: 30px;
-            font-size: 0.85rem;
-            font-weight: 400;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
             transition: opacity 0.3s;
         }
 
-        nav a:hover {
-            opacity: 0.5;
-        }
+        nav a:hover { opacity: 0.5; }
 
-        /* --- CONTENIDO PRINCIPAL --- */
         main {
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 3rem 2rem;
         }
 
-        section {
-            margin-bottom: var(--spacing);
-        }
-
-        .intro-text {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin-bottom: 3rem;
-        }
+        section { margin-bottom: 5rem; }
 
         h2 {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             color: var(--light-grey);
-            font-weight: 600;
         }
 
-        /* --- GALERÍA ARTÍSTICA (Fotos y Collages) --- */
-        .gallery {
+        /* --- SCIENTIFIC CONTENT --- */
+        .bio {
+            font-size: 1.2rem;
+            max-width: 850px;
+            margin-bottom: 4rem;
+            font-weight: 300;
+        }
+
+        ul { list-style: none; padding: 0; }
+        
+        li {
+            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
+        }
+
+        .pub-title { font-weight: 600; display: block; }
+        .pub-journal { font-style: italic; color: var(--light-grey); }
+
+        /* --- VISUAL PREVIEW --- */
+        .visual-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-top: 2rem;
         }
 
         .gallery-item {
-            background-color: #fcfcfc;
+            background-color: #f9f9f9;
+            aspect-ratio: 1 / 1; 
             overflow: hidden;
         }
 
         .gallery-item img {
             width: 100%;
-            height: auto;
-            display: block;
-            filter: grayscale(10%);
-            transition: all 0.5s ease;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
         }
 
-        .gallery-item img:hover {
-            filter: grayscale(0%);
-            transform: scale(1.03);
+        .gallery-item:hover img {
+            transform: scale(1.05);
         }
 
-        /* --- LISTAS (Publicaciones y Proyectos) --- */
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        li {
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f9f9f9;
-            padding-bottom: 0.5rem;
-        }
-
-        li strong {
-            font-weight: 600;
-        }
-
-        /* --- FOOTER --- */
-        footer {
-            padding: var(--spacing) 2rem;
-            border-top: 1px solid var(--border-color);
-            max-width: 1100px;
-            margin: 0 auto;
+        .view-more {
+            display: inline-block;
+            margin-top: 2rem;
             font-size: 0.8rem;
+            text-decoration: none;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        footer {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
             color: var(--light-grey);
             display: flex;
             justify-content: space-between;
         }
 
         @media (max-width: 768px) {
-            .gallery { grid-template-columns: 1fr; }
-            header, main { padding: 2rem 1.5rem; }
+            .visual-preview { grid-template-columns: repeat(2, 1fr); }
+            .bio { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -157,82 +155,72 @@
 
     <header>
         <h1>Coral Fustero-Torre, PhD</h1>
-        <p class="subtitle">Computational Biologist • Researcher • Visual Artist</p>
+        <p class="subtitle">Computational Biologist • Researcher</p>
         
         <nav>
-            <a href="#about">About</a>
-            <a href="#work">Research</a>
-            <a href="#visuals">Visuals</a>
+            <a href="#research">Research</a>
+            <a href="#publications">Publications</a>
+            <a href="visuals.html">Visuals</a>
             <a href="mailto:coralfustero@gmail.com">Contact</a>
         </nav>
     </header>
 
     <main>
-        <section id="about" class="intro-text">
-            <p>Computational biologist researcher. My work focuses on the use of computational approaches to reveal hidden molecular mechanisms and dynamics within complex cellular systems. Specialized in single-cell sequencing technologies and data-driven approaches to understand biological complexity and evolution.</p>
-        </section>
-
-<section id="visuals">
-            <h2>Photography & Collages</h2>
-            <div class="gallery">
-                <div class="gallery-item"><img src="img/R1-04013-0007.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04013-0010.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04013-0012.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04415-002A.JPG" alt="Photography"></div>
-                
-                <div class="gallery-item"><img src="img/R1-04415-023A.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04415-024A.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04726-0003.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04726-0008.TIF" alt="Photography"></div>
-                
-                <div class="gallery-item"><img src="img/R1-04726-0014.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04726-0016.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04726-0024.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04726-0026.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0005.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0005.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0008.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0012.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0023.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0024.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-04874-0026.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05053-0004.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05053-0027.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05053-0028.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05053-0036.JPG" alt="Photography"></div>
-                
-                <div class="gallery-item"><img src="img/R1-05053-0037.JPG" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05190-0004.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05190-0009.TIF" alt="Photography"></div>
-                <div class="gallery-item"><img src="img/R1-05190-0015.TIF" alt="Photography"></div>
+        <section id="research">
+            <div class="bio">
+                Coral Fustero-Torre is a computational biologist whose work focuses on revealing hidden molecular mechanisms within complex cellular systems using data-driven approaches and single-cell sequencing technologies.
             </div>
+            
+            <h2>Selected Research Areas</h2>
+            <ul>
+                <li>• Single-cell sequencing analysis & pipeline development</li>
+                <li>• Data-driven approaches to cellular complexity</li>
+                <li>• Computational modeling of molecular dynamics</li>
+                <li>• Development of tailored bioinformatics tools (Beyondcell, Bollito)</li>
+            </ul>
         </section>
 
-        <section id="work">
+        <section id="publications">
             <h2>Selected Publications</h2>
             <ul>
-                <li><strong>Fustero-Torre C.</strong> Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data. <em>Genome Medicine</em>. 2021.</li>
-                <li><strong>Fustero-Torre C.</strong> Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses. <em>Bioinformatics</em>. 2022.</li>
-                <li><em>Co-author.</em> Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma. <em>Nature Communications</em>. 2023.</li>
-                <li><em>Co-author.</em> Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors. 2024.</li>
-                <li><em>Co-author.</em> Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML. <em>Experimental Hematology and Oncology</em>. 2025.</li>
+                <li>
+                    <span class="pub-title">Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data.</span>
+                    <span class="pub-journal">Genome Medicine, 2021.</span>
+                </li>
+                <li>
+                    <span class="pub-title">Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses.</span>
+                    <span class="pub-journal">Bioinformatics, 2022.</span>
+                </li>
+                <li>
+                    <span class="pub-title">Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma.</span>
+                    <span class="pub-journal">Nature Communications, 2023.</span>
+                </li>
+                <li>
+                    <span class="pub-title">Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors.</span>
+                    <span class="pub-journal">2024.</span>
+                </li>
+                <li>
+                    <span class="pub-title">Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML.</span>
+                    <span class="pub-journal">Experimental Hematology and Oncology, 2025.</span>
+                </li>
             </ul>
         </section>
 
-        <section>
-            <h2>Selected Projects</h2>
-            <ul>
-                <li>Single-cell sequencing analysis</li>
-                <li>Data-driven approaches to cellular complexity</li>
-                <li>Computational modeling of molecular dynamics</li>
-                <li>Development of tailored bioinformatics tools</li>
-            </ul>
+        <section id="visuals">
+            <h2>Visual Work & Collages</h2>
+            <div class="visual-preview">
+                <div class="gallery-item"><img src="img/R1-04013-0007.jpg" alt=""></div>
+                <div class="gallery-item"><img src="img/R1-04726-0018.jpg" alt=""></div>
+                <div class="gallery-item"><img src="img/R1-04726-0003.jpg" alt=""></div>
+                <div class="gallery-item"><img src="img/R1-05053-3386.jpg" alt=""></div>
+            </div>
+            <a href="visuals.html" class="view-more">View full artistic portfolio →</a>
         </section>
     </main>
 
     <footer>
         <div>&copy; 2025 Coral Fustero-Torre</div>
-        <div>Built with GitHub Pages</div>
+        <div>Computational Biologist / Visual Artist</div>
     </footer>
 
 </body>

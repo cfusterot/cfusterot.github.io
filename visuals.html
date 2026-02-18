@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visuals | Coral Fustero-Torre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+
+        header {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            color: #000;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--light-grey);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem 2rem;
+        }
+
+        h1 {
+            font-weight: 300;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Cuadrícula tipo Portfolio */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-item {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .grid-item img:hover {
+            opacity: 0.8;
+        }
+
+        footer {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav>
+            <a href="index.html">← Back to Research</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Photography & Collages</h1>
+        
+        <div class="portfolio-grid">
+            <div class="gallery-item"><img src="img/R1-04013-0007" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04013-0010" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04013-0012" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04415-002A.JPG" alt=""></div>
+            
+            <div class="gallery-item"><img src="img/R1-04415-023A.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04415-024A.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04726-0003" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04726-0008" alt=""></div>
+            
+            <div class="gallery-item"><img src="img/R1-04726-0014" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04726-0016" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04726-0024" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04726-0026" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0005" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0005" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0008" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0012" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0023" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0024" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-04874-0026" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05053-0004.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05053-0027.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05053-0028.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05053-0036.JPG" alt=""></div>
+            
+            <div class="gallery-item"><img src="img/R1-05053-0037.JPG" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05190-0004" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05190-0009" alt=""></div>
+            <div class="gallery-item"><img src="img/R1-05190-0015" alt=""></div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 Coral Fustero-Torre
+    </footer>
+
+</body>
+</html>
