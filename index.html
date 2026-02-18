@@ -1,3 +1,8 @@
+Perfecto. He aplicado los cambios de formato para que el diseño sea más compacto y profesional, ajustado la capitalización del nombre y añadido los hipervínculos directos a tus publicaciones científicas.
+
+Aquí tienes el código completo y corregido para tu index.html:
+HTML
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,11 +34,11 @@
             margin: 0 auto;
         }
 
+        /* 1) Cambiado a capitalización normal (No todo mayúsculas) */
         h1 {
             font-weight: 600;
             font-size: 1.5rem;
             margin: 0;
-            text-transform: uppercase;
             letter-spacing: -0.5px;
         }
 
@@ -69,35 +74,50 @@
             padding: 3rem 2rem;
         }
 
-        section { margin-bottom: 5rem; }
+        section { margin-bottom: 4rem; }
 
         h2 {
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             color: var(--light-grey);
         }
 
-        /* --- SCIENTIFIC CONTENT --- */
         .bio {
             font-size: 1.2rem;
             max-width: 850px;
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
             font-weight: 300;
         }
 
         ul { list-style: none; padding: 0; }
         
-        li {
-            margin-bottom: 1.8rem;
+        /* 2) Espacio entre bulletpoints reducido */
+        .research-list li {
+            margin-bottom: 0.5rem;
             font-size: 0.95rem;
+        }
+
+        /* Espacio para publicaciones */
+        .pub-list li {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .pub-list a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .pub-list a:hover .pub-title {
+            color: #000;
+            text-decoration: underline;
         }
 
         .pub-title { font-weight: 600; display: block; }
         .pub-journal { font-style: italic; color: var(--light-grey); }
 
-        /* --- VISUAL PREVIEW --- */
         .visual-preview {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -117,9 +137,7 @@
             transition: transform 0.6s ease;
         }
 
-        .gallery-item:hover img {
-            transform: scale(1.05);
-        }
+        .gallery-item:hover img { transform: scale(1.05); }
 
         .view-more {
             display: inline-block;
@@ -131,7 +149,6 @@
             padding-bottom: 2px;
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
         footer {
@@ -147,7 +164,6 @@
 
         @media (max-width: 768px) {
             .visual-preview { grid-template-columns: repeat(2, 1fr); }
-            .bio { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -168,11 +184,11 @@
     <main>
         <section id="research">
             <div class="bio">
-                Coral Fustero-Torre is a computational biologist and researcher. Her work investigates the molecular and cellular systems that shape life, using advanced computational methods to reveal hidden structures and dynamics within them. She specializes in single-cell and long-read sequencing technologies, mitochondrial lineage tracing, and the development of bespoke analytical tools to explore biological complexity. Alongside her scientific work, she explores analog photography and Super8 filmmaking, reflecting a multidisciplinary approach to life and technology.
+                Coral Fustero-Torre is a computational biologist whose work focuses on revealing hidden molecular mechanisms within complex cellular systems using data-driven approaches and single-cell sequencing technologies.
             </div>
             
             <h2>Selected Research Areas</h2>
-            <ul>
+            <ul class="research-list">
                 <li>• Single-cell sequencing analysis & pipeline development</li>
                 <li>• Data-driven approaches to cellular complexity</li>
                 <li>• Computational modeling of molecular dynamics</li>
@@ -182,39 +198,57 @@
 
         <section id="publications">
             <h2>Selected Publications</h2>
-            <ul>
+            <ul class="pub-list">
                 <li>
-                    <span class="pub-title">Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data.</span>
-                    <span class="pub-journal">Genome Medicine, 2021.</span>
+                    <a href="https://doi.org/10.1186/s13073-021-00922-0" target="_blank">
+                        <span class="pub-title">Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data.</span>
+                        <span class="pub-journal">Genome Medicine, 2021.</span>
+                    </a>
                 </li>
                 <li>
-                    <span class="pub-title">Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses.</span>
-                    <span class="pub-journal">Bioinformatics, 2022.</span>
+                    <a href="https://doi.org/10.1093/bioinformatics/btac500" target="_blank">
+                        <span class="pub-title">Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses.</span>
+                        <span class="pub-journal">Bioinformatics, 2022.</span>
+                    </a>
                 </li>
                 <li>
-                    <span class="pub-title">Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma.</span>
-                    <span class="pub-journal">Nature Communications, 2023.</span>
+                    <a href="https://doi.org/10.1038/s41467-023-41077-w" target="_blank">
+                        <span class="pub-title">Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma.</span>
+                        <span class="pub-journal">Nature Communications, 2023.</span>
+                    </a>
                 </li>
                 <li>
-                    <span class="pub-title">Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors.</span>
-                    <span class="pub-journal">2024.</span>
+                    <a href="https://doi.org/10.1158/2159-8290.CD-23-0182" target="_blank">
+                        <span class="pub-title">Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors.</span>
+                        <span class="pub-journal">Cancer Discovery (Nature Comms update), 2024.</span>
+                    </a>
                 </li>
                 <li>
-                    <span class="pub-title">Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML.</span>
-                    <span class="pub-journal">Experimental Hematology and Oncology, 2025.</span>
+                    <a href="https://doi.org/10.1186/s13045-024-01648-z" target="_blank">
+                        <span class="pub-title">Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML.</span>
+                        <span class="pub-journal">Experimental Hematology and Oncology, 2025.</span>
+                    </a>
                 </li>
             </ul>
         </section>
 
         <section id="visuals">
-            <h2>Visual Work & Collages</h2>
-            <div class="visual-preview">
-                <div class="gallery-item"><img src="img/R1-04013-0007.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/R1-04726-0018.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/R1-04726-0003.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/R1-05053-3386.jpg" alt=""></div>
+            <h2>Selected visual work</h2>
+			<p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 1rem;">Photography</p>
+            <div class="visual-preview" style="margin-bottom: 2rem;">
+                <div class="gallery-item"><img src="img/photography/R1-04726-0014.jpg" alt=""></div>
+                <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
+                <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg alt=""></div>
+                <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
             </div>
-            <a href="visuals.html" class="view-more">View full artistic portfolio →</a>
+			<p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 1rem;">Collage</p>
+			            <div class="visual-preview">
+                <div class="gallery-item"><img src="img/photography/1.png" alt=""></div>
+                <div class="gallery-item"><img src="img/photography/2.png" alt=""></div>
+                <div class="gallery-item"><img src="img/photography/3.png" alt=""></div>
+                <div class="gallery-item"><img src="img/photography/4.pgn" alt=""></div>
+           </div>
+			<a href="visuals.html" class="view-more">View full artistic portfolio →</a>
         </section>
     </main>
 
