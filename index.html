@@ -6,7 +6,7 @@
     <title>Coral Fustero-Torre, PhD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <style>
         :root {
             --text-color: #1a1a1a;
@@ -15,7 +15,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Courier Prime', monospace;
             margin: 0;
             padding: 0;
             color: var(--text-color);
@@ -24,23 +24,23 @@
         }
 
         header {
-            padding: 5rem 2rem 1rem 2rem; /* Reducido el padding inferior del header */
+            padding: 4rem 2rem 1rem 2rem;
             max-width: 1000px;
             margin: 0 auto;
         }
 
         h1 {
+            font-family: 'Pixelify Sans', sans-serif;
             font-weight: 600;
-            font-size: 1.5rem;
+            font-size: 2.2rem;
             margin: 0;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
         }
 
         .subtitle {
             font-size: 0.9rem;
             color: var(--light-grey);
-            margin-top: 0.5rem;
-            letter-spacing: 0.5px;
+            margin-top: 0.3rem;
         }
 
         nav {
@@ -53,7 +53,7 @@
             text-decoration: none;
             color: var(--text-color);
             margin-right: 30px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 400;
             transition: opacity 0.3s;
         }
@@ -63,38 +63,38 @@
         main {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 1.5rem 2rem 3rem 2rem; /* Reducido el padding superior de main */
+            padding: 2rem 2rem 3rem 2rem;
         }
 
         section { margin-bottom: 4rem; }
 
         h2 {
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin-bottom: 1.5rem;
             color: var(--text-color);
-            margin-top: 0; /* Elimina margen extra en títulos */
+            margin-top: 0;
         }
 
         .bio {
-            font-size: 0.95rem;
+            font-size: 1rem;
             max-width: 850px;
             margin-bottom: 2rem;
-            font-weight: 400;
-            text-align: justify; /* Opcional: para un look más de "publicación" */
+            text-align: justify;
         }
 
         ul { list-style: none; padding: 0; }
         
         .research-list li {
             margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-            font-weight: 400;
+            font-size: 1rem;
         }
 
         .pub-list li {
             margin-bottom: 1.5rem;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .pub-list a {
@@ -106,7 +106,7 @@
             text-decoration: underline;
         }
 
-        .pub-title { font-weight: 600; display: block; }
+        .pub-title { font-weight: 700; display: block; }
         .pub-journal { font-style: italic; color: var(--light-grey); }
 
         .visual-preview {
@@ -119,6 +119,7 @@
             background-color: #f9f9f9;
             aspect-ratio: 1 / 1; 
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
         .gallery-item img {
@@ -133,20 +134,19 @@
         .view-more {
             display: inline-block;
             margin-top: 2rem;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-decoration: none;
             color: var(--text-color);
             border-bottom: 1px solid var(--text-color);
             padding-bottom: 2px;
-            font-weight: 500;
         }
 
         footer {
-            padding: 4rem 2rem;
+            padding: 3rem 2rem;
             max-width: 1000px;
             margin: 0 auto;
             border-top: 1px solid var(--border-color);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--light-grey);
             display: flex;
             justify-content: space-between;
@@ -154,7 +154,6 @@
 
         @media (max-width: 768px) {
             .visual-preview { grid-template-columns: repeat(2, 1fr); }
-            header { padding-top: 3rem; }
         }
     </style>
 </head>
@@ -168,6 +167,7 @@
             <a href="#research">Research</a>
             <a href="#publications">Publications</a>
             <a href="visuals.html">Visuals</a>
+            <a href="cv.html">CV</a>
             <a href="mailto:coralfustero@gmail.com">Contact</a>
         </nav>
     </header>
@@ -223,33 +223,33 @@
             </ul>
         </section>
 
-        <section id="visuals">
-            <h2>Selected Visual Work</h2>
+		<section id="visuals">
+		            <h2>Selected Visual Work</h2>
             
-            <p style="font-size: 0.75rem; color: #888; margin-bottom: 1rem;">Photography</p>
-            <div class="visual-preview" style="margin-bottom: 2rem;">
-                <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/photography/R1-04726-0003.jpg" alt=""></div>
-                <div class="gallery-item"><img src="img/photography/R1-05190-0015.jpg" alt=""></div>
-            </div>
+		            <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Photography</p>
+		            <div class="visual-preview" style="margin-bottom: 2rem;">
+		                <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
+		                <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
+		                <div class="gallery-item"><img src="img/photography/R1-04726-0003.jpg" alt=""></div>
+		                <div class="gallery-item"><img src="img/photography/R1-05190-0015.jpg" alt=""></div>
+		            </div>
 
-            <p style="font-size: 0.75rem; color: #888; margin-bottom: 1rem;">Collage</p>
-            <div class="visual-preview">
-                <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
-                <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
-                <div class="gallery-item"><img src="img/collage/3.png" alt=""></div>
-                <div class="gallery-item"><img src="img/collage/4.png" alt=""></div>
-            </div>
+		            <p style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">Collage</p>
+		            <div class="visual-preview">
+		                <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
+		                <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
+		                <div class="gallery-item"><img src="img/collage/3.png" alt=""></div>
+		                <div class="gallery-item"><img src="img/collage/4.png" alt=""></div>
+		            </div>
 
-            <a href="visuals.html" class="view-more">View full artistic portfolio →</a>
-        </section>
-    </main>
+		            <a href="visuals.html" class="view-more">View full artistic portfolio →</a>
+		        </section>
+		    </main>
 
-    <footer>
-        <div>&copy; 2025 Coral Fustero-Torre</div>
-        <div>Computational Biologist / Visual Artist</div>
-    </footer>
+		    <footer>
+		        <div>&copy; 2025 Coral Fustero-Torre</div>
+		        <div>Computational Biologist / Visual Artist</div>
+		    </footer>
 
-</body>
-</html>
+		</body>
+		</html>
