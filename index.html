@@ -1,51 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coral Fustero-Torre</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral Fustero-Torre, PhD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #666;
+            --border-color: #eee;
+            --spacing: 4rem;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        /* --- NAVEGACIÓN Y HEADER --- */
+        header {
+            padding: var(--spacing) 2rem 2rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            margin-right: 30px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.5;
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: var(--spacing);
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            color: var(--light-grey);
+            font-weight: 600;
+        }
+
+        /* --- GALERÍA ARTÍSTICA (Fotos y Collages) --- */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            background-color: #fcfcfc;
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(10%);
+            transition: all 0.5s ease;
+        }
+
+        .gallery-item img:hover {
+            filter: grayscale(0%);
+            transform: scale(1.03);
+        }
+
+        /* --- LISTAS (Publicaciones y Proyectos) --- */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f9f9f9;
+            padding-bottom: 0.5rem;
+        }
+
+        li strong {
+            font-weight: 600;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: var(--spacing) 2rem;
+            border-top: 1px solid var(--border-color);
+            max-width: 1100px;
+            margin: 0 auto;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            .gallery { grid-template-columns: 1fr; }
+            header, main { padding: 2rem 1.5rem; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Coral Fustero-Torre, PhD</h1>
-    <p class="subtitle">Computational Biologist • Researcher</p>
-  </header>
 
-  <main>
-    <section>
-      <p>Coral Fustero-Torre, PhD is a computational biologist researcher. Her work focuses on the use of computational approaches to reveal hidden molecular mechanisms and dynamics within complex cellular systems. She has specialized in single-cell sequencing technologies and the development of data-driven approaches to understand biological complexity and evolution.</p>
-    </section>
+    <header>
+        <h1>Coral Fustero-Torre, PhD</h1>
+        <p class="subtitle">Computational Biologist • Researcher • Visual Artist</p>
+        
+        <nav>
+            <a href="#about">About</a>
+            <a href="#work">Research</a>
+            <a href="#visuals">Visuals</a>
+            <a href="mailto:coralfustero@gmail.com">Contact</a>
+        </nav>
+    </header>
 
-    <section>
-      <h2>Selected Projects</h2>
-      <ul>
-        <li>Single-cell sequencing analysis</li>
-        <li>Data-driven approaches to cellular complexity</li>
-        <li>Computational modeling of molecular dynamics</li>
-        <li>Development of tailored bioinformatics tools</li>
-      </ul>
-    </section>
+    <main>
+        <section id="about" class="intro-text">
+            <p>Computational biologist researcher. My work focuses on the use of computational approaches to reveal hidden molecular mechanisms and dynamics within complex cellular systems. Specialized in single-cell sequencing technologies and data-driven approaches to understand biological complexity and evolution.</p>
+        </section>
 
-    <section>
-      <h2>Selected Publications</h2>
-      <ul>
-        <li><strong>Fustero-Torre C.</strong> Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data. Genome Medicine. 2021.</li>
-        <li><strong>Fustero-Torre C.</strong> Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses. Bioinformatics. 2022.</li>
-        <li><em>Co-author.</em> Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma. Nature Communications. 2023.</li>
-        <li><em>Co-author.</em> Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors. 2024.</li>
-        <li><em>Co-author.</em> Resolving intra-tumor heterogeneity and clonal evolution of core-binding factor acute myeloid leukemia patients with single-cell resolution. Experimental Hematology and Oncology. 2025.</li>
-      </ul>
-    </section>
+        <section id="visuals">
+            <h2>Photography & Collages</h2>
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80" alt="Collage 1">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=800&q=80" alt="Collage 2">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1515405290399-311ff7669d04?auto=format&fit=crop&w=800&q=80" alt="Photography">
+                </div>
+            </div>
+        </section>
 
-    <section>
-      <h2>Contact</h2>
-      <p>Email: <a href="mailto:coralfustero@gmail.com">coralfustero@gmail.com</a></p>
-    </section>
-  </main>
+        <section id="work">
+            <h2>Selected Publications</h2>
+            <ul>
+                <li><strong>Fustero-Torre C.</strong> Beyondcell: targeting cancer therapeutic heterogeneity in single-cell RNA-seq data. <em>Genome Medicine</em>. 2021.</li>
+                <li><strong>Fustero-Torre C.</strong> Bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses. <em>Bioinformatics</em>. 2022.</li>
+                <li><em>Co-author.</em> Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma. <em>Nature Communications</em>. 2023.</li>
+                <li><em>Co-author.</em> Type I interferon signaling pathway enhances immune-checkpoint inhibition in KRAS mutant lung tumors. 2024.</li>
+                <li><em>Co-author.</em> Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML. <em>Experimental Hematology and Oncology</em>. 2025.</li>
+            </ul>
+        </section>
 
-  <footer>
-    <p>&copy; 2025 Coral Fustero-Torre</p>
-  </footer>
+        <section>
+            <h2>Selected Projects</h2>
+            <ul>
+                <li>Single-cell sequencing analysis</li>
+                <li>Data-driven approaches to cellular complexity</li>
+                <li>Computational modeling of molecular dynamics</li>
+                <li>Development of tailored bioinformatics tools</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div>&copy; 2025 Coral Fustero-Torre</div>
+        <div>Built with GitHub Pages</div>
+    </footer>
+
 </body>
 </html>
