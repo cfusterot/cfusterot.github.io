@@ -6,7 +6,7 @@
     <title>Visuals | Coral Fustero-Torre</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
             --text-color: #1a1a1a;
@@ -21,10 +21,11 @@
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
         }
 
         header {
-            padding: 3rem 2rem;
+            padding: 4rem 2rem 1rem 2rem;
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
@@ -35,29 +36,33 @@
         .logo { 
             text-decoration: none; 
             color: #000; 
-            font-family: 'Pixelify Sans', sans-serif;
-            font-size: 1.2rem;
+            font-weight: 700; 
+            font-size: 1.2rem; 
+            letter-spacing: -0.5px;
         }
 
         nav a { 
             text-decoration: none; 
-            color: var(--light-grey); 
-            font-size: 0.9rem;
+            color: var(--text-color); 
+            font-size: 0.95rem; 
+            font-weight: 400;
         }
 
-        main { padding: 0 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        nav a:hover { opacity: 0.5; }
+
+        main { padding: 2rem 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
 
         .section-title {
-            font-family: 'Pixelify Sans', sans-serif;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
             color: var(--text-color);
             margin: 4rem 0 2rem 0;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            padding-bottom: 5px;
         }
 
+        /* Masonry Layout */
         .masonry-gallery {
             column-count: 4; 
             column-gap: 20px;
@@ -67,6 +72,7 @@
             break-inside: avoid;
             margin-bottom: 20px;
             cursor: pointer;
+            overflow: hidden;
             border: 1px solid var(--border);
         }
 
@@ -76,8 +82,11 @@
             transition: opacity 0.3s ease;
         }
 
-        .gallery-item:hover img { opacity: 0.7; }
+        .gallery-item:hover img {
+            opacity: 0.7;
+        }
 
+        /* Lightbox */
         .lightbox {
             position: fixed;
             top: 0; left: 0;
@@ -96,6 +105,7 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.05);
         }
 
+        /* Responsive */
         @media (max-width: 1100px) { .masonry-gallery { column-count: 3; } }
         @media (max-width: 800px) { .masonry-gallery { column-count: 2; } }
         @media (max-width: 500px) { .masonry-gallery { column-count: 1; } }
@@ -109,15 +119,65 @@
     </header>
 
     <main>
+        
         <h2 class="section-title">01. Photography</h2>
         <div class="masonry-gallery">
             <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
-            </div>
+            <div class="gallery-item"><img src="img/photography/R1-04013-0010.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-002A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-023A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-024A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0003.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0014.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0016.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0026.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0005.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0012.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0023.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0026.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0027.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0028.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0036.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0037.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0009.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0015.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-243A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-3387.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04723-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04724-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0028.jpg" alt=""></div>
+        </div>
 
         <h2 class="section-title">02. Collage</h2>
         <div class="masonry-gallery">
             <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
-            </div>
+            <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/3.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/4.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/5.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/6.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/7.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/8.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/9.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/10.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/11.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/12.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/13.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/14.png" alt=""></div>
+        </div>
+
+        <h2 class="section-title">03. Memory</h2>
+        <div class="masonry-gallery">
+        </div>
+
     </main>
 
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
@@ -127,6 +187,7 @@
     <script>
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
+        
         document.querySelectorAll('.gallery-item img').forEach(img => {
             img.onclick = (e) => {
                 e.stopPropagation();
@@ -135,5 +196,6 @@
             };
         });
     </script>
+
 </body>
 </html>
