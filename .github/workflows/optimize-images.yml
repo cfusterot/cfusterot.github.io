@@ -1,0 +1,26 @@
+name: Optimize Images
+on:
+  push:
+    paths:
+      - 'img/**' # Solo se activa las imagenes se suben a la carpeta img
+jobs:
+  build:
+    name: calibra-image-optimization
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Compress and Resize Images
+        uses: calibreapp/image-actions@main
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          # Configuración Premium
+          compressOnly: false
+          jpegQuality: '90'     # Calidad alta para evitar píxeles
+          pngQuality: '90'
+          webpQuality: '90'
+          # Redimensión a 2560px para pantallas 4K/Retina
+          maxWidth: 2560
+          maxHeight: 2560
+          ignorePaths: 'node_modules/**'
