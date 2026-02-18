@@ -81,7 +81,7 @@
         .cv-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .cv-content { flex: 1; }
@@ -90,13 +90,21 @@
             font-size: 0.85rem; 
             text-align: right; 
             margin-left: 20px;
-            min-width: 120px;
+            min-width: 140px;
         }
 
-        .cv-title { font-weight: 700; display: block; }
-        .cv-subtitle { font-style: italic; color: var(--light-grey); display: block; margin-bottom: 5px; }
-        .cv-description { font-size: 0.9rem; margin: 0; padding: 0; }
-        .cv-description li { list-style: none; margin-bottom: 3px; }
+        .cv-title { font-weight: 700; display: block; font-size: 1rem; }
+        .cv-subtitle { font-style: italic; color: var(--light-grey); display: block; margin-bottom: 8px; }
+        .cv-description { font-size: 0.95rem; margin: 0; padding: 0; list-style: none; }
+        .cv-description li { margin-bottom: 5px; position: relative; padding-left: 15px; }
+        .cv-description li::before { content: "+"; position: absolute; left: 0; }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            font-size: 0.95rem;
+        }
 
         footer {
             padding: 3rem 2rem;
@@ -110,6 +118,7 @@
         @media (max-width: 600px) {
             .cv-item { flex-direction: column; }
             .cv-date { text-align: left; margin-left: 0; margin-top: 5px; }
+            .skills-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -128,5 +137,111 @@
             
             <div class="cv-item">
                 <div class="cv-content">
-                    <span class="cv-title">Postdoctoral Researcher</span>
-                    <span class="cv-subtitle">Berlin Institute for Medical Systems
+                    <span class="cv-title">Postdoctoral researcher</span>
+                    <span class="cv-subtitle">Berlin Institute for Medical Systems Biology | BIH</span>
+                    <ul class="cv-description">
+                        <li>Integrated single cell multi-omic characterization and clonal tracing in clonal hematopoiesis</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2022 — 2025</div>
+            </div>
+
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">BSC access committee member</span>
+                    <span class="cv-subtitle">Barcelona Supercomputing Center (BSC)</span>
+                </div>
+                <div class="cv-date">2024 — Present</div>
+            </div>
+
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">Computational Biologist</span>
+                    <span class="cv-subtitle">Spanish National Cancer Research Center (CNIO)</span>
+                    <ul class="cv-description">
+                        <li>Analysis, quality control and functional characterization of NGS data</li>
+                        <li>Pipeline automation via snakemake</li>
+                        <li>Script programming in R</li>
+                        <li>Bioinformatic support</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2015 — 2022</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Teaching</h2>
+            
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">Lecturer</span>
+                    <span class="cv-subtitle">MSc in Applied Bioinformatics and Personalized Medicine | ISCIII</span>
+                    <ul class="cv-description">
+                        <li>Subject: OMICs data analysis and Interpretation</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">Lecturer</span>
+                    <span class="cv-subtitle">MSc in Bioinformatics and Computational Biology | UAM</span>
+                    <ul class="cv-description">
+                        <li>Subject: Translational genomics</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">Lecturer</span>
+                    <span class="cv-subtitle">Int. Master's Program in Molecular Medicine | Charité (Berlin)</span>
+                </div>
+                <div class="cv-date">2023</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Education</h2>
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">PhD in Molecular Biosciences</span>
+                    <span class="cv-subtitle">Universidad Autónoma de Madrid</span>
+                </div>
+                <div class="cv-date">2018 — 2022</div>
+            </div>
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">MSc in Bioinformatics and Computational Biology</span>
+                    <span class="cv-subtitle">Universidad Autónoma de Madrid</span>
+                </div>
+                <div class="cv-date">2016 — 2018</div>
+            </div>
+            <div class="cv-item">
+                <div class="cv-content">
+                    <span class="cv-title">BSc in Biotechnology</span>
+                    <span class="cv-subtitle">Universitat de Barcelona</span>
+                </div>
+                <div class="cv-date">2008 — 2013</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Tools</h2>
+            <div class="skills-grid">
+                <div>• R 📊</div>
+                <div>• Snakemake 🐍</div>
+                <div>• Python 💻</div>
+                <div>• Linux/Shell 🐚</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2025 Coral Fustero-Torre
+    </footer>
+
+</body>
+</html>
