@@ -10,6 +10,7 @@
     <style>
         :root {
             --text-color: #1a1a1a;
+            --bio-color: #444;
             --light-grey: #666;
             --border-color: #eee;
         }
@@ -23,51 +24,53 @@
             line-height: 1.6;
         }
 
-        header {
-            padding: 5rem 2rem 2rem 2rem;
-            max-width: 900px;
+        .container {
+            max-width: 1100px; /* Ancho suficiente para que la bio se expanda */
             margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 5rem 0 0.5rem 0;
         }
 
         h1 {
             font-weight: 700;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin: 0;
             letter-spacing: -0.5px;
         }
 
         .subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--light-grey);
             margin-top: 0.5rem;
-            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 2rem 5rem 2rem;
+            padding: 1rem 0 5rem 0;
         }
 
         .bio {
-            font-size: 1.25rem;
+            font-size: 1.0rem;
             font-weight: 400;
             margin-bottom: 5rem;
-            text-align: justify;
-            max-width: 850px;
-            color: var(--text-color);
+            text-align: justify; /* Texto justificado como pediste */
+            width: 100%; /* Ocupa todo el ancho del contenedor */
+            max-width: 1000px; /* Evita que las líneas sean infinitas en pantallas gigantes */
+            color: var(--bio-color);
         }
 
         .nav-section {
             margin-bottom: 3.5rem;
+            max-width: 600px; /* El menú se mantiene más recogido a la izquierda */
         }
 
         h2 {
             font-size: 1.1rem;
             font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 5px;
             color: var(--text-color);
@@ -80,7 +83,7 @@
         }
 
         .link-list li {
-            margin-bottom: 0.7rem;
+            margin-bottom: 0.6rem;
             display: flex;
             align-items: center;
         }
@@ -89,12 +92,13 @@
             content: "•";
             margin-right: 12px;
             color: var(--light-grey);
+            font-size: 0.8rem;
         }
 
         .link-list a {
             text-decoration: none;
             color: var(--text-color);
-            font-size: 1.05rem;
+            font-size: 1.0rem; /* Subsecciones pequeñitas */
             font-weight: 400;
             transition: opacity 0.3s ease;
         }
@@ -104,60 +108,61 @@
         }
 
         footer {
-            padding: 3rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 3rem 0;
             border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--light-grey);
             display: flex;
             justify-content: space-between;
         }
 
         @media (max-width: 600px) {
-            h1 { font-size: 1.5rem; }
-            .bio { font-size: 1.1rem; }
-            .link-list a { font-size: 1rem; }
+            header { padding-top: 3rem; }
+            h1 { font-size: 1.4rem; }
+            .bio, h2 { font-size: 1rem; text-align: left; } /* En móvil mejor no justificar */
+            .link-list a { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Coral Fustero-Torre, PhD</h1>
-        <p class="subtitle">Computational Biologist & Visual Artist</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Coral Fustero-Torre, PhD</h1>
+            <p class="subtitle">Computational Biologist | Visual Artist</p>
+        </header>
 
-    <main>
-        <section class="bio">
-            Coral Fustero-Torre is a computational biologist and researcher. Her work investigates the molecular and cellular systems that shape life, using advanced computational methods to reveal hidden structures and dynamics within them. She specializes in single-cell sequencing technologies and the development of analytical tools to decipher biological complexity and evolution. Alongside her scientific work, she explores analog photography, collage and Super8 filmmaking.
-        </section>
+        <main>
+            <section class="bio">
+				Coral Fustero-Torre is a computational biologist and researcher. Her work investigates the molecular and cellular systems that shape life, using advanced computational methods to reveal hidden structures and dynamics within them. She specializes in single-cell sequencing technologies and the development of analytical tools to decipher biological complexity and evolution. Alongside her scientific work, she explores analog photography, collage and Super8 filmmaking.
+            </section>
 
-        <nav>
-            <div class="nav-section">
-                <h2>Computational Biologist</h2>
-                <ul class="link-list">
-                    <li><a href="science.html">Research areas</a></li>
-                    <li><a href="science.html#publications">Publications</a></li>
-                    <li><a href="science.html#cv">Curriculum Vitae</a></li>
-                </ul>
-            </div>
+            <nav>
+                <div class="nav-section">
+                    <h2>Computational biologist</h2>
+                    <ul class="link-list">
+                        <li><a href="science.html">Research areas</a></li>
+                        <li><a href="science.html#publications">Publications</a></li>
+                        <li><a href="science.html#cv">Curriculum Vitae</a></li>
+                    </ul>
+                </div>
 
-            <div class="nav-section">
-                <h2>Visual Artist</h2>
-                <ul class="link-list">
-                    <li><a href="art.html#photography">Photography</a></li>
-                    <li><a href="art.html#collage">Collage</a></li>
-                    <li><a href="art.html#super8">Super8</a></li>
-                </ul>
-            </div>
-        </nav>
-    </main>
+                <div class="nav-section">
+                    <h2>Visual artist</h2>
+                    <ul class="link-list">
+                        <li><a href="art.html#photography">Photography</a></li>
+                        <li><a href="art.html#collage">Collage</a></li>
+                        <li><a href="art.html#super8">Super8</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </main>
 
-    <footer>
-        <div>&copy; 2026 Coral Fustero-Torre</div>
-        <div>Computational Biologist / Visual artist</div>
-    </footer>
+        <footer>
+	        <div>&copy; 2026 Coral Fustero-Torre</div>
+	        <div>Computational Biologist | Visual Artist</div>
+        </footer>
+    </div>
 
 </body>
 </html>
