@@ -80,6 +80,7 @@
 
         .gallery-item:hover img { opacity: 0.7; }
 
+        /* Lightbox con Navegación */
         .lightbox {
             position: fixed;
             top: 0; left: 0;
@@ -89,18 +90,41 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            cursor: zoom-out;
         }
 
         .lightbox img {
             max-width: 85%;
             max-height: 85vh;
             box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            cursor: zoom-out;
         }
+
+        /* Botones laterales */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-family: 'Courier Prime', monospace;
+            font-size: 2.5rem;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            z-index: 1010;
+        }
+
+        .nav-btn:hover { opacity: 0.5; }
+        #prev-btn { left: 2%; }
+        #next-btn { right: 2%; }
 
         @media (max-width: 1100px) { .masonry-gallery { column-count: 3; } }
         @media (max-width: 800px) { .masonry-gallery { column-count: 2; } }
-        @media (max-width: 500px) { .masonry-gallery { column-count: 1; } }
+        @media (max-width: 500px) { 
+            .masonry-gallery { column-count: 1; }
+            .nav-btn { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -113,7 +137,6 @@
     <main>
         <h2 id="photography" class="section-title">01. Photography</h2>
         <div class="masonry-gallery">
-
             <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04013-0010.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
@@ -146,7 +169,7 @@
             <div class="gallery-item"><img src="img/photography/R1-05190-0008.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04726-0028.jpg" alt=""></div>
-            </div>
+        </div>
 
         <h2 id="collage" class="section-title">02. Collage</h2>
         <div class="masonry-gallery">
@@ -164,31 +187,63 @@
             <div class="gallery-item"><img src="img/collage/12.png" alt=""></div>
             <div class="gallery-item"><img src="img/collage/13.png" alt=""></div>
             <div class="gallery-item"><img src="img/collage/14.png" alt=""></div>
-            </div>
+        </div>
 
-        <h2 id="super8" class="section-title">03. Super8</h2>
+        <h2 id="super8" class="section-title">03. Film</h2>
         <div class="masonry-gallery">
             </div>
     </main>
 
-    <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
-        <img id="lightbox-img" src="" alt="">
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button id="prev-btn" class="nav-btn" onclick="changeImage(-1, event)">←</button>
+        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+        <button id="next-btn" class="nav-btn" onclick="changeImage(1, event)">→</button>
     </div>
 
     <script>
+        let currentImages = [];
+        let currentIndex = 0;
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
-        document.querySelectorAll('.gallery-item img').forEach(img => {
+        const allImages = Array.from(document.querySelectorAll('.gallery-item img'));
+
+        allImages.forEach((img, index) => {
             img.onclick = (e) => {
                 e.stopPropagation();
-                lightbox.style.display = 'flex';
-                lightboxImg.src = img.src;
+                currentImages = allImages.map(el => el.src);
+                currentIndex = index;
+                updateLightbox();
             };
         });
+
+        function updateLightbox() {
+            lightboxImg.src = currentImages[currentIndex];
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+        }
+
+        function changeImage(step, event) {
+            if (event) event.stopPropagation();
+            currentIndex = (currentIndex + step + currentImages.length) % currentImages.length;
+            updateLightbox();
+        }
+
+        // Soporte para teclado
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === "ArrowLeft") changeImage(-1);
+                if (e.key === "ArrowRight") changeImage(1);
+                if (e.key === "Escape") closeLightbox();
+            }
+        });
     </script>
+		
+	<footer>
+	    &copy; 2026 Coral Fustero-Torre | Visual Artist
+	</footer>
+	
 </body>
 </html>
-
-
-
- 
