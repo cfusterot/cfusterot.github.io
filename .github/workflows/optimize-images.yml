@@ -20,7 +20,7 @@ jobs:
           jpegQuality: '90'     # Calidad alta para evitar píxeles
           pngQuality: '90'
           webpQuality: '90'
-          # Redimensión a 2560px para pantallas 4K/Retina
-          maxWidth: 2560
-          maxHeight: 2560
+          # Redimensión a 720px para pantallas 4K/Retina
+          maxWidth: 720
+          maxHeight: 720
           ignorePaths: 'node_modules/**'
