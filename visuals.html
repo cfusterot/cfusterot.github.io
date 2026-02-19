@@ -21,7 +21,6 @@
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            -webkit-font-smoothing: antialiased;
         }
 
         header {
@@ -37,20 +36,18 @@
             text-decoration: none; 
             color: #000; 
             font-weight: 700; 
-            font-size: 1.2rem; 
-            letter-spacing: -0.5px;
+            font-size: 1.2rem;
         }
 
         nav a { 
             text-decoration: none; 
-            color: var(--text-color); 
-            font-size: 0.95rem; 
-            font-weight: 400;
+            color: var(--light-grey); 
+            font-size: 0.9rem;
         }
 
-        nav a:hover { opacity: 0.5; }
+        nav a:hover { color: var(--text-color); }
 
-        main { padding: 2rem 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        main { padding: 0 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
 
         .section-title {
             font-size: 1.1rem;
@@ -62,7 +59,6 @@
             padding-bottom: 5px;
         }
 
-        /* Masonry Layout */
         .masonry-gallery {
             column-count: 4; 
             column-gap: 20px;
@@ -72,8 +68,8 @@
             break-inside: avoid;
             margin-bottom: 20px;
             cursor: pointer;
-            overflow: hidden;
             border: 1px solid var(--border);
+            overflow: hidden;
         }
 
         .gallery-item img {
@@ -82,11 +78,8 @@
             transition: opacity 0.3s ease;
         }
 
-        .gallery-item:hover img {
-            opacity: 0.7;
-        }
+        .gallery-item:hover img { opacity: 0.7; }
 
-        /* Lightbox */
         .lightbox {
             position: fixed;
             top: 0; left: 0;
@@ -105,7 +98,6 @@
             box-shadow: 0 5px 25px rgba(0,0,0,0.05);
         }
 
-        /* Responsive */
         @media (max-width: 1100px) { .masonry-gallery { column-count: 3; } }
         @media (max-width: 800px) { .masonry-gallery { column-count: 2; } }
         @media (max-width: 500px) { .masonry-gallery { column-count: 1; } }
@@ -115,13 +107,13 @@
 
     <header>
         <a href="index.html" class="logo">Coral Fustero-Torre</a>
-        <nav><a href="index.html">← Back to Research</a></nav>
+        <nav><a href="art.html">← Back to Art</a></nav>
     </header>
 
     <main>
-        
-        <h2 class="section-title">01. Photography</h2>
+        <h2 id="photography" class="section-title">01. Photography</h2>
         <div class="masonry-gallery">
+
             <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04013-0010.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
@@ -154,9 +146,9 @@
             <div class="gallery-item"><img src="img/photography/R1-05190-0008.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
             <div class="gallery-item"><img src="img/photography/R1-04726-0028.jpg" alt=""></div>
-        </div>
+            </div>
 
-        <h2 class="section-title">02. Collage</h2>
+        <h2 id="collage" class="section-title">02. Collage</h2>
         <div class="masonry-gallery">
             <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
             <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
@@ -172,12 +164,11 @@
             <div class="gallery-item"><img src="img/collage/12.png" alt=""></div>
             <div class="gallery-item"><img src="img/collage/13.png" alt=""></div>
             <div class="gallery-item"><img src="img/collage/14.png" alt=""></div>
-        </div>
+            </div>
 
-        <h2 class="section-title">03. Memory</h2>
+        <h2 id="super8" class="section-title">03. Super8</h2>
         <div class="masonry-gallery">
-        </div>
-
+            </div>
     </main>
 
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
@@ -187,7 +178,6 @@
     <script>
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
-        
         document.querySelectorAll('.gallery-item img').forEach(img => {
             img.onclick = (e) => {
                 e.stopPropagation();
@@ -196,6 +186,9 @@
             };
         });
     </script>
-
 </body>
 </html>
+
+
+
+ 
