@@ -24,7 +24,7 @@
         }
 
         header {
-            padding: 4rem 2rem 2rem 2rem;
+            padding: 5rem 2rem 2rem 2rem;
             max-width: 900px;
             margin: 0 auto;
         }
@@ -37,7 +37,7 @@
         }
 
         .subtitle {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--light-grey);
             margin-top: 0.5rem;
             text-transform: uppercase;
@@ -51,10 +51,12 @@
         }
 
         .bio {
-            font-size: 1rem;
-            margin-bottom: 4rem;
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-bottom: 5rem;
             text-align: justify;
-            max-width: 800px;
+            max-width: 850px;
+            color: var(--text-color);
         }
 
         .nav-section {
@@ -78,26 +80,27 @@
         }
 
         .link-list li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .link-list li::before {
+            content: "•";
+            margin-right: 12px;
+            color: var(--light-grey);
         }
 
         .link-list a {
             text-decoration: none;
             color: var(--text-color);
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 400;
             transition: opacity 0.3s ease;
         }
 
         .link-list a:hover {
             opacity: 0.5;
-        }
-
-        .link-note {
-            font-size: 0.85rem;
-            color: var(--light-grey);
-            margin-left: 10px;
-            font-style: italic;
         }
 
         footer {
@@ -113,7 +116,8 @@
 
         @media (max-width: 600px) {
             h1 { font-size: 1.5rem; }
-            .link-list a { font-size: 1.1rem; }
+            .bio { font-size: 1.1rem; }
+            .link-list a { font-size: 1rem; }
         }
     </style>
 </head>
@@ -147,20 +151,12 @@
                     <li><a href="art.html#super8">Super8</a></li>
                 </ul>
             </div>
-
-            <div class="nav-section">
-                <h2>Connect</h2>
-                <ul class="link-list">
-                    <li><a href="mailto:coralfustero@gmail.com">Email</a></li>
-                    <li><a href="https://www.researchgate.net/profile/Coral-Fustero-Torre" target="_blank">ResearchGate <span class="link-note">↗</span></a></li>
-                </ul>
-            </div>
         </nav>
     </main>
 
     <footer>
         <div>&copy; 2026 Coral Fustero-Torre</div>
-        <div>Berlin — Madrid</div>
+        <div>Computational Biologist / Visual artist</div>
     </footer>
 
 </body>
