@@ -1,5 +1,6 @@
 name: Optimize Images
 on:
+  workflow_dispatch: # permite ejecutarlo manualmente desde la pestaña "Actions"
   push:
     branches:
       - main
@@ -14,12 +15,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Optimize Images
-        uses: LRECO/action-optimize-images@v2
+        uses: calibra-ai/image-actions@main # Una versión más moderna y estable
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Calidad alta para mantener el detalle fino
-          jpegQuality: '90'
-          pngQuality: '90'
-          webpQuality: '90'
-          maxWidth: 300 #Redimensionado de las imágenes
-          # Si la imagen es más pequeña de 600, no la estirará (para no pixelar)
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          compressOnly: false
+          maxWidth: 600
+          # Convertir a WebP para que vaya más rápido
+          webpQuality: '80'
