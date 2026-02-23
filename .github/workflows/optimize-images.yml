@@ -17,10 +17,10 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           # Configuración Premium
           compressOnly: false
-          jpegQuality: '75'     # Calidad alta para evitar píxeles
-          pngQuality: '75'
-          webpQuality: '75'
-          # Redimensión a 720px para pantallas 4K/Retina
-          maxWidth: 600
-          maxHeight: 600
+          jpegQuality: '90'     # Calidad alta para evitar píxeles
+          pngQuality: '90'
+          webpQuality: '90'
+          # Redimensión a 300px para pantallas 4K/Retina
+          maxWidth: 300
+          maxHeight: 300
           ignorePaths: 'node_modules/**'
