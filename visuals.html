@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visuals | Coral Fustero-Torre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #888;
+            --bg-color: #ffffff;
+            --border: #eee;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            padding: 4rem 2rem 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { 
+            text-decoration: none; 
+            color: #000; 
+            font-weight: 700; 
+            font-size: 1.2rem;
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: var(--light-grey); 
+            font-size: 0.9rem;
+        }
+
+        nav a:hover { color: var(--text-color); }
+
+        main { padding: 0 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-color);
+            margin: 4rem 0 2rem 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .masonry-gallery {
+            column-count: 4; 
+            column-gap: 20px;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover img { opacity: 0.7; }
+
+        /* Lightbox con Navegación */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .lightbox img {
+            max-width: 85%;
+            max-height: 85vh;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            cursor: zoom-out;
+        }
+
+        /* Botones laterales */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-family: 'Courier Prime', monospace;
+            font-size: 2.5rem;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            z-index: 1010;
+        }
+
+        .nav-btn:hover { opacity: 0.5; }
+        #prev-btn { left: 2%; }
+        #next-btn { right: 2%; }
+
+        @media (max-width: 1100px) { .masonry-gallery { column-count: 3; } }
+        @media (max-width: 800px) { .masonry-gallery { column-count: 2; } }
+        @media (max-width: 500px) { 
+            .masonry-gallery { column-count: 1; }
+            .nav-btn { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav><a href="art.html">← Back to Art</a></nav>
+    </header>
+
+    <main>
+        <h2 id="photography" class="section-title">01. Photography</h2>
+        <div class="masonry-gallery">
+            <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04013-0010.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-002A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-023A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-024A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0003.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0014.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0016.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0026.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0005.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0012.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0023.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04874-0026.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0027.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0028.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0036.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-0037.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0009.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0015.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04415-243A.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05053-3387.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04723-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04724-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0004.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-05190-0008.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
+            <div class="gallery-item"><img src="img/photography/R1-04726-0028.jpg" alt=""></div>
+        </div>
+
+        <h2 id="collage" class="section-title">02. Collage</h2>
+        <div class="masonry-gallery">
+            <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/3.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/4.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/5.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/6.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/7.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/8.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/9.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/10.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/11.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/12.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/13.png" alt=""></div>
+            <div class="gallery-item"><img src="img/collage/14.png" alt=""></div>
+        </div>
+
+        <h2 id="super8" class="section-title">03. Film</h2>
+        <div class="masonry-gallery">
+            </div>
+    </main>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button id="prev-btn" class="nav-btn" onclick="changeImage(-1, event)">←</button>
+        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+        <button id="next-btn" class="nav-btn" onclick="changeImage(1, event)">→</button>
+    </div>
+
+    <script>
+        let currentImages = [];
+        let currentIndex = 0;
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const allImages = Array.from(document.querySelectorAll('.gallery-item img'));
+
+        allImages.forEach((img, index) => {
+            img.onclick = (e) => {
+                e.stopPropagation();
+                currentImages = allImages.map(el => el.src);
+                currentIndex = index;
+                updateLightbox();
+            };
+        });
+
+        function updateLightbox() {
+            lightboxImg.src = currentImages[currentIndex];
+            lightbox.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            lightbox.style.display = 'none';
+        }
+
+        function changeImage(step, event) {
+            if (event) event.stopPropagation();
+            currentIndex = (currentIndex + step + currentImages.length) % currentImages.length;
+            updateLightbox();
+        }
+
+        // Soporte para teclado
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === "ArrowLeft") changeImage(-1);
+                if (e.key === "ArrowRight") changeImage(1);
+                if (e.key === "Escape") closeLightbox();
+            }
+        });
+    </script>
+		
+	<footer>
+	    &copy; 2026 Coral Fustero-Torre | Visual Artist
+	</footer>
+	
+</body>
+</html>

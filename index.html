@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coral Fustero-Torre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --bio-color: #444;
+            --light-grey: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        header {
+            padding: 5rem 0 2rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .top-nav {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            letter-spacing: 1px;
+        }
+
+        main {
+            padding: 1rem 0 5rem 0;
+        }
+
+        .bio {
+            font-size: 1.0rem;
+            font-weight: 400;
+            margin-bottom: 5rem;
+            text-align: justify;
+            width: 100%;
+            max-width: 1000px;
+            color: var(--bio-color);
+        }
+
+        .nav-section {
+            margin-bottom: 5rem;
+        }
+
+        .section-header {
+            display: inline-flex;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: opacity 0.3s;
+        }
+
+        .section-header:hover {
+            opacity: 0.5;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: none; /* Sentence case como pediste antes */
+        }
+
+        .section-arrow {
+            margin-left: 10px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+
+        /* Grid estilo Are.na */
+        .arena-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .arena-box {
+            aspect-ratio: 1 / 1;
+            background-color: #ffffff; /* Blanco */
+            border: 1px solid #1a1a1a; /* Borde negro */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 20px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .arena-box:hover {
+            background-color: #fafafa; /* El gris suave de antes */
+            border-width: 1.5px;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .arena-box span {
+            font-size: 1rem;
+            text-align: center;
+            transition: font-weight 0.2s;
+        }
+
+        .arena-box:hover span {
+            font-weight: 700;
+        }
+
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            header { padding-top: 3rem; flex-direction: column; gap: 10px; }
+            .arena-grid { grid-template-columns: repeat(2, 1fr); }
+            .bio { text-align: left; font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .arena-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Coral Fustero-Torre, PhD</h1>
+        </header>
+
+        <main>
+            <section class="bio">
+                Coral Fustero-Torre is a computational biologist and researcher. Her work investigates cellular systems using advanced computational methods to reveal hidden structures and dynamics within them. She specializes in single-cell sequencing technologies and the development of analytical tools to decipher biological complexity and evolution. Alongside her scientific work, she explores analog photography, collage and Super8 filmmaking as a way to decode her surrounding microenvironment.
+            </section>
+
+            <div class="nav-section">
+                <a href="science.html" class="section-header">
+                    <h2>Computational biologist</h2>
+                    <span class="section-arrow">→</span>
+                </a>
+                <div class="arena-grid">
+                    <a href="science.html#research" class="arena-box"><span>Research</span></a>
+                    <a href="science.html#publications" class="arena-box"><span>Publications</span></a>
+                    <a href="science.html#cv" class="arena-box"><span>CV</span></a>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <a href="art.html" class="section-header">
+                    <h2>Visual artist</h2>
+                    <span class="section-arrow">→</span>
+                </a>
+                <div class="arena-grid">
+                    <a href="visuals.html#photography" class="arena-box"><span>Photography</span></a>
+                    <a href="visuals.html#collage" class="arena-box"><span>Collage</span></a>
+                    <a href="visuals.html#super8" class="arena-box"><span>Film</span></a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div>&copy; 2026 Coral Fustero-Torre</div>
+            <div>Computational Biologist | Visual Artist</div>
+        </footer>
+    </div>
+
+</body>
+</html>

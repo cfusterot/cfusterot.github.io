@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science | Coral Fustero-Torre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 4rem 2rem 1rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .logo { 
+            text-decoration: none; 
+            color: #000; 
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: var(--light-grey); 
+            font-size: 0.9rem;
+            margin-left: 20px;
+        }
+
+        nav a:hover { color: var(--text-color); }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 2rem 5rem 2rem;
+        }
+
+        section { margin-bottom: 4rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        ul { list-style: none; padding: 0; }
+        .list-item { margin-bottom: 0.8rem; }
+
+        /* Publicaciones */
+        .pub-item { margin-bottom: 1.5rem; }
+        .pub-link { text-decoration: none; color: inherit; }
+        .pub-link:hover .pub-title { text-decoration: underline; }
+        .pub-title { font-weight: 700; display: block; }
+        .pub-journal { font-style: italic; color: var(--light-grey); font-size: 0.95rem; }
+
+        /* CV Entries */
+        .cv-entry { display: flex; justify-content: space-between; margin-bottom: 2.5rem; }
+        .cv-main { flex: 1; }
+        .cv-date { color: var(--light-grey); font-size: 0.85rem; text-align: right; min-width: 140px; }
+        .cv-role { font-weight: 700; display: block; font-size: 1rem; }
+        .cv-inst { font-style: italic; color: var(--light-grey); display: block; margin-bottom: 8px; }
+        .cv-description { font-size: 0.95rem; margin: 0; padding: 0; list-style: none; }
+        .cv-description li { margin-bottom: 5px; position: relative; padding-left: 15px; }
+        .cv-description li::before { content: "+"; position: absolute; left: 0; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.95rem; }
+
+        footer {
+            padding: 3rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+
+        @media (max-width: 600px) {
+            .cv-entry { flex-direction: column; }
+            .cv-date { text-align: left; margin-top: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav><a href="index.html">← Menu</a></nav>
+    </header>
+
+    <main>
+        <section id="research">
+            <h2>Research Areas</h2>
+            <ul>
+                <li class="list-item">• Single-cell and long-read sequencing technologies</li>
+                <li class="list-item">• Mitochondrial lineage tracing</li>
+                <li class="list-item">• Development of custom analytical tools and pipelines </li>
+                <li class="list-item">• Computational modeling of cellular complexity and evolution</li>
+            </ul>
+        </section>
+		
+        <section id="publications">
+            <h2>Selected Publications</h2>
+            <div class="pub-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/41152985/" target="_blank" class="pub-link">
+                    <span class="pub-title">Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML.</span>
+                    <span class="pub-journal">Experimental Hematology and Oncology, 2025.</span>
+                </a>
+            </div>
+            <div class="pub-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/39186651/" target="_blank" class="pub-link">
+                    <span class="pub-title">Type I interferon signaling pathway enhances immune-checkpoint inhibition.</span>
+                    <span class="pub-journal">Cancer Discovery, 2024.</span>
+                </a>
+            </div>
+            <div class="pub-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/36854674/" target="_blank" class="pub-link">
+                    <span class="pub-title">Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma.</span>
+                    <span class="pub-journal">Nature Communications, 2023.</span>
+                </a>
+            </div>
+            <div class="pub-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/34788788/" target="_blank" class="pub-link">
+                    <span class="pub-title">bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses.</span>
+                    <span class="pub-journal">Bioinformatics, 2022.</span>
+                </a>
+            </div>
+            <div class="pub-item">
+                <a href="https://pubmed.ncbi.nlm.nih.gov/34911571/" target="_blank" class="pub-link">
+                    <span class="pub-title">Beyondcell: targeting cancer therapeutic heterogeneity in scRNA-seq.</span>
+                    <span class="pub-journal">Genome Medicine, 2021.</span>
+                </a>
+            </div>
+			<a href="https://www.researchgate.net/profile/Coral-Fustero-Torre?ev=hdr_xprf" target="_blank" class="external-link">View more on ResearchGate →</a>
+        </section>
+		
+        <section id="cv">
+            <a href="img/cv/Coral_Fustero_CV_compressed.pdf" download="Coral_Fustero_CV_compressed.pdf" style="float: right; text-decoration: none; color: var(--text-color); border: 1px solid #1a1a1a; padding: 5px 10px; font-size: 0.8rem;" target="">Download PDF</a>
+            <h2>Curriculum Vitae</h2>
+            
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Postdoctoral researcher</span>
+                    <span class="cv-inst">Berlin Institute for Medical Systems Biology (BIMSB) | BIH</span>
+                    <ul class="cv-description">
+                        <li>Integrated single cell multi-omic characterization</li>
+                        <li>Clonal tracing in clonal hematopoiesis</li>
+                        <li>Development of computational frameworks for lineage analysis</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2022 — 2025</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">BSC access committee member</span>
+                    <span class="cv-inst">Barcelona Supercomputing Center (BSC)</span>
+                </div>
+                <div class="cv-date">2024 — Present</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Computational Biologist</span>
+                    <span class="cv-inst">Spanish National Cancer Research Center (CNIO)</span>
+                    <ul class="cv-description">
+                        <li>Analysis, quality control and functional characterization of NGS data</li>
+                        <li>Pipeline automation via Snakemake</li>
+                        <li>Script programming in R and bioinformatic support</li>
+                        <li>Development of Beyondcell and Bollito tools</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2015 — 2022</div>
+            </div>
+
+            <h2 style="margin-top: 3rem;">Teaching</h2>
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">Int. Master's Program in Molecular Medicine | Charité (Berlin)</span>
+                </div>
+                <div class="cv-date">2023</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">MSc in Applied Bioinformatics and Personalized Medicine | ISCIII</span>
+                    <ul class="cv-description">
+                        <li>Subject: OMICs data analysis and Interpretation</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">MSc in Bioinformatics and Computational Biology | UAM</span>
+                    <ul class="cv-description">
+                        <li>Subject: Translational genomics</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <h2 style="margin-top: 3rem;">Additional Training</h2>
+			<div class="cv-entry">
+				<div class="cv-main">
+					<span class="cv-role">Investigative Data & Digital Tools</span>
+					<span class="cv-inst">Centre for Investigative Journalism (CIJ)</span>
+					<ul class="cv-description">
+						<li>Digital Tools for Investigation</li>
+						<li>Investigating Trade Data</li>
+					</ul>
+			</div>
+			<div class="cv-date">2026</div> </div>
+			
+			<div class="cv-entry">    
+				<div class="cv-main">
+					<span class="cv-role">4 Degrees of Simulation</span>
+					<span class="cv-inst">Institute for Postnatural Studies</span>
+					<p class="cv-description" style="font-size: 0.9rem; color: var(--light-grey);">Practice-led thematic seminar exploring postnatural landscapes and simulation.</p>
+				</div>
+				<div class="cv-date">2025</div> </div>
+				
+
+			
+			<h2 style="margin-top: 3rem;">Languages</h2>
+			<div class="skills-grid">
+				<div class="list-item">
+					<span style="font-weight: 700;">Spanish</span> 
+					<span style="color: var(--light-grey); font-size: 0.85rem; margin-left: 10px;">Native</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">English</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★★★</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">German</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★☆☆</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">Catalan</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★☆☆</span>
+				</div>
+			</div>
+			
+            <h2 style="margin-top: 3rem;">Tools</h2>
+            <div class="skills-grid">
+                <div>• R 📊</div>
+                <div>• Snakemake 🐍</div>
+                <div>• Python 💻</div>
+                <div>• Linux/Shell 🐚</div>
+            </div>
+        </section>
+		
+    </main>
+
+    <footer>
+        &copy; 2026 Coral Fustero-Torre | Computational Biologist
+    </footer>
+
+</body>
+</html>

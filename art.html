@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art | Coral Fustero-Torre</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 4rem 2rem 1rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .logo { 
+            text-decoration: none; 
+            color: #000; 
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: var(--light-grey); 
+            font-size: 0.9rem;
+            margin-left: 20px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 2rem 5rem 2rem;
+        }
+
+        section { margin-bottom: 5rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 2rem;
+        }
+
+        .art-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .art-item {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            background-color: #f9f9f9;
+        }
+
+        .art-item img, .art-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+
+        .art-item:hover img, .art-item:hover video { opacity: 0.8; }
+
+        .full-link {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            text-decoration: none;
+            border-bottom: 1px solid var(--light-grey);
+        }
+
+        .full-link:hover { color: var(--text-color); border-color: var(--text-color); }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #lightbox-content { position: relative; max-width: 80%; max-height: 80%; }
+        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 80vh; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 20px;
+            color: var(--text-color);
+            font-family: 'Courier Prime', monospace;
+        }
+        #prev-btn { left: -80px; }
+        #next-btn { right: -80px; }
+
+        @media (max-width: 768px) {
+            .art-selection { grid-template-columns: repeat(2, 1fr); }
+            .nav-arrow { padding: 10px; font-size: 1.5rem; }
+            #prev-btn { left: -40px; }
+            #next-btn { right: -40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav><a href="index.html">← Menu</a></nav>
+    </header>
+
+    <main>
+        <section id="photography">
+            <h2>Photography</h2>
+            <div class="art-selection">
+                <div class="art-item"><img src="img/photography/R1-04013-0012.jpg" alt="Photography 1"></div>
+                <div class="art-item"><img src="img/photography/R1-04013-0007.jpg" alt="Photography 2"></div>
+                <div class="art-item"><img src="img/photography/R1-04726-0003.jpg" alt="Photography 3"></div>
+                <div class="art-item"><img src="img/photography/R1-05190-0015.jpg" alt="Photography 4"></div>
+            </div>
+            <a href="visuals.html" class="full-link">View full photography portfolio →</a>
+        </section>
+
+        <section id="collage">
+            <h2>Collage</h2>
+            <div class="art-selection">
+                <div class="art-item"><img src="img/collage/1.png" alt="Collage 1"></div>
+                <div class="art-item"><img src="img/collage/2.png" alt="Collage 2"></div>
+                <div class="art-item"><img src="img/collage/3.png" alt="Collage 3"></div>
+                <div class="art-item"><img src="img/collage/4.png" alt="Collage 4"></div>
+            </div>
+            <a href="visuals.html#collage" class="full-link">View full collage portfolio →</a>
+        </section>
+
+        <section id="super8">
+            <h2>Super8</h2>
+            <div class="art-selection">
+                <div class="art-item"><video src="vid/super8/clip1.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/clip2.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/clip3.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/clip4.mp4" muted loop></video></div>
+            </div>
+            <a href="visuals.html#super8" class="full-link">View all film projects →</a>
+        </section>
+    </main>
+
+    <div id="lightbox" onclick="closeLightbox()">
+        <div id="lightbox-content" onclick="event.stopPropagation()">
+            <button id="prev-btn" class="nav-arrow" onclick="changeMedia(-1)">←</button>
+            <img id="lightbox-img" src="" alt="" style="display:none;">
+            <video id="lightbox-video" src="" controls style="display:none;"></video>
+            <button id="next-btn" class="nav-arrow" onclick="changeMedia(1)">→</button>
+        </div>
+    </div>
+
+    <script>
+        let currentGallery = [];
+        let currentIndex = 0;
+        let isVideo = false;
+
+        document.querySelectorAll('.art-item').forEach(item => {
+            item.onclick = () => {
+                const parent = item.closest('.art-selection');
+                const images = Array.from(parent.querySelectorAll('img')).map(img => ({type: 'img', src: img.src}));
+                const videos = Array.from(parent.querySelectorAll('video')).map(vid => ({type: 'video', src: vid.src}));
+                currentGallery = [...images, ...videos];
+                
+                const media = item.querySelector('img, video');
+                currentIndex = currentGallery.findIndex(m => m.src === media.src);
+                updateLightbox();
+            };
+        });
+
+        function updateLightbox() {
+            const lb = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lightbox-img');
+            const lbVid = document.getElementById('lightbox-video');
+            const item = currentGallery[currentIndex];
+
+            if (item.type === 'img') {
+                lbImg.src = item.src;
+                lbImg.style.display = 'block';
+                lbVid.style.display = 'none';
+                lbVid.pause();
+            } else {
+                lbVid.src = item.src;
+                lbVid.style.display = 'block';
+                lbImg.style.display = 'none';
+                lbVid.play();
+            }
+            lb.style.display = 'flex';
+        }
+
+        function changeMedia(step) {
+            currentIndex = (currentIndex + step + currentGallery.length) % currentGallery.length;
+            updateLightbox();
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            document.getElementById('lightbox-video').pause();
+            lb.style.display = 'none';
+        }
+    </script>
+	
+	<footer>
+	    &copy; 2026 Coral Fustero-Torre | Visual Artist
+	</footer>
+</body>
+</html>
