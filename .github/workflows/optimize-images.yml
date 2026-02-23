@@ -1,26 +1,25 @@
 name: Optimize Images
 on:
   push:
+    branches:
+      - main
     paths:
-      - 'img/**' # Solo se activa las imagenes se suben a la carpeta img
+      - 'img/**'
+
 jobs:
-  build:
-    name: calibra-image-optimization
+  optimize:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Compress and Resize Images
-        uses: calibreapp/image-actions@main
+      - name: Optimize Images
+        uses: LRECO/action-optimize-images@v2
         with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          # Configuración Premium
-          compressOnly: false
-          jpegQuality: '90'     # Calidad alta para evitar píxeles
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Calidad alta para mantener el detalle fino
+          jpegQuality: '90'
           pngQuality: '90'
           webpQuality: '90'
-          # Redimensión a 300px para pantallas 4K/Retina
-          maxWidth: 300
-          maxHeight: 300
-          ignorePaths: 'node_modules/**'
+          maxWidth: 300 #Redimensionado de las imágenes
+          # Si la imagen es más pequeña de 600, no la estirará (para no pixelar)
