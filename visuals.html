@@ -7,10 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --text-color: #333;
+            --text-color: #666; /* Soft Dark Grey Ink */
             --paper-bg: #e5e5e2; 
-            /* Deep Ink Texture */
-            --ink-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjgiIGZpbGw9IiM0NDQiIGZpbGwtb3BhY2l0eT0iMC41IiAvPjwvc3ZnPg==');
+            --ink-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjUiIGZpbGw9IiM3NzciIGZpbGwtb3BhY2l0eT0iMC4yNSIgLz48L3N2Zz4=');
         }
 
         body {
@@ -18,32 +17,32 @@
             margin: 0;
             background-color: var(--paper-bg);
             color: var(--text-color);
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA5Ii8+PC9zdmc+');
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA4Ii8+PC9zdmc+');
         }
 
         header { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; }
-        .logo { text-decoration: none; color: #000; font-weight: 700; font-size: 1.1rem; }
-        nav a { text-decoration: none; color: #777; font-size: 0.85rem; }
+        .logo { text-decoration: none; color: var(--text-color); font-weight: 700; font-size: 1.1rem; }
+        nav a { text-decoration: none; color: #999; font-size: 0.85rem; }
 
         main { padding: 0 2rem 10rem 2rem; max-width: 1400px; margin: 0 auto; }
 
         .section-title {
             font-size: 0.8rem;
             font-weight: 700;
-            margin: 8rem 0 3rem 0;
+            margin: 10rem 0 4rem 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             opacity: 0.4;
         }
 
-        /* --- COLLAGE GRID --- */
+        /* --- THE PSYCHOGEOGRAPHIC GRID --- */
         .archive-puzzle {
             display: grid;
             grid-template-columns: repeat(24, 1fr); 
-            grid-auto-rows: 40px; 
-            grid-auto-flow: dense; 
-            gap: 12px;
-            margin-bottom: 10rem;
+            grid-auto-rows: 4vw; 
+            grid-auto-flow: row; 
+            gap: 40px; 
+            margin-bottom: 15rem;
         }
 
         .archive-puzzle > img, .archive-puzzle > video { display: none; }
@@ -51,41 +50,39 @@
         .gallery-item {
             position: relative;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            background: transparent;
             z-index: 1;
         }
 
-        /* SIZES */
-        .size-s { grid-column: span 4; grid-row: span 4; }
-        .size-m { grid-column: span 7; grid-row: span 7; }
-        .size-l { grid-column: span 10; grid-row: span 12; }
-        .size-tall { grid-column: span 5; grid-row: span 11; }
-        .size-wide { grid-column: span 12; grid-row: span 6; }
-        .size-silhouette { grid-column: span 9; grid-row: span 15; z-index: 10; }
+        /* FRAGMENT SIZES */
+        .size-s { grid-column: span 3; grid-row: span 3; }
+        .size-m { grid-column: span 5; grid-row: span 5; }
+        .size-wide { grid-column: span 8; grid-row: span 3; }
+        .size-tall { grid-column: span 3; grid-row: span 8; }
+        .size-silhouette { grid-column: span 8; grid-row: span 12; z-index: 5; }
 
-        /* CUTS */
-        .cut-organic-1 { clip-path: polygon(2% 0%, 98% 3%, 100% 95%, 3% 100%); }
-        .cut-organic-2 { clip-path: polygon(0% 5%, 100% 0%, 96% 92%, 4% 100%); }
-        .cut-tri { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
-        .cut-circle { clip-path: circle(48% at 50% 50%); }
+        /* --- INTEGRATED SHAPE LIBRARY --- */
+        .cut-map1 { clip-path: polygon(10% 0, 90% 5%, 100% 40%, 85% 95%, 40% 100%, 0 70%, 5% 20%); }
+        .cut-map2 { clip-path: polygon(0 15%, 100% 0, 90% 100%, 15% 85%); }
+        .cut-map3 { clip-path: polygon(30% 0, 100% 30%, 70% 100%, 0 80%, 10% 20%); }
+        .cut-trapezoid { clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); }
+        .cut-rhomboid  { clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%); }
         .cut-lshape { clip-path: polygon(0% 0%, 100% 0%, 100% 45%, 45% 45%, 45% 100%, 0% 100%); }
-        
-        /* Silhouette: No clip, respects transparency of the PNG file */
         .cut-none { clip-path: none !important; }
 
         .gallery-item img, .gallery-item video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(100%) contrast(170%) brightness(105%);
-            opacity: 0.95;
+            filter: grayscale(100%) contrast(90%) brightness(115%) opacity(0.9);
             transition: inherit;
             display: block !important;
         }
 
-        /* For transparent PNG silhouettes */
         .gallery-item.type-silhouette img { 
             object-fit: contain !important; 
+            filter: grayscale(100%) contrast(100%) brightness(110%);
         }
 
         .gallery-item::after {
@@ -96,16 +93,15 @@
             background-size: 2px 2px;
             mix-blend-mode: multiply;
             pointer-events: none;
-            opacity: 0.8;
+            opacity: 0.6;
             transition: opacity 0.3s;
         }
 
-        /* HOVER: REVEAL COLOR & RECTANGLE */
         .gallery-item:hover {
-            transform: scale(1.08) rotate(0deg) !important;
+            transform: scale(1.1) rotate(0deg) !important;
             z-index: 100;
             clip-path: none !important;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
         .gallery-item:hover img, .gallery-item:hover video {
@@ -115,28 +111,27 @@
 
         .gallery-item:hover::after { opacity: 0; }
 
-        /* LIGHTBOX */
         .lightbox {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            display: none; justify-content: center; align-items: center;
-            z-index: 2000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); display: none;
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        .lightbox-content { position: relative; max-width: 85%; max-height: 85vh; }
+        #lightbox-img, #lightbox-video { 
+            max-width: 100%; max-height: 85vh; 
+            filter: grayscale(100%) contrast(90%) brightness(110%); 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05); 
         }
 
-        .lightbox-content { position: relative; max-width: 85%; max-height: 85vh; display: flex; align-items: center; justify-content: center; }
-        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 85vh; filter: none; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 2.5rem; cursor: pointer; padding: 20px; color: var(--text-color); font-family: 'Courier Prime', monospace;}
+        #prev-btn { left: -80px; } #next-btn { right: -80px; }
 
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 2.5rem; cursor: pointer; padding: 20px; color: #000; font-family: 'Courier Prime', monospace; }
-        #prev-btn { left: -80px; }
-        #next-btn { right: -80px; }
-
-        @media (max-width: 900px) {
-            .archive-puzzle { grid-template-columns: repeat(12, 1fr); grid-auto-rows: 50px; }
+        @media (max-width: 1000px) {
+            .archive-puzzle { grid-template-columns: repeat(12, 1fr); grid-auto-rows: 8vw; gap: 20px; }
             #prev-btn { left: -40px; } #next-btn { right: -40px; }
         }
 
-        footer { padding: 5rem 2rem; text-align: center; font-size: 0.7rem; color: #999; }
+        footer { padding: 5rem 2rem; text-align: center; font-size: 0.7rem; color: #ccc; }
     </style>
 </head>
 <body>
@@ -148,20 +143,20 @@
 
     <main>
         <div class="section-title">01. Photography</div>
-        <div class="archive-puzzle">
+        <div class="archive-puzzle" id="photo-puzzle">
             <img src="img/photography/R1-04726-0003.png" data-type="silhouette">
             <img src="img/photography/R1-04726-0014.png" data-type="silhouette">
-            <img src="img/photography/R1-04013-0007.jpg">
-            <img src="img/photography/R1-04013-0010.jpg">
-            <img src="img/photography/R1-04013-0012.jpg">
+            <img src="img/photography/R1-04726-0026.png" data-type="silhouette">
+            
+            <img src="img/photography/R1-04013-0007.jpg" data-shape="trapezoid">
+            <img src="img/photography/R1-04013-0010.jpg" data-shape="rhomboid">
+            <img src="img/photography/R1-04013-0012.jpg" data-shape="map1">
+            
             <img src="img/photography/R1-04415-002A.jpg">
             <img src="img/photography/R1-04415-023A.jpg">
             <img src="img/photography/R1-04415-024A.jpg">
-            <img src="img/photography/R1-04726-0003.png" data-type="silhouette">
             <img src="img/photography/R1-04726-0008.jpg">
-            <img src="img/photography/R1-04726-0014.png" data-type="silhouette">
             <img src="img/photography/R1-04726-0016.jpg">
-            <img src="img/photography/R1-04726-0026.png" data-type="silhouette">
             <img src="img/photography/R1-04874-0005.jpg">
             <img src="img/photography/R1-04874-0008.jpg">
             <img src="img/photography/R1-04874-0012.jpg">
@@ -179,8 +174,8 @@
 
         <div class="section-title">02. Collage</div>
         <div class="archive-puzzle">
-            <img src="img/collage/1.png">
-            <img src="img/collage/2.png">
+            <img src="img/collage/1.png" data-shape="map2">
+            <img src="img/collage/2.png" data-shape="trapezoid">
             <img src="img/collage/3.png">
             <img src="img/collage/4.png">
             <img src="img/collage/5.png">
@@ -216,8 +211,9 @@
 
     <script>
         function initializeArchive() {
-            const sizes = ['size-s', 'size-m', 'size-tall', 'size-wide'];
-            const cuts = ['cut-organic-1', 'cut-organic-2', 'cut-tri', 'cut-circle', 'cut-lshape'];
+            const sizes = ['size-s', 'size-s', 'size-m', 'size-wide', 'size-tall'];
+            const shapePool = ['cut-map1', 'cut-map2', 'cut-map3', 'cut-trapezoid', 'cut-rhomboid'];
+            
             let mediaItems = [];
             let currentIndex = 0;
 
@@ -230,20 +226,26 @@
                     if (media.tagName === 'IMG' || media.tagName === 'VIDEO') {
                         const wrapper = document.createElement('div');
                         const isSilhouette = media.getAttribute('data-type') === 'silhouette';
-                        let randCut;
-                        let randSize;
+                        const manualShape = media.getAttribute('data-shape');
+                        
+                        let assignedCut;
+                        let assignedSize;
 
                         if (isSilhouette) {
-                            randCut = 'cut-none';
-                            randSize = 'size-silhouette';
+                            assignedCut = 'cut-none';
+                            assignedSize = 'size-silhouette';
                             wrapper.classList.add('type-silhouette');
+                        } else if (manualShape) {
+                            assignedCut = `cut-${manualShape}`;
+                            assignedSize = sizes[Math.floor(Math.random() * sizes.length)];
                         } else {
-                            randSize = sizes[Math.floor(Math.random() * sizes.length)];
-                            randCut = cuts[Math.floor(Math.random() * cuts.length)];
+                            assignedSize = sizes[Math.floor(Math.random() * sizes.length)];
+                            // Randomly pick from maps, trapezoids, or rhomboids
+                            assignedCut = shapePool[Math.floor(Math.random() * shapePool.length)];
                         }
                         
-                        wrapper.className = `gallery-item ${randSize} ${randCut}`;
-                        const rot = (Math.random() * 6 - 3).toFixed(1);
+                        wrapper.className += ` gallery-item ${assignedSize} ${assignedCut}`;
+                        const rot = (Math.random() * 10 - 5).toFixed(1);
                         wrapper.style.transform = `rotate(${rot}deg)`;
 
                         puzzle.replaceChild(wrapper, media);
@@ -289,7 +291,6 @@
                 }
             });
         }
-
         initializeArchive();
     </script>
 </body>
