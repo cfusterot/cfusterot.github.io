@@ -109,8 +109,20 @@
             z-index: 1000;
         }
 
-        #lightbox-content { position: relative; max-width: 80%; max-height: 80%; }
-        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 80vh; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        #lightbox-content { 
+            position: relative; 
+            max-width: 80%; 
+            max-height: 80%; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #lightbox-img, #lightbox-video { 
+            max-width: 100%; 
+            max-height: 80vh; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
         
         .nav-arrow {
             position: absolute;
@@ -123,6 +135,7 @@
             padding: 20px;
             color: var(--text-color);
             font-family: 'Courier Prime', monospace;
+            z-index: 1010;
         }
         #prev-btn { left: -80px; }
         #next-btn { right: -80px; }
@@ -168,9 +181,9 @@
         <section id="super8">
             <h2>Super8</h2>
             <div class="art-selection">
-                <div class="art-item"><video src="vid/super8/clip1.mp4" muted loop></video></div>
-                <div class="art-item"><video src="vid/super8/clip2.mp4" muted loop></video></div>
-                <div class="art-item"><video src="vid/super8/clip3.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/flores.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/besito.mp4" muted loop></video></div>
+                <div class="art-item"><video src="vid/super8/plumitas.mp4" muted loop></video></div>
                 <div class="art-item"><video src="vid/super8/clip4.mp4" muted loop></video></div>
             </div>
             <a href="visuals.html#super8" class="full-link">View all film projects →</a>
@@ -180,7 +193,7 @@
     <div id="lightbox" onclick="closeLightbox()">
         <div id="lightbox-content" onclick="event.stopPropagation()">
             <button id="prev-btn" class="nav-arrow" onclick="changeMedia(-1)">←</button>
-            <img id="lightbox-img" src="" alt="" style="display:none;">
+            <img id="lightbox-img" src="" style="display:none;">
             <video id="lightbox-video" src="" controls style="display:none;"></video>
             <button id="next-btn" class="nav-arrow" onclick="changeMedia(1)">→</button>
         </div>
@@ -189,17 +202,18 @@
     <script>
         let currentGallery = [];
         let currentIndex = 0;
-        let isVideo = false;
 
         document.querySelectorAll('.art-item').forEach(item => {
             item.onclick = () => {
                 const parent = item.closest('.art-selection');
-                const images = Array.from(parent.querySelectorAll('img')).map(img => ({type: 'img', src: img.src}));
-                const videos = Array.from(parent.querySelectorAll('video')).map(vid => ({type: 'video', src: vid.src}));
-                currentGallery = [...images, ...videos];
+                // Create a unified list of media items in this section
+                currentGallery = Array.from(parent.querySelectorAll('img, video')).map(media => ({
+                    type: media.tagName.toLowerCase(),
+                    src: media.src
+                }));
                 
-                const media = item.querySelector('img, video');
-                currentIndex = currentGallery.findIndex(m => m.src === media.src);
+                const clickedMedia = item.querySelector('img, video');
+                currentIndex = currentGallery.findIndex(m => m.src === clickedMedia.src);
                 updateLightbox();
             };
         });
@@ -235,9 +249,9 @@
             lb.style.display = 'none';
         }
     </script>
-	
-	<footer>
-	    &copy; 2026 Coral Fustero-Torre | Visual Artist
-	</footer>
+    
+    <footer>
+        &copy; 2026 Coral Fustero-Torre | Visual Artist
+    </footer>
 </body>
 </html>

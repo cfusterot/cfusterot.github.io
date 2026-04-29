@@ -4,126 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visuals | Coral Fustero-Torre</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --text-color: #1a1a1a;
-            --light-grey: #888;
-            --bg-color: #ffffff;
-            --border: #eee;
+            --text-color: #333;
+            --paper-bg: #e5e5e2; 
+            --ink-color: #555; 
+            --halftone: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjQiIGZpbGw9IiM2NjYiIGZpbGwtb3BhY2l0eT0iMC4yNSIgLz48L3N2Zz4=');
         }
 
         body {
             font-family: 'Courier Prime', monospace;
             margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
+            background-color: var(--paper-bg);
             color: var(--text-color);
         }
 
-        header {
-            padding: 4rem 2rem 1rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        header { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; }
+        .logo { text-decoration: none; color: #000; font-weight: 700; font-size: 1.1rem; }
+        nav a { text-decoration: none; color: #777; font-size: 0.85rem; }
 
-        .logo { 
-            text-decoration: none; 
-            color: #000; 
-            font-weight: 700; 
-            font-size: 1.2rem;
-        }
-
-        nav a { 
-            text-decoration: none; 
-            color: var(--light-grey); 
-            font-size: 0.9rem;
-        }
-
-        nav a:hover { color: var(--text-color); }
-
-        main { padding: 0 2rem 5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        main { padding: 0 2rem 10rem 2rem; max-width: 1400px; margin: 0 auto; }
 
         .section-title {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 700;
+            margin: 6rem 0 2rem 0;
             text-transform: uppercase;
-            color: var(--text-color);
-            margin: 4rem 0 2rem 0;
-            border-bottom: 1px solid var(--border);
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             padding-bottom: 5px;
         }
 
-        .masonry-gallery {
-            column-count: 4; 
-            column-gap: 20px;
+        /* --- THE DYNAMIC GRID --- */
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-auto-rows: 150px;
+            grid-auto-flow: dense; /* This fills in gaps for a tighter collage feel */
+            gap: 25px;
         }
 
         .gallery-item {
-            break-inside: avoid;
-            margin-bottom: 20px;
+            position: relative;
             cursor: pointer;
-            border: 1px solid var(--border);
+            background-color: #fff;
+            transition: all 0.4s ease;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.08);
             overflow: hidden;
         }
 
-        .gallery-item img {
+        /* DYNAMIC SIZE CLASSES */
+        .size-s { grid-column: span 1; grid-row: span 1; }
+        .size-m { grid-column: span 2; grid-row: span 2; }
+        .size-l { grid-column: span 2; grid-row: span 3; }
+        .size-w { grid-column: span 3; grid-row: span 2; }
+
+        /* CUT CLASSES */
+        .cut-1 { clip-path: polygon(2% 0%, 95% 4%, 100% 30%, 98% 95%, 40% 98%, 0% 80%); }
+        .cut-2 { clip-path: polygon(5% 5%, 100% 0, 95% 95%, 0 100%); }
+        .cut-3 { clip-path: polygon(0% 15%, 20% 0%, 100% 10%, 90% 85%, 15% 100%); }
+        .cut-4 { clip-path: polygon(0 0, 90% 5%, 100% 100%, 10% 90%); }
+
+        .gallery-item img, .gallery-item video {
             width: 100%;
-            display: block;
-            transition: opacity 0.3s ease;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(130%) brightness(115%);
+            opacity: 0.9;
         }
 
-        .gallery-item:hover img { opacity: 0.7; }
+        .gallery-item::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: var(--halftone);
+            background-size: 2px 2px;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+        }
 
-        /* Lightbox con Navegación */
+        .gallery-item:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+            z-index: 100;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* LIGHTBOX */
         .lightbox {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.98);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000;
         }
 
-        .lightbox img {
-            max-width: 85%;
-            max-height: 85vh;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
-            cursor: zoom-out;
-        }
+        .lightbox-content { position: relative; max-width: 85%; max-height: 85vh; }
+        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 85vh; filter: none; clip-path: none; }
 
-        /* Botones laterales */
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-family: 'Courier Prime', monospace;
-            font-size: 2.5rem;
-            cursor: pointer;
-            padding: 20px;
-            user-select: none;
-            z-index: 1010;
-        }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #000; padding: 20px; z-index: 2100; }
+        #prev-btn { left: -80px; }
+        #next-btn { right: -80px; }
 
-        .nav-btn:hover { opacity: 0.5; }
-        #prev-btn { left: 2%; }
-        #next-btn { right: 2%; }
-
-        @media (max-width: 1100px) { .masonry-gallery { column-count: 3; } }
-        @media (max-width: 800px) { .masonry-gallery { column-count: 2; } }
-        @media (max-width: 500px) { 
-            .masonry-gallery { column-count: 1; }
-            .nav-btn { font-size: 1.5rem; }
+        @media (max-width: 600px) {
+            #prev-btn { left: -40px; }
+            #next-btn { right: -40px; }
+            .size-m, .size-l, .size-w { grid-column: span 1; grid-row: span 1; }
         }
     </style>
 </head>
@@ -131,119 +117,130 @@
 
     <header>
         <a href="index.html" class="logo">Coral Fustero-Torre</a>
-        <nav><a href="art.html">← Back to Art</a></nav>
+        <nav><a href="art.html">← MENU</a></nav>
     </header>
 
     <main>
-        <h2 id="photography" class="section-title">01. Photography</h2>
-        <div class="masonry-gallery">
-            <div class="gallery-item"><img src="img/photography/R1-04013-0007.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04013-0010.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04013-0012.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04415-002A.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04415-023A.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04415-024A.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0003.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0008.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0014.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0016.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0026.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0005.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0008.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0012.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0023.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0024.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04874-0026.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-0004.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-0027.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-0028.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-0036.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-0037.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05190-0009.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05190-0015.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04415-243A.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05053-3387.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04723-0004.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04724-0024.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05190-0004.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-05190-0008.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0024.jpg" alt=""></div>
-            <div class="gallery-item"><img src="img/photography/R1-04726-0028.jpg" alt=""></div>
+        <div class="section-title">01. Photography</div>
+        <div class="archive-grid" id="photo-grid">
+            <img src="img/photography/R1-04013-0007.jpg">
+            <img src="img/photography/R1-04013-0010.jpg">
+            <img src="img/photography/R1-04013-0012.jpg">
+            <img src="img/photography/R1-04415-002A.jpg">
+            <img src="img/photography/R1-04415-023A.jpg">
+            <img src="img/photography/R1-04415-024A.jpg">
+            <img src="img/photography/R1-04726-0003.jpg">
+            <img src="img/photography/R1-04726-0008.jpg">
+            <img src="img/photography/R1-04726-0014.jpg">
+            <img src="img/photography/R1-04726-0016.jpg">
+            <img src="img/photography/R1-04726-0026.jpg">
+            <img src="img/photography/R1-04874-0005.jpg">
+            <img src="img/photography/R1-04874-0008.jpg">
+            <img src="img/photography/R1-04874-0012.jpg">
+            <img src="img/photography/R1-04874-0023.jpg">
+            <img src="img/photography/R1-04874-0024.jpg">
+            <img src="img/photography/R1-04874-0026.jpg">
+            <img src="img/photography/R1-05053-0004.jpg">
+            <img src="img/photography/R1-05053-0027.jpg">
+            <img src="img/photography/R1-05053-0028.jpg">
+            <img src="img/photography/R1-05053-0036.jpg">
+            <img src="img/photography/R1-05053-0037.jpg">
+            <img src="img/photography/R1-05190-0009.jpg">
+            <img src="img/photography/R1-05190-0015.jpg">
+            <img src="img/photography/R1-04415-243A.jpg">
+            <img src="img/photography/R1-05053-3387.jpg">
+            <img src="img/photography/R1-04723-0004.jpg">
+            <img src="img/photography/R1-04724-0024.jpg">
+            <img src="img/photography/R1-05190-0004.jpg">
+            <img src="img/photography/R1-05190-0008.jpg">
+            <img src="img/photography/R1-04726-0024.jpg">
+            <img src="img/photography/R1-04726-0028.jpg">
         </div>
 
-        <h2 id="collage" class="section-title">02. Collage</h2>
-        <div class="masonry-gallery">
-            <div class="gallery-item"><img src="img/collage/1.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/2.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/3.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/4.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/5.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/6.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/7.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/8.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/9.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/10.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/11.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/12.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/13.png" alt=""></div>
-            <div class="gallery-item"><img src="img/collage/14.png" alt=""></div>
+        <div class="section-title">02. Collage</div>
+        <div class="archive-grid" id="collage-grid">
+            <img src="img/collage/1.png">
+            <img src="img/collage/2.png">
+            <img src="img/collage/3.png">
+            <img src="img/collage/4.png">
+            <img src="img/collage/5.png">
+            <img src="img/collage/6.png">
+            <img src="img/collage/7.png">
+            <img src="img/collage/8.png">
+            <img src="img/collage/9.png">
+            <img src="img/collage/10.png">
+            <img src="img/collage/11.png">
+            <img src="img/collage/12.png">
+            <img src="img/collage/13.png">
+            <img src="img/collage/14.png">
         </div>
 
-        <h2 id="super8" class="section-title">03. Film</h2>
-        <div class="masonry-gallery">
-            </div>
+        <div class="section-title">03. Film</div>
+        <div class="archive-grid" id="film-grid">
+            <video src="vid/super8/flores.mp4" muted loop></video>
+            <video src="vid/super8/besito.mp4" muted loop></video>
+            <video src="vid/super8/plumitas.mp4" muted loop></video>
+            <video src="vid/super8/clip4.mp4" muted loop></video>
+        </div>
     </main>
 
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-        <button id="prev-btn" class="nav-btn" onclick="changeImage(-1, event)">←</button>
-        <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
-        <button id="next-btn" class="nav-btn" onclick="changeImage(1, event)">→</button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button id="prev-btn" class="nav-btn" onclick="changeMedia(-1)">←</button>
+            <img id="lightbox-img" src="" style="display:none;">
+            <video id="lightbox-video" src="" controls style="display:none;"></video>
+            <button id="next-btn" class="nav-btn" onclick="changeMedia(1)">→</button>
+        </div>
     </div>
 
     <script>
-        let currentImages = [];
+        const sizes = ['size-s', 'size-m', 'size-l', 'size-w'];
+        const cuts = ['cut-1', 'cut-2', 'cut-3', 'cut-4'];
+        let mediaItems = [];
         let currentIndex = 0;
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const allImages = Array.from(document.querySelectorAll('.gallery-item img'));
 
-        allImages.forEach((img, index) => {
-            img.onclick = (e) => {
-                e.stopPropagation();
-                currentImages = allImages.map(el => el.src);
-                currentIndex = index;
+        // Automatically wrap images/videos in gallery containers
+        document.querySelectorAll('.archive-grid img, .archive-grid video').forEach((media) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = `gallery-item ${sizes[Math.floor(Math.random()*sizes.length)]} ${cuts[Math.floor(Math.random()*cuts.length)]}`;
+            
+            // Give it a random slight rotation
+            const rot = (Math.random() * 6 - 3).toFixed(1);
+            wrapper.style.transform = `rotate(${rot}deg)`;
+            
+            media.parentNode.insertBefore(wrapper, media);
+            wrapper.appendChild(media);
+
+            mediaItems.push({ type: media.tagName.toLowerCase(), src: media.src });
+            
+            wrapper.onclick = () => {
+                currentIndex = mediaItems.findIndex(item => item.src === media.src);
                 updateLightbox();
             };
         });
 
         function updateLightbox() {
-            lightboxImg.src = currentImages[currentIndex];
-            lightbox.style.display = 'flex';
+            const item = mediaItems[currentIndex];
+            const lbImg = document.getElementById('lightbox-img');
+            const lbVid = document.getElementById('lightbox-video');
+            
+            if (item.type === 'img') {
+                lbImg.src = item.src; lbImg.style.display = 'block'; lbVid.style.display = 'none'; lbVid.pause();
+            } else {
+                lbVid.src = item.src; lbVid.style.display = 'block'; lbImg.style.display = 'none'; lbVid.play();
+            }
+            document.getElementById('lightbox').style.display = 'flex';
         }
 
-        function closeLightbox() {
-            lightbox.style.display = 'none';
-        }
-
-        function changeImage(step, event) {
-            if (event) event.stopPropagation();
-            currentIndex = (currentIndex + step + currentImages.length) % currentImages.length;
+        function changeMedia(step) {
+            currentIndex = (currentIndex + step + mediaItems.length) % mediaItems.length;
             updateLightbox();
         }
 
-        // Soporte para teclado
-        document.addEventListener('keydown', (e) => {
-            if (lightbox.style.display === 'flex') {
-                if (e.key === "ArrowLeft") changeImage(-1);
-                if (e.key === "ArrowRight") changeImage(1);
-                if (e.key === "Escape") closeLightbox();
-            }
-        });
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.getElementById('lightbox-video').pause();
+        }
     </script>
-		
-	<footer>
-	    &copy; 2026 Coral Fustero-Torre | Visual Artist
-	</footer>
-	
 </body>
 </html>
