@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography | Coral Fustero-Torre</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #666; 
+            --paper-bg: #e5e5e2; 
+            --ink-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjUiIGZpbGw9IiM3NzciIGZpbGwtb3BhY2l0eT0iMC4yNSIgLz48L3N2Zz4=');
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            background-color: var(--paper-bg);
+            color: var(--text-color);
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA4Ii8+PC9zdmc+');
+        }
+
+        header { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; }
+        .logo { text-decoration: none; color: var(--text-color); font-weight: 700; font-size: 1.1rem; }
+        nav a { text-decoration: none; color: #999; font-size: 0.85rem; }
+
+        main { padding: 0 2rem 10rem 2rem; max-width: 1400px; margin: 0 auto; }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin: 10rem 0 4rem 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.4;
+        }
+
+        .archive-puzzle {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr); 
+            grid-auto-rows: 4vw; 
+            grid-auto-flow: row; 
+            gap: 40px; 
+            margin-bottom: 15rem;
+            content-visibility: auto;
+        }
+
+        .archive-puzzle > img, .archive-puzzle > video { display: none; }
+
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: transparent;
+            z-index: 1;
+        }
+
+        .size-s { grid-column: span 4; grid-row: span 4; }
+        .size-m { grid-column: span 6; grid-row: span 6; }
+        .size-wide { grid-column: span 9; grid-row: span 4; }
+        .size-tall { grid-column: span 4; grid-row: span 9; }
+
+        .cut-map1 { clip-path: polygon(10% 0, 90% 5%, 100% 40%, 85% 95%, 40% 100%, 0 70%, 5% 20%); }
+        .cut-map2 { clip-path: polygon(0 15%, 100% 0, 90% 100%, 15% 85%); }
+        .cut-map3 { clip-path: polygon(30% 0, 100% 30%, 70% 100%, 0 80%, 10% 20%); }
+        .cut-trapezoid { clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%); }
+        .cut-rhomboid  { clip-path: polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%); }
+
+        .gallery-item img, .gallery-item video {
+            width: 100%; height: 100%; object-fit: cover; 
+            filter: grayscale(100%) contrast(90%) brightness(115%) opacity(0.9);
+            transition: all 0.4s ease-in-out;
+            display: block !important;
+        }
+
+        .gallery-item::after {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: var(--ink-texture); background-size: 2px 2px;
+            mix-blend-mode: multiply; pointer-events: none; opacity: 0.6; z-index: 2;
+        }
+
+        .gallery-item:hover { z-index: 100; transform: scale(1.2) rotate(0deg) !important; }
+        .gallery-item:hover img, .gallery-item:hover video {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+            object-fit: contain !important;
+            filter: grayscale(0%) contrast(100%) brightness(100%);
+            opacity: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item:hover::after { opacity: 0; }
+
+        .lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); display: none;
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        .lightbox-content { position: relative; max-width: 85%; max-height: 85vh; }
+        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 85vh; filter: none !important; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 2.5rem; cursor: pointer; padding: 20px; color: var(--text-color); font-family: 'Courier Prime', monospace;}
+        #prev-btn { left: -80px; } #next-btn { right: -80px; }
+
+        @media (max-width: 1000px) {
+            .archive-puzzle { grid-template-columns: repeat(12, 1fr); grid-auto-rows: 8vw; gap: 20px; }
+            #prev-btn { left: -40px; } #next-btn { right: -40px; }
+        }
+        footer { padding: 5rem 2rem; text-align: center; font-size: 0.7rem; color: #ccc; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav><a href="art.html">← MENU</a></nav>
+    </header>
+    <main>
+        <div class="section-title">Film (Super8)</div>
+        <div class="archive-puzzle">
+            <video src="vid/super8/flores.mp4" muted loop preload="metadata"></video>
+            <video src="vid/super8/besito.mp4" muted loop preload="metadata"></video>
+            <video src="vid/super8/plumitas.mp4" muted loop preload="metadata"></video>
+        </div>
+    </main>
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button id="prev-btn" class="nav-btn" onclick="changeMedia(-1)">←</button>
+            <img id="lightbox-img" src="" style="display:none;">
+            <video id="lightbox-video" src="" controls style="display:none;"></video>
+            <button id="next-btn" class="nav-btn" onclick="changeMedia(1)">→</button>
+        </div>
+    </div>
+    <footer>&copy; 2026 Coral Fustero-Torre</footer>
+    <script>
+        // (Shared JS Logic for random generation and lightbox)
+        function initializeArchive() {
+            const sizes = ['size-s', 'size-s', 'size-m', 'size-wide', 'size-tall'];
+            const shapePool = ['cut-map1', 'cut-map2', 'cut-map3', 'cut-trapezoid', 'cut-rhomboid'];
+            let mediaItems = []; let currentIndex = 0;
+            const puzzles = document.querySelectorAll('.archive-puzzle');
+            puzzles.forEach(puzzle => {
+                const mediaElements = Array.from(puzzle.children);
+                mediaElements.forEach(media => {
+                    if (media.tagName === 'IMG' || media.tagName === 'VIDEO') {
+                        const wrapper = document.createElement('div');
+                        const manualShape = media.getAttribute('data-shape');
+                        let assignedCut = manualShape ? `cut-${manualShape}` : shapePool[Math.floor(Math.random() * shapePool.length)];
+                        let assignedSize = sizes[Math.floor(Math.random() * sizes.length)];
+                        wrapper.className += ` gallery-item ${assignedSize}`;
+                        media.classList.add(assignedCut);
+                        wrapper.style.transform = `rotate(${(Math.random() * 10 - 5).toFixed(1)}deg)`;
+                        puzzle.replaceChild(wrapper, media); wrapper.appendChild(media);
+                        mediaItems.push({ type: media.tagName.toLowerCase(), src: media.src });
+                        wrapper.onclick = () => { currentIndex = mediaItems.findIndex(item => item.src === media.src); updateLightbox(); };
+                    }
+                });
+            });
+            function updateLightbox() {
+                const item = mediaItems[currentIndex]; const lbImg = document.getElementById('lightbox-img'); const lbVid = document.getElementById('lightbox-video');
+                if (item.type === 'img') { lbImg.src = item.src; lbImg.style.display = 'block'; lbVid.style.display = 'none'; lbVid.pause(); }
+                else { lbVid.src = item.src; lbVid.style.display = 'block'; lbImg.style.display = 'none'; lbVid.play(); }
+                document.getElementById('lightbox').style.display = 'flex';
+            }
+            window.changeMedia = (step) => { currentIndex = (currentIndex + step + mediaItems.length) % mediaItems.length; updateLightbox(); };
+            window.closeLightbox = () => { document.getElementById('lightbox').style.display = 'none'; document.getElementById('lightbox-video').pause(); };
+            document.addEventListener('keydown', (e) => { if (document.getElementById('lightbox').style.display === 'flex') { if (e.key === "ArrowLeft") changeMedia(-1); if (e.key === "ArrowRight") changeMedia(1); if (e.key === "Escape") closeLightbox(); } });
+        }
+        initializeArchive();
+    </script>
+</body>
+</html>

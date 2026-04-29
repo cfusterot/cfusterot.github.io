@@ -3,151 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coral Fustero-Torre</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Coral Fustero-Torre | PhD</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --text-color: #1a1a1a;
-            --bio-color: #444;
-            --light-grey: #666;
-            --border-color: #eee;
+            --text-color: #555; 
+            --accent-red: #d9432f; 
+            --paper-bg: #e5e5e2; 
+            --ink-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjUiIGZpbGw9IiM3NzciIGZpbGwtb3BhY2l0eT0iMC4yNSIgLz48L3N2Zz4=');
         }
 
         body {
             font-family: 'Courier Prime', monospace;
             margin: 0;
-            padding: 0;
+            background-color: var(--paper-bg);
             color: var(--text-color);
-            background-color: #fff;
             line-height: 1.6;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA4Ii8+PC9zdmc+');
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        header {
-            padding: 5rem 0 2rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
+        header { padding: 6rem 0 3rem 0; }
 
         h1 {
             font-weight: 700;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             margin: 0;
-            letter-spacing: -0.5px;
+            color: #333;
         }
 
-        .top-nav {
-            font-size: 0.85rem;
-            color: var(--light-grey);
-            letter-spacing: 1px;
-        }
-
-        main {
-            padding: 1rem 0 5rem 0;
-        }
+        main { padding: 1rem 0 5rem 0; }
 
         .bio {
-            font-size: 1.0rem;
-            font-weight: 400;
-            margin-bottom: 5rem;
+            font-size: 1rem;
+            margin-bottom: 6rem;
             text-align: justify;
-            width: 100%;
-            max-width: 1000px;
-            color: var(--bio-color);
+            max-width: 900px;
+            color: #444;
         }
 
-        .nav-section {
-            margin-bottom: 5rem;
-        }
+        .nav-section { margin-bottom: 6rem; }
 
+        /* --- SECTION HEADERS (No Underlines) --- */
         .section-header {
             display: inline-flex;
             align-items: baseline;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             text-decoration: none;
-            color: var(--text-color);
             transition: opacity 0.3s;
+            color: inherit;
         }
 
-        .section-header:hover {
-            opacity: 0.5;
-        }
+        .section-header:hover { opacity: 0.6; }
 
-        h2 {
+        .section-header h2 {
             font-size: 1.1rem;
             font-weight: 700;
             margin: 0;
-            text-transform: none; /* Sentence case como pediste antes */
         }
+
+        .art-head h2 { color: var(--accent-red); }
 
         .section-arrow {
             margin-left: 10px;
             font-size: 0.9rem;
-            color: var(--light-grey);
+            opacity: 0.4;
         }
 
-        /* Grid estilo Are.na */
+        /* --- ARE.NA GRID SYSTEM --- */
         .arena-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
+            gap: 30px;
+        }
+
+        /* PRIMARY SECTION (Science) */
+        .grid-science {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Larger Boxes */
+        }
+
+        /* SECONDARY SECTION (Art) */
+        .grid-art {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller Boxes */
+            gap: 20px;
         }
 
         .arena-box {
             aspect-ratio: 1 / 1;
-            background-color: #ffffff; /* Blanco */
-            border: 1px solid #1a1a1a; /* Borde negro */
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            color: var(--text-color);
-            padding: 20px;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .arena-box:hover {
-            background-color: #fafafa; /* El gris suave de antes */
-            border-width: 1.5px;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.4s ease-in-out;
         }
 
         .arena-box span {
-            font-size: 1rem;
-            text-align: center;
+            font-size: 0.9rem;
+            z-index: 3;
             transition: font-weight 0.2s;
         }
 
-        .arena-box:hover span {
-            font-weight: 700;
+        /* Science Styling: Professional, Minimalist */
+        .science-box { 
+            color: #333; 
+            background-color: rgba(255,255,255,0.4); 
+            border: 1px solid rgba(0,0,0,0.1); 
+        }
+        .science-box:hover { background: #fff; transform: translateY(-3px); }
+
+        /* Art Styling: Transparent Background, Red Scrap focus */
+        .art-box { 
+            color: var(--accent-red); 
+            background-color: transparent; /* No white background */
+            border: none;
         }
 
+        .art-box::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(217, 67, 47, 0.12); /* The "Scrap" color */
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        
+        .art-box:hover::before { 
+            background-color: rgba(217, 67, 47, 0.2); 
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) !important; /* Expansion reveal */
+        }
+
+        /* Scraps Shape Pool */
+        .cut-trapezoid::before { clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%); }
+        .cut-map::before { clip-path: polygon(5% 15%, 95% 0, 100% 85%, 15% 100%); }
+        .cut-rhomboid::before { clip-path: polygon(18% 0, 100% 0, 82% 100%, 0 100%); }
+
         footer {
-            padding: 3rem 0;
-            border-top: 1px solid var(--border-color);
+            padding: 4rem 0;
+            border-top: 1px solid rgba(0,0,0,0.05);
             font-size: 0.75rem;
-            color: var(--light-grey);
+            color: #999;
             display: flex;
             justify-content: space-between;
         }
 
         @media (max-width: 768px) {
-            header { padding-top: 3rem; flex-direction: column; gap: 10px; }
-            .arena-grid { grid-template-columns: repeat(2, 1fr); }
-            .bio { text-align: left; font-size: 1rem; }
-        }
-
-        @media (max-width: 480px) {
-            .arena-grid { grid-template-columns: 1fr; }
+            .grid-science, .grid-art { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -160,7 +166,7 @@
 
         <main>
             <section class="bio">
-                Coral Fustero-Torre is a computational biologist and researcher. Her work investigates cellular systems using advanced computational methods to reveal hidden structures and dynamics within them. She specializes in single-cell sequencing technologies and the development of analytical tools to decipher biological complexity and evolution. Alongside her scientific work, she explores analog photography, collage and Super8 filmmaking as a way to decode her surrounding microenvironment.
+                Coral Fustero-Torre is a <strong>computational biologist</strong> investigating cellular systems through advanced computational methods. She specializes in single-cell sequencing and the development of analytical tools to decipher biological complexity. Alongside her science, she explores analog photography, collage, and Super8 filmmaking as a <strong>visual artist</strong>, decoding her surrounding microenvironments.
             </section>
 
             <div class="nav-section">
@@ -168,22 +174,22 @@
                     <h2>Computational biologist</h2>
                     <span class="section-arrow">→</span>
                 </a>
-                <div class="arena-grid">
-                    <a href="science.html#research" class="arena-box"><span>Research</span></a>
-                    <a href="science.html#publications" class="arena-box"><span>Publications</span></a>
-                    <a href="science.html#cv" class="arena-box"><span>CV</span></a>
+                <div class="arena-grid grid-science">
+                    <a href="science.html#research" class="science-box arena-box"><span>Research</span></a>
+                    <a href="science.html#publications" class="science-box arena-box"><span>Publications</span></a>
+                    <a href="science.html#cv" class="science-box arena-box"><span>CV</span></a>
                 </div>
             </div>
 
             <div class="nav-section">
-                <a href="art.html" class="section-header">
+                <a href="art.html" class="section-header art-head">
                     <h2>Visual artist</h2>
                     <span class="section-arrow">→</span>
                 </a>
-                <div class="arena-grid">
-                    <a href="visuals.html#photography" class="arena-box"><span>Photography</span></a>
-                    <a href="visuals.html#collage" class="arena-box"><span>Collage</span></a>
-                    <a href="visuals.html#super8" class="arena-box"><span>Film</span></a>
+                <div class="arena-grid grid-art">
+                    <a href="photography.html" class="art-box arena-box cut-trapezoid"><span>Photography</span></a>
+                    <a href="collage.html" class="art-box arena-box cut-map"><span>Collage</span></a>
+                    <a href="film.html" class="art-box arena-box cut-rhomboid"><span>Film</span></a>
                 </div>
             </div>
         </main>
@@ -194,5 +200,12 @@
         </footer>
     </div>
 
+    <script>
+        // Individual rotations to keep the "drifting scraps" feel
+        document.querySelectorAll('.art-box').forEach(box => {
+            const rot = (Math.random() * 6 - 3).toFixed(1);
+            box.style.transform = `rotate(${rot}deg)`;
+        });
+    </script>
 </body>
 </html>
