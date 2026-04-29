@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visuals | Coral Fustero-Torre</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
             --text-color: #333;
@@ -20,7 +22,15 @@
             color: var(--text-color);
         }
 
-        header { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; }
+        header { 
+            padding: 3rem 2rem; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: baseline; 
+        }
+
         .logo { text-decoration: none; color: #000; font-weight: 700; font-size: 1.1rem; }
         nav a { text-decoration: none; color: #777; font-size: 0.85rem; }
 
@@ -41,8 +51,14 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             grid-auto-rows: 150px;
-            grid-auto-flow: dense; /* This fills in gaps for a tighter collage feel */
+            grid-auto-flow: dense; 
             gap: 25px;
+        }
+
+        /* Prevent flicker while JS loads */
+        .archive-grid img, .archive-grid video {
+            max-width: 100%;
+            display: none; 
         }
 
         .gallery-item {
@@ -52,6 +68,7 @@
             transition: all 0.4s ease;
             box-shadow: 1px 1px 2px rgba(0,0,0,0.08);
             overflow: hidden;
+            display: block;
         }
 
         /* DYNAMIC SIZE CLASSES */
@@ -72,6 +89,7 @@
             object-fit: cover;
             filter: grayscale(100%) contrast(130%) brightness(115%);
             opacity: 0.9;
+            display: block !important;
         }
 
         .gallery-item::after {
@@ -111,6 +129,8 @@
             #next-btn { right: -40px; }
             .size-m, .size-l, .size-w { grid-column: span 1; grid-row: span 1; }
         }
+
+        footer { padding: 5rem 2rem; text-align: center; font-size: 0.8rem; color: #777; border-top: 1px solid rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -193,54 +213,71 @@
         </div>
     </div>
 
+    <footer>
+        &copy; 2026 Coral Fustero-Torre | Visual Artist
+    </footer>
+
     <script>
-        const sizes = ['size-s', 'size-m', 'size-l', 'size-w'];
-        const cuts = ['cut-1', 'cut-2', 'cut-3', 'cut-4'];
-        let mediaItems = [];
-        let currentIndex = 0;
+        window.addEventListener('DOMContentLoaded', () => {
+            const sizes = ['size-s', 'size-m', 'size-l', 'size-w'];
+            const cuts = ['cut-1', 'cut-2', 'cut-3', 'cut-4'];
+            let mediaItems = [];
+            let currentIndex = 0;
 
-        // Automatically wrap images/videos in gallery containers
-        document.querySelectorAll('.archive-grid img, .archive-grid video').forEach((media) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = `gallery-item ${sizes[Math.floor(Math.random()*sizes.length)]} ${cuts[Math.floor(Math.random()*cuts.length)]}`;
-            
-            // Give it a random slight rotation
-            const rot = (Math.random() * 6 - 3).toFixed(1);
-            wrapper.style.transform = `rotate(${rot}deg)`;
-            
-            media.parentNode.insertBefore(wrapper, media);
-            wrapper.appendChild(media);
+            const allMedia = document.querySelectorAll('.archive-grid img, .archive-grid video');
 
-            mediaItems.push({ type: media.tagName.toLowerCase(), src: media.src });
-            
-            wrapper.onclick = () => {
-                currentIndex = mediaItems.findIndex(item => item.src === media.src);
+            allMedia.forEach((media) => {
+                const wrapper = document.createElement('div');
+                const randomSize = sizes[Math.floor(Math.random() * sizes.length)];
+                const randomCut = cuts[Math.floor(Math.random() * cuts.length)];
+                wrapper.className = `gallery-item ${randomSize} ${randomCut}`;
+                
+                const rot = (Math.random() * 6 - 3).toFixed(1);
+                wrapper.style.transform = `rotate(${rot}deg)`;
+                
+                media.parentNode.insertBefore(wrapper, media);
+                wrapper.appendChild(media);
+
+                mediaItems.push({ type: media.tagName.toLowerCase(), src: media.src });
+                
+                wrapper.onclick = () => {
+                    currentIndex = mediaItems.findIndex(item => item.src === media.src);
+                    updateLightbox();
+                };
+            });
+
+            function updateLightbox() {
+                const item = mediaItems[currentIndex];
+                const lbImg = document.getElementById('lightbox-img');
+                const lbVid = document.getElementById('lightbox-video');
+                const lb = document.getElementById('lightbox');
+                
+                if (item.type === 'img') {
+                    lbImg.src = item.src; lbImg.style.display = 'block'; lbVid.style.display = 'none'; lbVid.pause();
+                } else {
+                    lbVid.src = item.src; lbVid.style.display = 'block'; lbImg.style.display = 'none'; lbVid.play();
+                }
+                lb.style.display = 'flex';
+            }
+
+            window.changeMedia = function(step) {
+                currentIndex = (currentIndex + step + mediaItems.length) % mediaItems.length;
                 updateLightbox();
             };
+
+            window.closeLightbox = function() {
+                document.getElementById('lightbox').style.display = 'none';
+                document.getElementById('lightbox-video').pause();
+            };
+
+            document.addEventListener('keydown', (e) => {
+                if (document.getElementById('lightbox').style.display === 'flex') {
+                    if (e.key === "ArrowLeft") changeMedia(-1);
+                    if (e.key === "ArrowRight") changeMedia(1);
+                    if (e.key === "Escape") closeLightbox();
+                }
+            });
         });
-
-        function updateLightbox() {
-            const item = mediaItems[currentIndex];
-            const lbImg = document.getElementById('lightbox-img');
-            const lbVid = document.getElementById('lightbox-video');
-            
-            if (item.type === 'img') {
-                lbImg.src = item.src; lbImg.style.display = 'block'; lbVid.style.display = 'none'; lbVid.pause();
-            } else {
-                lbVid.src = item.src; lbVid.style.display = 'block'; lbImg.style.display = 'none'; lbVid.play();
-            }
-            document.getElementById('lightbox').style.display = 'flex';
-        }
-
-        function changeMedia(step) {
-            currentIndex = (currentIndex + step + mediaItems.length) % mediaItems.length;
-            updateLightbox();
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').style.display = 'none';
-            document.getElementById('lightbox-video').pause();
-        }
     </script>
 </body>
 </html>
