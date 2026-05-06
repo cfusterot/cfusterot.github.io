@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychogeographic Portfolio | Coral Fustero-Torre</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #444; 
+            --paper-bg: #e5e5e2; 
+            --accent-red: #d93829; 
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            background-color: var(--paper-bg);
+            color: var(--text-color);
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsb=Im5vbmUiIGZpbHRlcj0idXJsKCNuKSIgb3BhY2l0eT0iMC4wOCIvPjwvc3ZnPg==');
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 0.8s ease;
+        }
+
+        /* Change background when zoomed out, allow scrolling to continue */
+        body.is-zoomed {
+            background-color: #d1d1ce;
+        }
+
+        header { padding: 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; position: relative; z-index: 4000; }
+        .logo { text-decoration: none; color: var(--text-color); font-weight: 700; font-size: 1.1rem; }
+        nav a { text-decoration: none; color: #999; font-size: 0.85rem; }
+
+        /* Wrapper that scales down during zoom mode */
+        #canvas-wrapper {
+            position: relative;
+            width: 100%;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: top center;
+            z-index: 1;
+        }
+
+        #map-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%; 
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Vertical layout height */
+        main { position: relative; width: 100vw; height: 11000px; z-index: 2; }
+
+        .archive-stream { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        
+        #main-stream > img, #main-stream > video { display: none; }
+
+        .gallery-item {
+            position: absolute;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Smooth assembly animation */
+        .gallery-item.ready-to-move {
+            transition: left 1.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                        top 1.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                        transform 1.5s cubic-bezier(0.25, 1, 0.5, 1),
+                        z-index 0.5s ease;
+        }
+
+        .media-container { width: 100%; height: 100%; position: relative; }
+        
+        .gallery-item img, .gallery-item video { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            display: block; 
+            filter: grayscale(100%) contrast(110%) brightness(95%);
+            transition: filter 0.4s ease, transform 0.4s ease, clip-path 0.4s ease;
+            background-color: #ccc;
+        }
+
+        /* Hover logic: colors the whole project/neighborhood */
+        .gallery-item.project-hovered {
+            z-index: 5000 !important;
+        }
+
+        .gallery-item.project-hovered img, .gallery-item.project-hovered video {
+            filter: grayscale(0%) contrast(105%) brightness(100%);
+        }
+
+        /* Specific item hover gets a slight lift and reveals the full image ignoring the clip-path */
+        .gallery-item:hover img, .gallery-item:hover video {
+            transform: scale(1.10);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border-radius: 2px;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important; 
+            z-index: 6000;
+            position: relative;
+        }
+
+        /* Map Overview Hover: Removed the red border, just scales and adds shadow */
+        body.is-zoomed .gallery-item:hover img, body.is-zoomed .gallery-item:hover video {
+            transform: scale(2.0);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        /* ==========================================================================
+           CUSTOMIZATION: SHAPES
+           ========================================================================== 
+           These CSS classes use 'clip-path' to cut out the images like paper shapes 
+           or city blocks. You can create new ones using 'clip-path: polygon(...)'.
+           ========================================================================== */
+        .shape-block img, .shape-block video { clip-path: inset(1px); } /* Perfect Square/Rect */
+        .shape-chamfer-tr img, .shape-chamfer-tr video { clip-path: polygon(1px 1px, calc(100% - 25px) 1px, calc(100% - 1px) 25px, calc(100% - 1px) calc(100% - 1px), 1px calc(100% - 1px)); } /* Top Right Corner Cut */
+        .shape-chamfer-bl img, .shape-chamfer-bl video { clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - 1px), 25px calc(100% - 1px), 1px calc(100% - 25px)); } /* Bottom Left Corner Cut */
+        .shape-slant-top img, .shape-slant-top video { clip-path: polygon(1px 15px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - 1px), 1px calc(100% - 1px)); } /* Angled Top Edge */
+        .shape-slant-bottom img, .shape-slant-bottom video { clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - 15px), 1px calc(100% - 1px)); } /* Angled Bottom Edge */
+
+        /* ==========================================================================
+           CUSTOMIZATION: SIZES (DESKTOP)
+           ========================================================================== 
+           These define the base dimensions (Width x Height) of the media elements 
+           before they are scaled up by hovering. 
+           ========================================================================== */
+        .size-xxs { width: 60px; height: 60px; }     /* Extra Extra Small */
+        .size-xs { width: 90px; height: 90px; }      /* Extra Small */
+        .size-s { width: 130px; height: 130px; }     /* Small */
+        .size-m { width: 180px; height: 180px; }     /* Medium (Standard Square) */
+        .size-l { width: 240px; height: 240px; }     /* Large */
+        .size-xl { width: 300px; height: 300px; }    /* Extra Large */
+        .size-wide { width: 240px; height: 120px; }  /* Landscape/Horizontal */
+        .size-tall { width: 120px; height: 240px; }  /* Portrait/Vertical */
+
+        /* ==========================================================================
+           CUSTOMIZATION: SIZES (MOBILE / SMARTPHONE)
+           ========================================================================== 
+           These dynamically shrink the images on small screens so huge neighborhoods 
+           fit inside the viewport horizontally.
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .size-xxs { width: 30px; height: 30px; }
+            .size-xs { width: 45px; height: 45px; }
+            .size-s { width: 65px; height: 65px; }
+            .size-m { width: 90px; height: 90px; }
+            .size-l { width: 120px; height: 120px; }
+            .size-xl { width: 150px; height: 150px; }
+            .size-wide { width: 120px; height: 60px; }
+            .size-tall { width: 60px; height: 120px; }
+            
+            #zoom-controls { bottom: 20px !important; right: 20px !important; }
+            #zoom-controls button { width: 35px !important; height: 35px !important; font-size: 1.2rem !important; }
+        }
+
+        /* Typography */
+        .project-label {
+            position: absolute;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent-red);
+            font-weight: 700;
+            text-decoration: none;
+            pointer-events: auto;
+            cursor: pointer;
+            z-index: 2000;
+            padding: 4px 0;
+            opacity: 0;
+            transition: opacity 1s ease 0.5s, color 0.3s ease; 
+        }
+
+        .project-label:hover { color: #000; text-decoration: underline; }
+
+        .project-desc {
+            position: absolute;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
+            max-width: 320px;
+            pointer-events: none;
+            z-index: 2000;
+            padding: 15px;
+            border-left: 2px solid var(--accent-red);
+            background: rgba(229, 229, 226, 0.95); 
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            transition: opacity 1s ease 0.8s; 
+        }
+
+        /* Zoom Controls (+ / - / Reset) */
+        #zoom-controls {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 12px;
+            z-index: 8000;
+        }
+
+        #zoom-controls button {
+            width: 40px; height: 40px;
+            border-radius: 4px;
+            background: transparent;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            font-family: 'Courier Prime', monospace;
+            font-weight: 400;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+            padding: 0;
+        }
+
+        #zoom-controls button:hover {
+            background: var(--text-color);
+            color: var(--paper-bg);
+            transform: scale(1.05);
+        }
+
+        .lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: none; justify-content: center; align-items: center; z-index: 9000; }
+        .lightbox-content { position: relative; max-width: 85%; max-height: 85vh; }
+        #lightbox-img, #lightbox-video { max-width: 100%; max-height: 85vh; box-shadow: 0 30px 60px rgba(0,0,0,0.2); }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 2rem; cursor: pointer; color: #666; font-family: 'Courier Prime', monospace;}
+        #prev-btn { left: -60px; } #next-btn { right: -60px; }
+        #lightbox-counter { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #bbb; }
+
+        footer { position: relative; width: 100%; padding: 5rem 0; text-align: center; font-size: 0.7rem; color: #aaa; z-index: 10; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">Coral Fustero-Torre</a>
+        <nav><a href="art.html">← MENU</a></nav>
+    </header>
+
+    <div id="zoom-controls">
+        <button onclick="changeZoom(0.25)" title="Zoom In">+</button>
+        <button onclick="changeZoom(-0.25)" title="Zoom Out">-</button>
+        <button onclick="resetCamera()" title="Reset Camera">↺</button>
+    </div>
+
+    <div id="canvas-wrapper">
+        <svg id="map-canvas"></svg>
+        
+        <main id="main-container">
+            <div class="archive-stream" id="main-stream">
+                
+                <!-- PROJECT 1: ESCITALOPRAM (Collages) -->
+                <img src="img/collage/1.png" data-project="escitalopram" data-project-desc="Colectivo Escitalopram está integrado por Vicente Ugarte y Coral Fustero. Surgido al deambular por las calles de Berlín, el colectivo centra su práctica en la recolección de libros zu verschenken, y en su uso como materia prima para sus collages.">
+                <img src="img/collage/2.png" data-project="escitalopram">
+                <img src="img/collage/3.png" data-project="escitalopram">
+                <img src="img/collage/4.png" data-project="escitalopram">
+                <img src="img/collage/5.png" data-project="escitalopram">
+                <img src="img/collage/6.png" data-project="escitalopram">
+                <img src="img/collage/8.png" data-project="escitalopram">
+
+                <!-- PROJECT 2: NATUR (Merged Nature Videos + Photography) -->
+                <img src="img/photography/natur/R1-05002-034A.jpg" data-project="natur" data-project-desc="Photographic and film studies of the natural environment, capturing seasonal shifts and organic textures.">
+                <img src="img/photography/natur/R1-05190-0004.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-05190-0009.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-05190-0021.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-05461-002A.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-05461-004A.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-05779-0004.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-06387-0001.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-07608-0009.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-07608-0023.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-07608-0024.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-07608-0025.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-07608-0032.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-08944-0025.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-08955-0014.jpg" data-project="natur">
+                <img src="img/photography/natur/R1-08958-009A.jpg" data-project="natur">
+
+                <!-- PROJECT 3: CASITOS -->
+                <video src="img/super8/besito.mp4" data-project="casitos" muted loop preload="metadata" data-project-desc="Architectural observations."></video>
+                <video src="img/super8/plumitas.mp4" data-project="casitos" muted loop preload="metadata"></video>
+                <img src="img/photography/casitos/R1-04275-0001.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-04601-017A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-04601-018A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-04601-021A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-04629-0000.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-04629-0024.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-05002-005A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-05460-024A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-05460-027A.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-06387-0000.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-06387-0030.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-08944-0020.jpg" data-project="casitos">
+                <img src="img/photography/casitos/R1-09835-0001.jpg" data-project="casitos">
+
+                <!-- PROJECT 4: SELFIE -->
+                <img src="img/photography/selfie/R1-04275-0022.jpg" data-project="selfie" data-project-desc="Self portraits.">
+                <img src="img/photography/selfie/R1-04539-0014.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-04726-0014.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-04874-0008.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-05000-035A.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-05054-0009.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-05460-006A.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-05460-008A.jpg" data-project="selfie">
+                <img src="img/photography/selfie/R1-05461-005A.jpg" data-project="selfie">
+
+                <!-- PROJECT 5: UNCERTAINTY -->
+                <img src="img/photography/uncertainty/R1-04275-0025.jpg" data-project="uncertainty" data-project-desc="Uncertainty.">
+                <img src="img/photography/uncertainty/R1-04415-023A.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04415-024A.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04539-0010.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04601-035A.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04629-0003.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04629-0007.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04726-0028.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04732-0011.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-04874-0005.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-05190-0015.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-07608-0030.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-07624-011A.jpg" data-project="uncertainty">
+                <img src="img/photography/uncertainty/R1-08045-0013.jpg" data-project="uncertainty">
+
+                <!-- PROJECT 6: BERLIN -->
+                <img src="img/photography/walkthisway/berlin/R1-01762-029A.jpg" data-project="berlin" data-project-desc="Observations of the urban sprawl in Berlin.">
+                <img src="img/photography/walkthisway/berlin/R1-02283-0029.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-02283-0030.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-02283-014A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04013-0010.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04013-0012.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04275-0029.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04415-002A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04601-010A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04601-025A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04601-029A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04601-031A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04601-036A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04726-0003.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04726-0008.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-04726-0016.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-007A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-008A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-021A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-024A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-026A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05002-027A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-005A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-013A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-016A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-022A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-034A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05460-035A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-05462-019A.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-06387-0004.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-06387-0007.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-06387-0010.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-07608-0019.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-08944-0004.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-08944-0014.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-08944-0015.jpg" data-project="berlin">
+                <img src="img/photography/walkthisway/berlin/R1-08944-0017.jpg" data-project="berlin">
+
+                <!-- PROJECT 7: SPAIN -->
+                <img src="img/photography/walkthisway/spain/R1-01880-0027.jpg" data-project="spain" data-project-desc="Observations across Spain.">
+                <img src="img/photography/walkthisway/spain/R1-04726-0024.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04726-0026.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04874-0012.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04874-0020.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04874-0023.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04874-0024.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-04874-0026.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0004.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0005.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0027.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0028.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0036.jpg" data-project="spain">
+                <img src="img/photography/walkthisway/spain/R1-05053-0037.jpg" data-project="spain">
+
+            </div>
+        </main>
+
+        <footer>&copy; 2026 Coral Fustero-Torre</footer>
+    </div>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button id="prev-btn" class="nav-btn" onclick="changeMedia(-1)">←</button>
+            <img id="lightbox-img" src="" style="display:none;">
+            <video id="lightbox-video" src="" controls style="display:none;"></video>
+            <button id="next-btn" class="nav-btn" onclick="changeMedia(1)">→</button>
+            <div id="lightbox-counter"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================================================
+        // CUSTOMIZATION: CONNECTIONS (LINES BETWEEN CLUSTERS)
+        // Adjust these values to change how the dashed map lines look.
+        // ==========================================================================
+        const CONNECTION_STYLE = {
+            color: "#bbb",          // Line color (hex code, rgb, or named color)
+            width: "1.5",           // Line thickness in pixels
+            dashArray: "8,8",       // Spacing of the dashes ("dash-length, gap-length"). Set to "none" for a solid line.
+            curveOffsetMobile: 50,  // How much the line curves horizontally on small screens
+            curveOffsetDesktop: 250 // How much the line curves horizontally on large screens
+        };
+
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+
+        const DOM_STATE = { projects: {} };
+        
+        // ==========================================================================
+        // CUSTOMIZATION: ASSIGN SHAPES
+        // These are randomly assigned to your images to make them look like city blocks.
+        // You can duplicate certain classes to make them appear more frequently.
+        // ==========================================================================
+        const VARIED_SHAPES = [
+            'shape-block', 'shape-block', 'shape-block', 'shape-block', // Predominantly full blocks
+            'shape-chamfer-tr', 'shape-chamfer-bl', 
+            'shape-slant-top', 'shape-slant-bottom'
+        ];
+
+        // Vertical zig-zag pattern with 11000px total height context
+        const centerDefs = [
+            {x: 30, y: 600},    // escitalopram
+            {x: 70, y: 1900},   // natur
+            {x: 30, y: 3200},   // casitos
+            {x: 70, y: 4500},   // selfie
+            {x: 30, y: 5800},   // uncertainty
+            {x: 70, y: 7100},   // berlin
+            {x: 30, y: 8400}    // spain
+        ];
+
+        let projectCounter = 0;
+        let currentScale = 1;
+
+        // Zoom API
+        window.changeZoom = (delta) => {
+            const wrapper = document.getElementById('canvas-wrapper');
+            const minScale = window.innerWidth < 768 ? 0.15 : 0.05;
+            currentScale = Math.max(minScale, Math.min(2, currentScale + delta));
+            
+            if (currentScale < 1) {
+                document.body.classList.add('is-zoomed');
+                // Force assembly of all unbuilt neighborhoods when zooming out
+                Object.keys(DOM_STATE.projects).forEach(projName => {
+                    if (!DOM_STATE.projects[projName].built) {
+                        buildNeighborhood(projName);
+                    }
+                });
+            } else {
+                document.body.classList.remove('is-zoomed');
+            }
+            
+            wrapper.style.transform = `scale(${currentScale})`;
+        };
+
+        window.resetCamera = () => {
+            currentScale = 1;
+            document.body.classList.remove('is-zoomed');
+            document.getElementById('canvas-wrapper').style.transform = 'scale(1)';
+        };
+
+        // Generator for grid-aligned square spiral search 
+        function* getGridSpiral(startX, startY, step) {
+            let x = 0, y = 0;
+            let dx = step, dy = 0;
+            let segmentLength = 1;
+            let segmentPassed = 0;
+            while (true) {
+                yield { x: startX + x, y: startY + y };
+                x += dx;
+                y += dy;
+                segmentPassed++;
+                if (segmentPassed === segmentLength) {
+                    segmentPassed = 0;
+                    let temp = dx;
+                    dx = -dy;
+                    dy = temp;
+                    if (dy === 0) {
+                        segmentLength++;
+                    }
+                }
+            }
+        }
+
+        function getSizesForProjectCount(count) {
+            if (count > 15) return ['size-xs', 'size-s', 'size-m', 'size-tall', 'size-wide'];
+            if (count > 8)  return ['size-s', 'size-m', 'size-l', 'size-tall', 'size-wide'];
+            return ['size-m', 'size-l', 'size-xl', 'size-tall', 'size-wide'];
+        }
+
+        function initializeArchive() {
+            const stream = document.getElementById('main-stream');
+            const rawMedia = Array.from(stream.querySelectorAll(':scope > img, :scope > video'));
+            const windowW = window.innerWidth;
+            const isMobile = windowW < 1024;
+
+            const projectCounts = {};
+            rawMedia.forEach(m => {
+                const name = m.getAttribute('data-project');
+                projectCounts[name] = (projectCounts[name] || 0) + 1;
+            });
+
+            rawMedia.forEach(media => {
+                const name = media.getAttribute('data-project');
+                const descSource = rawMedia.find(m => m.getAttribute('data-project') === name && m.hasAttribute('data-project-desc'));
+
+                if (!DOM_STATE.projects[name]) {
+                    const projIndex = projectCounter++;
+                    const def = centerDefs[projIndex % centerDefs.length];
+                    const targetCenterY = isMobile ? 600 + (projIndex * 1300) : def.y;
+
+                    DOM_STATE.projects[name] = {
+                        index: projIndex,
+                        name: name,
+                        built: false, 
+                        description: descSource ? descSource.getAttribute('data-project-desc') : '',
+                        elements: [],
+                        labelEl: null,
+                        descEl: null,
+                        context: null,
+                        targetCenterY: targetCenterY
+                    };
+
+                    const label = document.createElement('a');
+                    label.className = 'project-label';
+                    label.innerText = name.toUpperCase(); 
+                    label.href = "javascript:void(0)"; 
+                    
+                    // Click the title to open the lightbox strictly for this project
+                    label.onclick = (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (currentScale < 1) {
+                            resetCamera();
+                            setTimeout(() => {
+                                window.scrollTo({
+                                    top: DOM_STATE.projects[name].targetCenterY - 200,
+                                    behavior: 'smooth'
+                                });
+                            }, 400);
+                        } else {
+                            const firstMedia = document.querySelector(`.gallery-item[data-project="${name}"] img, .gallery-item[data-project="${name}"] video`);
+                            if(firstMedia) openLightbox(name, firstMedia.getAttribute('src'));
+                        }
+                    };
+
+                    stream.appendChild(label);
+                    DOM_STATE.projects[name].labelEl = label;
+
+                    if (DOM_STATE.projects[name].description) {
+                        const desc = document.createElement('div');
+                        desc.className = 'project-desc';
+                        desc.innerText = DOM_STATE.projects[name].description;
+                        stream.appendChild(desc);
+                        DOM_STATE.projects[name].descEl = desc;
+                    }
+                }
+
+                const clone = media.cloneNode(true);
+                clone.classList.remove('raw-media');
+                clone.style.display = 'block';
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'gallery-item';
+                
+                wrapper.style.zIndex = Math.floor(Math.random() * 500) + 10;
+                wrapper.dataset.project = name;
+
+                const allowedSizes = getSizesForProjectCount(projectCounts[name]);
+                const sizeClass = media.getAttribute('data-size') || allowedSizes[Math.floor(Math.random() * allowedSizes.length)];
+
+                if(media.getAttribute('data-shape')) {
+                    wrapper.classList.add(media.getAttribute('data-shape'));
+                } else {
+                    wrapper.classList.add(VARIED_SHAPES[Math.floor(Math.random() * VARIED_SHAPES.length)]);
+                }
+                
+                wrapper.classList.add(sizeClass);
+
+                const container = document.createElement('div');
+                container.className = 'media-container';
+                
+                if(media.tagName === 'VIDEO') media.play();
+                
+                container.appendChild(media);
+                wrapper.appendChild(container);
+
+                const targetY = DOM_STATE.projects[name].targetCenterY;
+                const spreadX = Math.max(20, Math.random() * (windowW - 250));
+                const spreadY = targetY + (Math.random() * 1000 - 500); 
+                const spreadRot = (Math.random() * 120 - 60).toFixed(1); 
+                
+                wrapper.style.left = `${spreadX}px`;
+                wrapper.style.top = `${spreadY}px`;
+                wrapper.style.transform = `rotate(${spreadRot}deg)`;
+
+                wrapper.addEventListener('mouseenter', () => {
+                    if (!DOM_STATE.projects[name].built) {
+                        buildNeighborhood(name);
+                    }
+                    
+                    document.querySelectorAll(`.gallery-item[data-project="${name}"]`).forEach(el => {
+                        el.classList.add('project-hovered');
+                    });
+                });
+
+                wrapper.addEventListener('mouseleave', () => {
+                    document.querySelectorAll(`.gallery-item[data-project="${name}"]`).forEach(el => {
+                        el.classList.remove('project-hovered');
+                    });
+                });
+
+                // Click image to handle zoom tracking OR open strictly locked lightbox
+                wrapper.onclick = (e) => {
+                    e.stopPropagation();
+                    if (currentScale < 1) {
+                        resetCamera(); 
+                        setTimeout(() => {
+                            window.scrollTo({
+                                top: DOM_STATE.projects[name].targetCenterY - 200,
+                                behavior: 'smooth'
+                            });
+                        }, 400); 
+                    } else {
+                        openLightbox(name, media.getAttribute('src'));
+                    }
+                };
+                
+                stream.appendChild(wrapper);
+                
+                wrapper.offsetWidth; 
+                requestAnimationFrame(() => {
+                    wrapper.classList.add('ready-to-move');
+                });
+
+                DOM_STATE.projects[name].elements.push(wrapper);
+            });
+        }
+
+        function buildNeighborhood(projectName) {
+            const proj = DOM_STATE.projects[projectName];
+            proj.built = true; 
+            
+            const windowW = window.innerWidth;
+            const isMobile = windowW < 1024; 
+            
+            const def = centerDefs[proj.index % centerDefs.length];
+            const minX = isMobile ? windowW / 2 : 450; 
+            const mainCenterX = Math.max(minX, (def.x * windowW / 100));
+            const mainCenterY = proj.targetCenterY; 
+
+            proj.context = { x: mainCenterX, y: mainCenterY };
+
+            const occupiedRects = [];
+            const roadGap = 0; 
+            const stepSize = 10; 
+            
+            let textStartX = isMobile ? 20 : mainCenterX - 400;
+            let currentTextY = mainCenterY - 100; 
+
+            proj.labelEl.style.left = `${textStartX}px`;
+            proj.labelEl.style.top = `${currentTextY}px`;
+            proj.labelEl.style.opacity = '1';
+            
+            occupiedRects.push({
+                l: textStartX - 20, r: textStartX + 350,
+                t: currentTextY - 20, b: currentTextY + 60
+            });
+            
+            currentTextY += 50;
+
+            if (proj.descEl) {
+                proj.descEl.style.left = `${textStartX}px`;
+                proj.descEl.style.top = `${currentTextY}px`;
+                proj.descEl.style.opacity = '1';
+                
+                occupiedRects.push({
+                    l: textStartX - 20, r: textStartX + 350,
+                    t: currentTextY - 20, b: currentTextY + 250
+                });
+            }
+
+            // Strict orthogonal packing. 
+            proj.elements.forEach((wrapper) => {
+                wrapper.style.transform = `rotate(0deg)`;
+                wrapper.style.zIndex = 10; 
+
+                const w = wrapper.offsetWidth || 130;
+                const h = wrapper.offsetHeight || 130;
+                
+                let found = false;
+                const gridSearch = getGridSpiral(mainCenterX, mainCenterY, stepSize);
+
+                while (!found) {
+                    const pos = gridSearch.next().value;
+                    const testRect = { l: pos.x - w/2, r: pos.x + w/2, t: pos.y - h/2, b: pos.y + h/2 };
+                    const isOutOfBounds = (testRect.l < 20 || testRect.r > windowW - 20);
+                    
+                    const collision = isOutOfBounds || occupiedRects.some(r => {
+                        return (testRect.l < r.r + roadGap &&
+                                testRect.r > r.l - roadGap &&
+                                testRect.t < r.b + roadGap &&
+                                testRect.b > r.t - roadGap);
+                    });
+
+                    if (!collision) {
+                        wrapper.style.left = `${testRect.l}px`;
+                        wrapper.style.top = `${testRect.t}px`;
+                        occupiedRects.push(testRect);
+                        found = true;
+                    }
+                }
+            });
+
+            updateMapLines();
+        }
+
+        function updateMapLines() {
+            const svg = document.getElementById('map-canvas');
+            svg.innerHTML = ''; 
+
+            const windowW = window.innerWidth;
+            const isMobile = windowW < 768; 
+
+            const builtProjects = Object.values(DOM_STATE.projects)
+                                        .filter(p => p.built)
+                                        .sort((a, b) => a.index - b.index);
+
+            for (let i = 0; i < builtProjects.length - 1; i++) {
+                const start = builtProjects[i].context;
+                const end = builtProjects[i+1].context;
+                
+                if (builtProjects[i+1].index - builtProjects[i].index === 1) {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    
+                    // Applies the user-defined CONNECTION_STYLE rules
+                    const curveOffset = isMobile ? CONNECTION_STYLE.curveOffsetMobile : CONNECTION_STYLE.curveOffsetDesktop; 
+                    const d = `M ${start.x} ${start.y} Q ${(start.x + end.x)/2 + curveOffset} ${(start.y + end.y)/2} ${end.x} ${end.y}`;
+                    
+                    line.setAttribute("d", d);
+                    line.setAttribute("stroke", CONNECTION_STYLE.color);
+                    line.setAttribute("stroke-width", CONNECTION_STYLE.width);
+                    line.setAttribute("fill", "none");
+                    line.setAttribute("stroke-dasharray", CONNECTION_STYLE.dashArray);
+                    
+                    line.style.opacity = 0;
+                    line.style.transition = "opacity 1.5s ease 0.5s";
+                    svg.appendChild(line);
+                    
+                    setTimeout(() => line.style.opacity = 1, 50);
+                }
+            }
+        }
+
+        function openLightbox(project, startSrc) {
+            // ONLY query items from the specific project
+            const items = Array.from(document.querySelectorAll(`.gallery-item[data-project="${project}"] img, .gallery-item[data-project="${project}"] video`));
+
+            window.activeLightboxItems = items.map(media => ({
+                type: media.tagName.toLowerCase(),
+                src: media.getAttribute('src')
+            }));
+
+            window.currentIndex = window.activeLightboxItems.findIndex(item => startSrc.includes(item.src));
+            if (window.currentIndex === -1) window.currentIndex = 0;
+            
+            updateLightbox(); 
+        }
+
+        function updateLightbox() {
+            if(!window.activeLightboxItems || window.activeLightboxItems.length === 0) return;
+            const item = window.activeLightboxItems[window.currentIndex]; 
+            const lbImg = document.getElementById('lightbox-img'); 
+            const lbVid = document.getElementById('lightbox-video');
+            
+            if (item.type === 'img') { 
+                lbImg.src = item.src; lbImg.style.display = 'block'; 
+                lbVid.style.display = 'none'; lbVid.pause(); 
+            } else { 
+                lbVid.src = item.src; lbVid.style.display = 'block'; 
+                lbImg.style.display = 'none'; lbVid.play(); 
+            }
+            document.getElementById('lightbox-counter').innerText = `${window.currentIndex + 1} / ${window.activeLightboxItems.length}`;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        window.changeMedia = (step) => {
+            window.currentIndex = (window.currentIndex + step + window.activeLightboxItems.length) % window.activeLightboxItems.length;
+            updateLightbox();
+        };
+
+        window.closeLightbox = () => { 
+            document.getElementById('lightbox').style.display = 'none'; 
+            document.getElementById('lightbox-video').pause();
+        };
+
+        // Keyboard Controls for Lightbox Navigation
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('lightbox');
+            if (lb.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') changeMedia(-1);
+                if (e.key === 'ArrowRight') changeMedia(1);
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', initializeArchive);
+    </script>
+</body>
+</html>
