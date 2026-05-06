@@ -86,12 +86,6 @@
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Larger Boxes */
         }
 
-        /* SECONDARY SECTION (Art) */
-        .grid-art {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller Boxes */
-            gap: 20px;
-        }
-
         .arena-box {
             aspect-ratio: 1 / 1;
             display: flex;
@@ -116,32 +110,6 @@
         }
         .science-box:hover { background: #fff; transform: translateY(-3px); }
 
-        /* Art Styling: Transparent Background, Red Scrap focus */
-        .art-box { 
-            color: var(--accent-red); 
-            background-color: transparent; /* No white background */
-            border: none;
-        }
-
-        .art-box::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(217, 67, 47, 0.12); /* The "Scrap" color */
-            z-index: 1;
-            transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
-        }
-        
-        .art-box:hover::before { 
-            background-color: rgba(217, 67, 47, 0.2); 
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) !important; /* Expansion reveal */
-        }
-
-        /* Scraps Shape Pool */
-        .cut-trapezoid::before { clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%); }
-        .cut-map::before { clip-path: polygon(5% 15%, 95% 0, 100% 85%, 15% 100%); }
-        .cut-rhomboid::before { clip-path: polygon(18% 0, 100% 0, 82% 100%, 0 100%); }
-
         footer {
             padding: 4rem 0;
             border-top: 1px solid rgba(0,0,0,0.05);
@@ -152,7 +120,7 @@
         }
 
         @media (max-width: 768px) {
-            .grid-science, .grid-art { grid-template-columns: repeat(2, 1fr); }
+            .grid-science { grid-template-columns: repeat(2, 1fr); }
             h1 { font-size: 1.3rem; }
         }
     </style>
@@ -166,7 +134,7 @@
 
         <main>
             <section class="bio">
-                Coral Fustero-Torre is a <strong>computational biologist</strong> investigating cellular systems through advanced computational methods. She specializes in single-cell sequencing and the development of analytical tools to decipher biological complexity. Alongside her science, she explores analog photography, collage, and Super8 filmmaking as a <strong>visual artist</strong>, decoding her surrounding microenvironments.
+                Coral Fustero-Torre is a <strong>computational biologist</strong> investigating cellular systems through advanced computational methods. She specializes in single-cell sequencing and the development of analytical tools to decipher biological complexity. Alongside her scientific practice, she explores the use of analog photography, collage, and Super8 filmmaking as tools to decode her surrounding <strong>microenvironment</strong>.
             </section>
 
             <div class="nav-section">
@@ -182,15 +150,10 @@
             </div>
 
             <div class="nav-section">
-                <a href="art.html" class="section-header art-head">
-                    <h2>Visual artist</h2>
+                <a href="visual_archive.html" class="section-header art-head">
+                    <h2>Visual archive</h2>
                     <span class="section-arrow">→</span>
                 </a>
-                <div class="arena-grid grid-art">
-                    <a href="photography.html" class="art-box arena-box cut-trapezoid"><span>Photography</span></a>
-                    <a href="collage.html" class="art-box arena-box cut-map"><span>Collage</span></a>
-                    <a href="film.html" class="art-box arena-box cut-rhomboid"><span>Film</span></a>
-                </div>
             </div>
         </main>
 
@@ -200,12 +163,5 @@
         </footer>
     </div>
 
-    <script>
-        // Individual rotations to keep the "drifting scraps" feel
-        document.querySelectorAll('.art-box').forEach(box => {
-            const rot = (Math.random() * 6 - 3).toFixed(1);
-            box.style.transform = `rotate(${rot}deg)`;
-        });
-    </script>
 </body>
 </html>
