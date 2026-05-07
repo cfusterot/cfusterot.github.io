@@ -6,15 +6,15 @@
     <title>Psychogeographic Portfolio | Coral Fustero-Torre</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
-        /* Forces the typewriter font onto absolutely everything */
-        * {
-            font-family: 'Courier Prime', monospace !important;
-        }
-
         :root {
             --text-color: #444; 
             --paper-bg: #e5e5e2; 
             --accent-red: #d93829; 
+        }
+
+        /* Forces the typewriter font onto absolutely everything */
+        * {
+            font-family: 'Courier Prime', monospace !important;
         }
 
         body {
@@ -25,13 +25,12 @@
             overflow-x: hidden;
             position: relative;
             transition: background-color 0.8s ease;
-            -webkit-tap-highlight-color: transparent; /* Cleaner tapping on mobile */
         }
 
         body.is-zoomed { background-color: #d1d1ce; }
 
         header { padding: 2rem; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: baseline; position: relative; z-index: 4000; }
-        .logo { text-decoration: none; color: var(--text-color); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
+        .logo { text-decoration: none; color: var(--text-color); font-weight: 700; font-size: 1.1rem; }
         nav a { text-decoration: none; color: #999; font-size: 0.85rem; }
 
         #canvas-wrapper {
@@ -69,39 +68,25 @@
         .gallery-item img, .gallery-item video { 
             width: 100%; height: 100%; object-fit: cover; display: block; 
             filter: grayscale(100%) contrast(110%) brightness(95%);
-            transition: filter 0.4s ease, clip-path 0.4s ease, box-shadow 0.4s ease;
+            transition: filter 0.4s ease, transform 0.4s ease, clip-path 0.4s ease, box-shadow 0.4s ease;
             background-color: #ccc;
         }
 
         .gallery-item.project-hovered { z-index: 5000 !important; }
         .gallery-item.project-hovered img, .gallery-item.project-hovered video { filter: grayscale(0%) contrast(105%) brightness(100%); }
         
-        /* HOVER REVEAL: Only triggers on desktops with a mouse, AND only when .is-static is applied */
-        @media (hover: hover) and (pointer: fine) {
-            .gallery-item.is-static:hover {
-                z-index: 6000 !important;
-            }
-            .gallery-item.is-static:hover img, .gallery-item.is-static:hover video {
-                position: absolute;
-                top: 50%; left: 50%;
-                transform: translate(-50%, -50%);
-                width: auto; height: auto;
-                min-width: 100%; min-height: 100%;
-                max-width: 500px; max-height: 500px; 
-                object-fit: contain;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
-                clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important; 
-                border-radius: 2px;
-                background-color: transparent;
-            }
-
-            body.is-zoomed .gallery-item.is-static:hover img, body.is-zoomed .gallery-item.is-static:hover video { 
-                transform: translate(-50%, -50%) scale(2.0); 
-                box-shadow: 0 25px 50px rgba(0,0,0,0.4); 
-            }
+        /* HOVER FIX: Stays exactly the same size, but reveals missing corners */
+        .gallery-item:hover img, .gallery-item:hover video {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            border-radius: 2px;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important; 
+            z-index: 6000; 
+            position: relative;
         }
 
-        /* Custom Cutouts */
+        /* Scales only when the map is fully zoomed out so you can actually see what you hover */
+        body.is-zoomed .gallery-item:hover img, body.is-zoomed .gallery-item:hover video { transform: scale(2.0); box-shadow: 0 25px 50px rgba(0,0,0,0.4); }
+
         .shape-block img, .shape-block video, img.shape-block, video.shape-block { clip-path: inset(1px); } 
         .shape-chamfer-tr img, .shape-chamfer-tr video, img.shape-chamfer-tr, video.shape-chamfer-tr { clip-path: polygon(1px 1px, calc(100% - 25px) 1px, calc(100% - 1px) 25px, calc(100% - 1px) calc(100% - 1px), 1px calc(100% - 1px)); } 
         .shape-chamfer-bl img, .shape-chamfer-bl video, img.shape-chamfer-bl, video.shape-chamfer-bl { clip-path: polygon(1px 1px, calc(100% - 1px) 1px, calc(100% - 1px) calc(100% - 1px), 25px calc(100% - 1px), 1px calc(100% - 25px)); } 
@@ -119,8 +104,7 @@
 
         @media (max-width: 768px) {
             .size-xxs { width: 30px; height: 30px; } .size-xs { width: 45px; height: 45px; } .size-s { width: 65px; height: 65px; } .size-m { width: 90px; height: 90px; } .size-l { width: 120px; height: 120px; } .size-xl { width: 150px; height: 150px; } .size-wide { width: 120px; height: 60px; } .size-tall { width: 60px; height: 120px; }
-            #zoom-controls { bottom: 20px !important; right: 20px !important; } 
-            #zoom-controls button { width: 45px !important; height: 45px !important; font-size: 1.4rem !important; } 
+            #zoom-controls { bottom: 20px !important; right: 20px !important; } #zoom-controls button { width: 35px !important; height: 35px !important; font-size: 1.2rem !important; }
         }
 
         .project-label { position: absolute; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 4px; color: var(--accent-red); font-weight: 700; text-decoration: none; pointer-events: auto; cursor: pointer; z-index: 2000; padding: 4px 0; opacity: 0; transition: opacity 1s ease 0.5s, color 0.3s ease; }
@@ -130,7 +114,7 @@
             position: absolute; font-size: 0.95rem; line-height: 1.6; color: #555; max-width: 350px; pointer-events: auto; z-index: 2000; padding: 15px; border-left: 2px solid var(--accent-red); background: rgba(229, 229, 226, 0.95); backdrop-filter: blur(3px); opacity: 0; transition: opacity 1s ease 0.8s; 
         }
 
-        /* FLÂNERIES BUTTON */
+        /* Flâneries link styling (No square, no symbols, text-only underline) */
         .portal-btn {
             display: inline-block; 
             margin-top: 15px; 
@@ -138,7 +122,7 @@
             border: none; 
             color: var(--text-color); 
             font-size: 0.95rem; 
-            font-weight: normal; 
+            font-weight: bold; 
             cursor: pointer; 
             background: transparent; 
             text-decoration: underline;
@@ -179,55 +163,37 @@
         
         #flanerie-drawer.open { top: 0; }
         
+        /* Hidden by default so it doesn't appear on screen randomly */
         .close-drawer {
             display: none; 
-            position: absolute; top: 30px; right: 40px; 
-            font-size: 1rem; 
-            font-weight: normal;
-            cursor: pointer; background: none; border: none; color: var(--text-color); z-index: 9600;
+            position: absolute; top: 30px; right: 40px; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-color); z-index: 9600;
         }
         .close-drawer:hover { color: var(--accent-red); }
+        
+        /* Only show the close button when the drawer itself is open */
         #flanerie-drawer.open .close-drawer { display: block; }
 
         .archive-table { width: 100%; max-width: 1100px; margin: 0 auto; }
-        .archive-title { font-size: 2rem; font-weight: normal; text-transform: uppercase; border-bottom: 2px solid var(--text-color); padding-bottom: 1rem; margin-bottom: 2rem; }
+        .archive-title { font-size: 2rem; text-transform: uppercase; border-bottom: 2px solid var(--text-color); padding-bottom: 1rem; margin-bottom: 2rem; }
+
         .archive-header { display: flex; font-weight: bold; border-bottom: 1px solid var(--text-color); padding-bottom: 10px; margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; color: #777;}
         .col-time { width: 15%; }
-        .col-media { width: 50%; display: flex; gap: 15px; flex-wrap: wrap; padding-right: 40px; align-items: flex-start; }
-        .col-notes { width: 35%; }
+        .col-media { width: 45%; }
+        .col-notes { width: 40%; }
 
         .archive-row { display: flex; border-bottom: 1px solid #ccc; padding: 40px 0; align-items: flex-start; }
         .archive-row .col-time { font-weight: bold; font-size: 0.9rem; }
+        .archive-row .col-media { padding-right: 40px; }
         
         .archive-row .col-media img, .archive-row .col-media video { 
-            flex: 1 1 0;
-            min-width: 150px;
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
+            object-fit: cover;
             display: block; 
             filter: grayscale(100%); 
             cursor: pointer; 
             transition: filter 0.3s ease; 
         }
         .archive-row .col-media img:hover, .archive-row .col-media video:hover { filter: grayscale(0%); }
-
-        /* iPhone Shape for Videos in the Drawer */
-        .archive-row .col-media video.iphone-video {
-            aspect-ratio: 9 / 16;
-            object-fit: cover !important; 
-            height: auto; 
-            max-height: 400px;
-            border-radius: 24px; /* Creates the phone-like rounded edges */
-            clip-path: none !important; /* Overrides the paper cutout shapes specifically for these videos */
-        }
-
         .archive-row .col-notes { font-size: 0.9rem; line-height: 1.5; color: #333; }
-
-        .rot-1 { transform: rotate(1.5deg); }
-        .rot-2 { transform: rotate(-1.5deg); }
-        .rot-3 { transform: rotate(2.5deg); }
-        .rot-4 { transform: rotate(-2.5deg); }
 
         @media (max-width: 768px) {
             .archive-header { display: none; } 
@@ -410,100 +376,30 @@
         window.scrollTo(0, 0);
 
         const DOM_STATE = { projects: {} };
-        const centerDefs = [ {x: 30, y: 600}, {x: 70, y: 1900}, {x: 30, y: 3200}, {x: 70, y: 4500}, {x: 30, y: 5800}, {x: 70, y: 7100}, {x: 30, y: 8400} ];
         const VARIED_SHAPES = ['shape-block', 'shape-block', 'shape-block', 'shape-block', 'shape-chamfer-tr', 'shape-chamfer-bl', 'shape-slant-top', 'shape-slant-bottom'];
-        const ROTATIONS = ['', '', '', '', '', '', '', 'rot-1', 'rot-2', 'rot-3', 'rot-4'];
+        const centerDefs = [ {x: 30, y: 600}, {x: 70, y: 1900}, {x: 30, y: 3200}, {x: 70, y: 4500}, {x: 30, y: 5800}, {x: 70, y: 7100}, {x: 30, y: 8400} ];
 
         let projectCounter = 0;
         let currentScale = 1;
 
-        const SIZE_AREAS = {
-            'size-xxs': 60*60, 'size-xs': 90*90, 'size-s': 130*130, 'size-m': 180*180, 
-            'size-l': 240*240, 'size-xl': 300*300, 'size-wide': 240*120, 'size-tall': 120*240
-        };
-
-        const shuffleArray = (array) => {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        };
-
         // ==========================================================================
-        // FLÂNERIES DATA 
+        // FLÂNERIES DATA (Paths accurately updated to img/walkthisway/[project]/flaneuries/)
         // ==========================================================================
         const FIELD_NOTES = {
             berlin: [
-                { 
-                    time: "09:15", 
-                    media: [
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A2950C0-8FDA-4C61-923C-A82D6E3EAAA6.jpeg" }
-                    ], 
-                    text: "Morning encounters. The rhythm of the city starts early." 
-                },
-                { 
-                    time: "11:30", 
-                    media: [
-                        { type: "video", src: "img/photography/walkthisway/berlin/flaneries/1A48B6DD-8C37-4A84-8A98-51D3EE52BE2C_3.mov" },
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A48B6DD-8C37-4A84-8A98-51D3EE52BE2C.jpeg" }
-                    ], 
-                    text: "Waiting at the food stand. A quiet moment of pause amidst the concrete." 
-                },
-                { 
-                    time: "12:15", 
-                    media: [
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A600455-9811-48B1-9F52-C883E4828BF9.jpeg" }
-                    ], 
-                    text: "Street crossing details." 
-                },
-                { 
-                    time: "14:20", 
-                    media: [
-                        { type: "video", src: "img/photography/walkthisway/berlin/flaneries/1A904AE4-F387-4C18-8CD8-4CFCD3BC4C4E_3.mov" },
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A904AE4-F387-4C18-8CD8-4CFCD3BC4C4E.jpeg" }
-                    ], 
-                    text: "Resting on the brick wall. A brief escape to eat ice cream." 
-                },
-                { 
-                    time: "15:45", 
-                    media: [
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1B0161B8-5933-4804-9DA9-5567E71E2B98.jpeg" }
-                    ], 
-                    text: "Mid-afternoon shadows." 
-                },
-                { 
-                    time: "17:00", 
-                    media: [
-                        { type: "video", src: "img/photography/walkthisway/berlin/flaneries/1B2827BC-C290-4BB3-B2F4-FAD4F554026A_3.mov" },
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1B2827BC-C290-4BB3-B2F4-FAD4F554026A.jpeg" }
-                    ], 
-                    text: "The golden hour hits the pavement." 
-                },
-                { 
-                    time: "18:45", 
-                    media: [
-                        { type: "video", src: "img/photography/walkthisway/berlin/flaneries/1B3F909A-B76C-4767-A8E3-9333CF581B94_3.mov" },
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1B3F909A-B76C-4767-A8E3-9333CF581B94.jpeg" }
-                    ], 
-                    text: "Watching the street empty out." 
-                },
-                { 
-                    time: "19:30", 
-                    media: [
-                        { type: "video", src: "img/photography/walkthisway/berlin/flaneries/1B6EA93D-C692-4C9B-9412-C5F6AD05A854_3.mov" },
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1B6EA93D-C692-4C9B-9412-C5F6AD05A854.jpeg" }
-                    ], 
-                    text: "Interior glimpse. Groups gathering, the hum of conversation." 
-                },
-                { 
-                    time: "21:00", 
-                    media: [
-                        { type: "img", src: "img/photography/walkthisway/berlin/flaneries/1BA01F62-7DE3-4A32-9ACF-DA8DCD63D650.jpeg" }
-                    ], 
-                    text: "Nightfall over the city." 
-                }
+                { time: "09:15", type: "video", src: "img/walkthisway/berlin/flaneuries/1B2827BC-C290-4BB3-B2F4-FAD4F554026A_3.mov", text: "Commuters outside the station. The rhythm of the city starts early. Everyone moving with purpose.", size: "size-m" },
+                { time: "11:30", type: "video", src: "img/walkthisway/berlin/flaneuries/1A48B6DD-8C37-4A84-8A98-51D3EE52BE2C_3.mov", text: "Waiting at the food stand. A quiet moment of pause amidst the concrete.", size: "size-tall" },
+                { time: "14:20", type: "video", src: "img/walkthisway/berlin/flaneuries/1B6EA93D-C692-4C9B-9412-C5F6AD05A854_3.mov", text: "Interior glimpse. Groups gathering, the hum of conversation.", size: "size-wide" },
+                { time: "15:45", type: "video", src: "img/walkthisway/berlin/flaneuries/1A904AE4-F387-4C18-8CD8-4CFCD3BC4C4E_3.mov", text: "Resting on the brick wall. A brief escape to eat ice cream.", size: "size-l" },
+                { time: "17:00", type: "video", src: "img/walkthisway/berlin/flaneuries/1A2950C0-8FDA-4C61-923C-A82D6E3EAAA6_3.mov", text: "Walking past the market crates. The layers of the neighborhood.", size: "size-tall" },
+                { time: "18:10", type: "img", src: "img/walkthisway/berlin/flaneuries/1A600455-9811-48B1-9F52-C883E4828BF9.jpeg", text: "Evening shadows elongating.", size: "size-m" },
+                { time: "18:45", type: "video", src: "img/walkthisway/berlin/flaneuries/1B3F909A-B76C-4767-A8E3-9333CF581B94_3.mov", text: "Watching the street empty out.", size: "size-wide" },
+                { time: "19:30", type: "img", src: "img/walkthisway/berlin/flaneuries/1B0161B8-5933-4804-9DA9-5567E71E2B98.jpeg", text: "Nightfall approaches.", size: "size-xl" },
+                { time: "21:00", type: "img", src: "img/walkthisway/berlin/flaneuries/1BA01F62-7DE3-4A32-9ACF-DA8DCD63D650.jpeg", text: "The end of the route.", size: "size-l" }
             ],
-            spain: []
+            spain: [
+                { time: "10:00", type: "img", src: "img/walkthisway/spain/flaneuries/R1-01880-0027.jpg", text: "Morning light in the plaza.", size: "size-m" }
+            ]
         };
 
         window.changeZoom = (delta) => {
@@ -512,9 +408,7 @@
             currentScale = Math.max(minScale, Math.min(2, currentScale + delta));
             if (currentScale < 1) {
                 document.body.classList.add('is-zoomed');
-                Object.keys(DOM_STATE.projects).forEach(projName => { 
-                    if (!DOM_STATE.projects[projName].built) buildNeighborhood(projName); 
-                });
+                Object.keys(DOM_STATE.projects).forEach(projName => { if (!DOM_STATE.projects[projName].built) buildNeighborhood(projName); });
             } else {
                 document.body.classList.remove('is-zoomed');
             }
@@ -586,8 +480,9 @@
                         
                         let content = `<p>${DOM_STATE.projects[name].description}</p>`;
                         
-                        if (FIELD_NOTES[name] && FIELD_NOTES[name].length > 0) {
-                            content += `<button class="portal-btn" onclick="openFlanerie('${name}')">Flâneries</button>`;
+                        // FLÂNERIES BUTTON LOGIC (Underlined link style, no borders)
+                        if (FIELD_NOTES[name]) {
+                            content += `<button class="portal-btn" onclick="openFlanerie('${name}')">FLÂNERIES</button>`;
                         }
                         
                         desc.innerHTML = content;
@@ -643,13 +538,7 @@
                 };
                 
                 stream.appendChild(wrapper);
-                
-                wrapper.offsetWidth; 
-                requestAnimationFrame(() => { 
-                    wrapper.classList.add('ready-to-move'); 
-                    // Add is-static delay for initial random placements
-                    setTimeout(() => wrapper.classList.add('is-static'), 1500);
-                });
+                wrapper.offsetWidth; requestAnimationFrame(() => { wrapper.classList.add('ready-to-move'); });
                 DOM_STATE.projects[name].elements.push(wrapper);
             });
         }
@@ -678,19 +567,10 @@
                 occupiedRects.push({ l: textStartX - 20, r: textStartX + 350, t: currentTextY - 20, b: currentTextY + 250 });
             }
 
-            shuffleArray(proj.elements);
-            const getSizeClass = (el) => Array.from(el.classList).find(c => c.startsWith('size-'));
-            proj.elements.sort((a, b) => SIZE_AREAS[getSizeClass(b)] - SIZE_AREAS[getSizeClass(a)]);
-
             proj.elements.forEach((wrapper) => {
-                // Remove static class so hover effects don't trigger while it's moving
-                wrapper.classList.remove('is-static');
-                
                 wrapper.style.transform = `rotate(0deg)`; wrapper.style.zIndex = 10; 
                 const w = wrapper.offsetWidth || 130; const h = wrapper.offsetHeight || 130;
-                let found = false; 
-                
-                const gridSearch = getGridSpiral(mainCenterX, mainCenterY, 5);
+                let found = false; const gridSearch = getGridSpiral(mainCenterX, mainCenterY, 10);
 
                 while (!found) {
                     const pos = gridSearch.next().value;
@@ -702,9 +582,6 @@
                         wrapper.style.left = `${testRect.l}px`; wrapper.style.top = `${testRect.t}px`; occupiedRects.push(testRect); found = true;
                     }
                 }
-                
-                // Add the is-static class back exactly when the 1.5s movement animation ends
-                setTimeout(() => { wrapper.classList.add('is-static'); }, 1500);
             });
             updateMapLines();
         }
@@ -732,32 +609,24 @@
             const title = document.getElementById('flanerie-title');
             const content = document.getElementById('flanerie-content');
             
-            title.innerText = `FLÂNERIES: ${cityKey.toUpperCase()}`;
+            title.innerText = `FLÂNERIES: ${cityKey}`;
             content.innerHTML = ''; 
 
             const data = FIELD_NOTES[cityKey] || [];
             
-            data.forEach((note) => {
+            data.forEach((note, index) => {
                 const row = document.createElement('div');
                 row.className = 'archive-row';
                 
-                // Ensure Videos come FIRST so they sit on the left of paired images
-                note.media.sort((a, b) => (a.type === 'video' ? -1 : 1));
+                const sizeClass = note.size || 'size-l'; 
+                const shapeClass = VARIED_SHAPES[Math.floor(Math.random() * VARIED_SHAPES.length)];
 
                 let mediaHTML = '';
-                note.media.forEach((m) => {
-                    const shapeClass = VARIED_SHAPES[Math.floor(Math.random() * VARIED_SHAPES.length)];
-                    const rotClass = ROTATIONS[Math.floor(Math.random() * ROTATIONS.length)];
-                    
-                    const portraitClass = (m.type === 'video') ? 'iphone-video' : '';
-                    const combinedClasses = `${shapeClass} ${rotClass} ${portraitClass}`.trim();
-
-                    if (m.type === 'video') {
-                        mediaHTML += `<video class="${combinedClasses}" src="${m.src}" muted loop autoplay playsinline onclick="openDrawerLightbox('${cityKey}', '${m.src}')"></video>`;
-                    } else {
-                        mediaHTML += `<img class="${combinedClasses}" src="${m.src}" loading="lazy" onclick="openDrawerLightbox('${cityKey}', '${m.src}')">`;
-                    }
-                });
+                if (note.type === 'video') {
+                    mediaHTML = `<video class="${sizeClass} ${shapeClass}" src="${note.src}" muted loop autoplay playsinline onclick="openDrawerLightbox('${cityKey}', ${index})"></video>`;
+                } else {
+                    mediaHTML = `<img class="${sizeClass} ${shapeClass}" src="${note.src}" loading="lazy" onclick="openDrawerLightbox('${cityKey}', ${index})">`;
+                }
 
                 row.innerHTML = `
                     <div class="col-time">${note.time}</div>
@@ -787,16 +656,10 @@
             updateLightbox(); 
         }
 
-        function openDrawerLightbox(cityKey, startSrc) {
+        function openDrawerLightbox(cityKey, index) {
             const data = FIELD_NOTES[cityKey];
-            window.activeLightboxItems = [];
-            data.forEach(note => {
-                note.media.forEach(m => {
-                    window.activeLightboxItems.push({ type: m.type, src: m.src });
-                });
-            });
-            window.currentIndex = window.activeLightboxItems.findIndex(item => item.src.includes(startSrc) || startSrc.includes(item.src));
-            if (window.currentIndex === -1) window.currentIndex = 0;
+            window.activeLightboxItems = data.map(item => ({ type: item.type, src: item.src }));
+            window.currentIndex = index;
             updateLightbox();
         }
 
