@@ -14,7 +14,6 @@
             --river-color: #dcd9d4; 
             --map-ink: #111;
             --highlight: #d93829; 
-            --street-width: 6px; 
         }
 
         body {
@@ -56,7 +55,7 @@
         #viewport:active { cursor: grabbing; }
 
         #map-world {
-            position: absolute; width: 8000px; height: 8000px;
+            position: absolute; width: 15000px; height: 10000px;
             transform-origin: 0 0; transition: transform 0.1s linear;
         }
 
@@ -82,16 +81,13 @@
             opacity: 0;
         }
 
-        .map-river { fill: none; stroke: var(--river-color); stroke-width: 60px; stroke-linejoin: round; stroke-linecap: round; }
-        .map-river-outline { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 62px; stroke-linejoin: round; stroke-linecap: round; }
+        .map-river { fill: none; stroke: var(--river-color); stroke-width: 120px; stroke-linejoin: round; stroke-linecap: round; }
+        .map-river-outline { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 124px; stroke-linejoin: round; stroke-linecap: round; }
         .map-park { fill: var(--building-bg); stroke: none; }
-
-        .transport-line { fill: none; stroke: var(--building-bg); stroke-width: 4px; stroke-linejoin: round; stroke-linecap: round; opacity: 0.9; }
-        .transport-station { fill: var(--map-bg); stroke: var(--building-bg); stroke-width: 3px; }
 
         /* MAP BLOCKS */
         .map-block { position: absolute; z-index: 10; transition: transform 0.3s ease, z-index 0s; }
-        .map-block-inner { width: 100%; height: 100%; background-color: var(--building-bg); cursor: crosshair; }
+        .map-block-inner { width: 100%; height: 100%; background-color: var(--building-bg); cursor: crosshair; position: relative; overflow: hidden; }
         
         .map-block img, .map-block video {
             width: 100%; height: 100%; object-fit: cover; display: block; background-color: #bbb;
@@ -118,7 +114,6 @@
         .shape-step { clip-path: polygon(0 0, 50% 0, 50% 50%, 100% 50%, 100% 100%, 0 100%); }
         .shape-courtyard { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 25%, 75% 25%, 75% 75%, 25% 75%, 25% 25%, 0% 25%); }
         .shape-poly1 { clip-path: polygon(4% 0, 100% 4%, 96% 100%, 0 96%); }
-        .shape-cross { clip-path: polygon(33% 0, 66% 0, 66% 33%, 100% 33%, 100% 66%, 66% 66%, 66% 100%, 33% 100%, 33% 66%, 0 66%, 0 33%, 33% 33%); }
 
         /* MOUSE TOOLTIP */
         #cursor-tooltip {
@@ -192,7 +187,6 @@
             background: #fff; z-index: 10000;
         }
         
-        /* Lightbox Close Button - Matched to logo font */
         #lb-close {
             position: absolute; top: 30px; right: 40px; 
             font-family: 'Courier Prime', monospace; font-size: 1.5rem; font-weight: 400; 
@@ -266,8 +260,8 @@
     </div>
 
     <div id="ui-controls">
-        <button onclick="zoomViaButton(1.3)">+</button>
-        <button onclick="zoomViaButton(0.7)">-</button>
+        <button onclick="zoomViaButton(1.25)">+</button>
+        <button onclick="zoomViaButton(0.8)">-</button>
         <button onclick="resetCameraToFit()">↺</button>
     </div>
 
@@ -325,6 +319,15 @@
 
         const DESCRIPTIONS = { natur: "Photographic and film studies of the natural environment.", berlin: "Observations of the urban sprawl in Berlin.", spain: "Observations across Spain.", escitalopram: "Colectivo Escitalopram está integrado por Vicente Ugarte y Coral Fustero. Surgido al deambular por las calles de Berlín.", casitos: "Architectural observations and structural forms.", selfie: "Self portraits exploring reflection and identity.", uncertainty: "A visual essay on states of uncertainty and transition." };
         
+        const ZONE_COLORS = {
+            berlin: '#e63946',        
+            escitalopram: '#f4a261',  
+            spain: '#2a9d8f',         
+            casitos: '#4361ee',       
+            selfie: '#7209b7',        
+            uncertainty: '#f72585'    
+        };
+
         const FIELD_NOTES = { 
             berlin: [
                 { time: "09:15", media: [{ type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A2950C0-8FDA-4C61-923C-A82D6E3EAAA6.jpeg" }], text: "Morning encounters. The rhythm of the city starts early." }, 
@@ -353,88 +356,48 @@
         const flanerieBtnContainer = document.getElementById('flanerie-btn-container');
         const surveyBox = document.getElementById('survey-box');
         
-        // --- STRICT MAP LIMITS & SIZING ---
-        const GRID_UNIT = 45; 
+        const GRID_UNIT = 160; 
         const STREET_GAP = 6; 
-        const CENTER_GX = 65; 
-        const CENTER_GY = 52;
+        const CENTER_GX = 35; 
+        const CENTER_GY = 25;
         
-        // Hard Boundaries for a perfect landscape map frame
-        const LIMIT_MIN_X = 10;
-        const LIMIT_MAX_X = 120;
-        const LIMIT_MIN_Y = 15;
-        const LIMIT_MAX_Y = 85;
+        const LIMIT_MIN_X = 5;
+        const LIMIT_MAX_X = 65;
+        const LIMIT_MIN_Y = 5;
+        const LIMIT_MAX_Y = 45;
 
         let occupiedGrid = {}; 
+        let generatedBuildings = [];
 
-        // Restored large sizes for dominant images, mixed with smaller organic filler pieces
-        const PHOTO_SIZES = [ 
-            {w: 4, h: 3}, {w: 3, h: 4}, {w: 3, h: 3}, 
-            {w: 3, h: 2}, {w: 2, h: 3}, {w: 2, h: 2} 
-        ];
-        const FILLER_SIZES = [ 
-            {w: 2, h: 2}, {w: 2, h: 1}, {w: 1, h: 2}, {w: 1, h: 1} 
-        ];
-        
-        // Assorted architectural block shapes
-        const ALL_SHAPES = [
-            'shape-block', 'shape-block', 'shape-block', 'shape-block', 
-            'shape-chamfer-tr', 'shape-chamfer-bl', 'shape-slant-top', 'shape-slant-bottom', 
-            'shape-l-left', 'shape-l-right', 'shape-t', 'shape-u', 'shape-step', 'shape-courtyard', 'shape-poly1'
+        const ZONES = [
+            { id: 'berlin', minX: 5, maxX: 30, minY: 5, maxY: 24, sizes: [{w:3,h:3},{w:2,h:2},{w:1,h:2}], shapes: ['shape-block', 'shape-courtyard'], density: 0.9, streetSpacing: 6 },
+            { id: 'escitalopram', minX: 25, maxX: 45, minY: 5, maxY: 24, sizes: [{w:2,h:2},{w:2,h:1},{w:1,h:2}], shapes: ['shape-block', 'shape-u'], density: 0.9, streetSpacing: 5 },
+            { id: 'spain', minX: 45, maxX: 65, minY: 5, maxY: 24, sizes: [{w:2,h:2},{w:1,h:1}], shapes: ['shape-block'], density: 0.95, streetSpacing: 4 },
+            { id: 'casitos', minX: 5, maxX: 30, minY: 26, maxY: 45, sizes: [{w:2,h:2},{w:1,h:1}], shapes: ['shape-block', 'shape-circle-exact'], density: 0.9, streetSpacing: 5 },
+            { id: 'selfie', minX: 25, maxX: 45, minY: 26, maxY: 45, sizes: [{w:2,h:2},{w:1,h:2}], shapes: ['shape-block', 'shape-poly1'], density: 0.9, streetSpacing: 5 },
+            { id: 'uncertainty', minX: 45, maxX: 65, minY: 26, maxY: 45, sizes: [{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-chamfer-tr'], density: 0.9, streetSpacing: 5 }
         ];
 
-        // Specific Plazas/Parks to serve as logical center points for neighborhoods
         const PLACES = [
-            { type: 'square', gx: 30, gy: 30, r: 3 },       // Berlin Plaza
-            { type: 'park', gx: 105, gy: 25, w: 8, h: 5 },  // Spain Gardens
-            { type: 'square', gx: 30, gy: 70, r: 4 },       // Casitos clearings
-            { type: 'park', gx: 105, gy: 65, w: 7, h: 7 },  // Uncertainty Void
-            { type: 'square', gx: 68, gy: 22, r: 3 },       // Selfie Court
-            { type: 'square', gx: 68, gy: 78, r: 3 }        // Escitalopram Center
+            { gx: 15, gy: 14, w: 4, h: 4, shape: 'shape-courtyard', zone: 'berlin' },
+            { gx: 55, gy: 14, w: 4, h: 4, shape: 'shape-block', zone: 'spain' },
+            { gx: 15, gy: 35, w: 5, h: 5, shape: 'shape-circle-exact', zone: 'casitos' },
+            { gx: 55, gy: 35, w: 4, h: 4, shape: 'shape-poly1', zone: 'uncertainty' },
+            { gx: 35, gy: 35, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'selfie' },
+            { gx: 35, gy: 14, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'escitalopram' }
         ];
+
+        for(let i=0; i<15; i++) {
+            let px = LIMIT_MIN_X + Math.floor(Math.random() * (LIMIT_MAX_X - LIMIT_MIN_X - 2));
+            let py = LIMIT_MIN_Y + Math.floor(Math.random() * (LIMIT_MAX_Y - LIMIT_MIN_Y - 2));
+            PLACES.push({ gx: px, gy: py, w: 2, h: 2, shape: Math.random()>0.5?'shape-circle-exact':'shape-block', zone: 'filler', type: 'park' });
+        }
 
         let currentLightboxImages = [];
         let currentLightboxIndex = 0;
         let scale = 1; let pos = { x: 0, y: 0 }; 
 
-        // Sorting by color to keep aesthetics nice
-        function getImageHue(src) {
-            return new Promise((resolve) => {
-                const img = new Image(); 
-                img.crossOrigin = "Anonymous";
-                let fallback = setTimeout(() => resolve(0), 1000); 
-                img.onload = function() {
-                    clearTimeout(fallback);
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    canvas.width = 50; canvas.height = 50; ctx.drawImage(img, 0, 0, 50, 50);
-                    try {
-                        const data = ctx.getImageData(0, 0, 50, 50).data; let r = 0, g = 0, b = 0;
-                        for (let i = 0; i < data.length; i += 4) { r += data[i]; g += data[i+1]; b += data[i+2]; }
-                        r /= (data.length / 4); g /= (data.length / 4); b /= (data.length / 4);
-                        r /= 255; g /= 255; b /= 255;
-                        const max = Math.max(r, g, b), min = Math.min(r, g, b); let h = 0;
-                        if (max === min) h = 0;
-                        else if (max === r) h = (g - b) / (max - min) + (g < b ? 6 : 0);
-                        else if (max === g) h = (b - r) / (max - min) + 2;
-                        else if (max === b) h = (r - g) / (max - min) + 4;
-                        resolve(h * 60);
-                    } catch (e) { resolve(0); }
-                };
-                img.onerror = () => { clearTimeout(fallback); resolve(0); }; 
-                img.src = src;
-            });
-        }
-
-        async function organizeArchiveByColor() {
-            for (const key in ARCHIVE) {
-                const items = ARCHIVE[key];
-                const colorMapped = await Promise.all(items.map(async (src) => ({ src, hue: await getImageHue(src) })));
-                colorMapped.sort((a, b) => a.hue - b.hue);
-                ARCHIVE[key] = colorMapped.map(item => item.src);
-            }
-        }
-
-        function getRiverY(dx) { return Math.sin(dx * 0.15) * 4 + (dx * -0.05); }
+        function getRiverY(dx) { return Math.sin(dx * 0.2) * 2 + (dx * -0.05); }
 
         function isRiverCorridor(gx, gy, w, h) {
             for (let x = 0; x < w; x++) {
@@ -460,160 +423,225 @@
             for(let x = 0; x < w; x++) for(let y = 0; y < h; y++) occupiedGrid[`${gx+x},${gy+y}`] = true;
         }
 
-        async function initCartography() {
-            await organizeArchiveByColor();
-            
+        function initCartography() {
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
 
             const fragment = document.createDocumentFragment();
 
-            // Widely separated Anchors strategically placed to build distinct neighborhoods
-            const anchors = {
-                berlin: { x: 30, y: 30 },           
-                spain: { x: 110, y: 30 },           
-                selfie: { x: 70, y: 25 },     
-                casitos: { x: 30, y: 70 },          
-                uncertainty: { x: 110, y: 70 },     
-                escitalopram: { x: 70, y: 75 }            
-            };
-
             drawSVG_BaseLayers();
-
-            // Step 1: Claim Plazas and Parks so nothing builds on them
-            PLACES.forEach(p => {
-                if (p.type === 'square') {
-                    let w = Math.ceil(p.r * 2); markOccupied(p.gx - Math.floor(w/2), p.gy - Math.floor(w/2), w, w);
-                } else if (p.type === 'park') {
-                    markOccupied(p.gx, p.gy, p.w, p.h);
-                }
-            });
+            drawDiagrammaticDetails(); 
 
             let queues = {};
             for(let k in ARCHIVE) queues[k] = [...ARCHIVE[k]];
 
-            // --- STEP 2: PLACE IMAGES FIRST (Ensures they get large, dominant shapes) ---
-            
-            // A. Natur (Sweeping along the river)
-            let naturQueue = queues['natur'];
-            let currentX = LIMIT_MIN_X;
-            if (naturQueue) {
-                naturQueue.forEach(src => {
-                    let placed = false;
-                    while(!placed && currentX <= LIMIT_MAX_X) {
-                        let rY = Math.floor(CENTER_GY + getRiverY(currentX - CENTER_GX));
-                        let size = PHOTO_SIZES[Math.floor(Math.random() * PHOTO_SIZES.length)];
+            PLACES.forEach(p => {
+                if(isStrictlyWithinBounds(p.gx, p.gy, p.w, p.h) && !isRiverCorridor(p.gx, p.gy, p.w, p.h)) {
+                    markOccupied(p.gx, p.gy, p.w, p.h);
+                    generatedBuildings.push({ x: p.gx, y: p.gy, w: p.w, h: p.h, shape: p.shape, src: null, project: null, zone: p.zone });
+                }
+            });
+
+            for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
+                let rY = Math.floor(CENTER_GY + getRiverY(x - CENTER_GX));
+                if (Math.random() < 0.9) { 
+                    let sizes = [{w:3,h:3}, {w:2,h:3}, {w:3,h:2}, {w:2,h:2}]; 
+                    let s = sizes[Math.floor(Math.random() * sizes.length)];
+                    for (let yOff of [-2, -1, 1, 2].sort(()=>Math.random()-0.5)) {
+                        let checkY = rY + yOff;
+                        if (isStrictlyWithinBounds(x, checkY, s.w, s.h) && !isOccupied(x, checkY, s.w, s.h) && !isRiverCorridor(x, checkY, s.w, s.h)) {
+                            markOccupied(x, checkY, s.w, s.h);
+                            generatedBuildings.push({ x, y: checkY, w: s.w, h: s.h, shape: 'shape-block', src: null, project: null, zone: 'natur' });
+                            x += Math.floor(s.w / 2); 
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
+                for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
+                    let matchingZones = ZONES.filter(z => x >= z.minX && x <= z.maxX && y >= z.minY && y <= z.maxY);
+                    if (matchingZones.length > 0) {
+                        let zone = matchingZones[Math.floor(Math.random() * matchingZones.length)];
                         
-                        // Try offsets around the river line
-                        for (let yOff of [-3, -2, -1, 1, 2, 3].sort(() => Math.random() - 0.5)) {
-                            let checkY = rY + yOff;
-                            if (isStrictlyWithinBounds(currentX, checkY, size.w, size.h) && !isOccupied(currentX, checkY, size.w, size.h)) {
-                                markOccupied(currentX, checkY, size.w, size.h);
-                                let shape = ALL_SHAPES[Math.floor(Math.random() * ALL_SHAPES.length)];
-                                spawnBlock(fragment, {x: currentX, y: checkY, w: size.w, h: size.h, shape: shape, src: src, project: 'natur'});
-                                placed = true;
-                                currentX += Math.floor(size.w / 2); // Move forward organically
-                                break;
-                            }
-                        }
-                        if(!placed) currentX++;
-                    }
-                });
-            }
+                        if (x % zone.streetSpacing === 0 || y % zone.streetSpacing === 0) continue; 
+                        if (isOccupied(x, y, 1, 1)) continue;
 
-            // B. Populate other projects spiraling outward from anchors
-            for (const [project, queue] of Object.entries(queues)) {
-                if (project === 'natur') continue;
-                
-                let cx = anchors[project].x;
-                let cy = anchors[project].y;
-
-                queue.forEach(src => {
-                    let placed = false;
-                    let radius = 0;
-                    let size = PHOTO_SIZES[Math.floor(Math.random() * PHOTO_SIZES.length)];
-
-                    while (!placed && radius < 40) { 
-                        for (let dx = -radius; dx <= radius; dx++) {
-                            for (let dy = -radius; dy <= radius; dy++) {
-                                if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
-                                let checkX = cx + dx; let checkY = cy + dy;
-                                
-                                if (isStrictlyWithinBounds(checkX, checkY, size.w, size.h) && !isOccupied(checkX, checkY, size.w, size.h) && !isRiverCorridor(checkX, checkY, size.w, size.h)) {
-                                    markOccupied(checkX, checkY, size.w, size.h);
-                                    let shape = (Math.random() > 0.8) ? 'shape-circle-exact' : ALL_SHAPES[Math.floor(Math.random() * ALL_SHAPES.length)];
-                                    spawnBlock(fragment, {x: checkX, y: checkY, w: size.w, h: size.h, shape: shape, src: src, project: project});
-                                    placed = true; 
-                                    break;
-                                }
-                            }
-                            if(placed) break;
-                        }
-                        radius++;
-                    }
-                });
-            }
-
-            // --- STEP 3: FILL THE REST OF THE CITY (Organic Sprawl) ---
-            for(let pass = 0; pass < FILLER_SIZES.length; pass++) {
-                let fw = FILLER_SIZES[pass].w;
-                let fh = FILLER_SIZES[pass].h;
-                
-                for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
-                    for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
-                        if (isStrictlyWithinBounds(x, y, fw, fh) && !isOccupied(x, y, fw, fh)) {
+                        for (let s of zone.sizes) {
                             let valid = true;
-                            for(let ix=0; ix<fw; ix++) {
-                                for(let iy=0; iy<fh; iy++) {
-                                    if(isRiverCorridor(x+ix, y+iy, 1, 1)) { valid = false; break; } 
+                            if (!isStrictlyWithinBounds(x, y, s.w, s.h)) valid = false;
+                            if (valid) {
+                                for(let ix=0; ix < s.w; ix++) {
+                                    for(let iy=0; iy < s.h; iy++) {
+                                        let checkX = x + ix; let checkY = y + iy;
+                                        if (checkX % zone.streetSpacing === 0 || checkY % zone.streetSpacing === 0 || isOccupied(checkX, checkY, 1, 1) || isRiverCorridor(checkX, checkY, 1, 1)) {
+                                            valid = false; break;
+                                        }
+                                    }
+                                    if(!valid) break;
                                 }
-                                if(!valid) break;
                             }
-                            if(valid) {
-                                // 75% probability leaves organic gaps (alleys, small open areas)
-                                if (Math.random() < 0.75) {
-                                    markOccupied(x, y, fw, fh);
-                                    let shape = ALL_SHAPES[Math.floor(Math.random() * ALL_SHAPES.length)];
-                                    spawnBlock(fragment, {x: x, y: y, w: fw, h: fh, shape: shape, src: null, project: null});
-                                } else {
-                                    // Ghost mark to leave a permanent gap (a street/alley)
-                                    markOccupied(x, y, fw, fh);
+                            if (valid) {
+                                if (Math.random() < zone.density) {
+                                    markOccupied(x, y, s.w, s.h);
+                                    let shape = zone.shapes[Math.floor(Math.random() * zone.shapes.length)];
+                                    generatedBuildings.push({ x, y, w: s.w, h: s.h, shape, src: null, project: null, zone: zone.id });
                                 }
+                                break; 
                             }
                         }
                     }
                 }
             }
 
+            for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
+                for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
+                    if (isStrictlyWithinBounds(x, y, 1, 1) && !isOccupied(x, y, 1, 1) && !isRiverCorridor(x, y, 1, 1)) {
+                        if (Math.random() < 0.9) {
+                            markOccupied(x, y, 1, 1);
+                            generatedBuildings.push({ x, y, w: 1, h: 1, shape: 'shape-block', src: null, project: null, zone: 'filler' });
+                        }
+                    }
+                }
+            }
+            
+            let naturQueue = queues['natur'];
+            if (naturQueue && naturQueue.length > 0) {
+                let emptyNatur = generatedBuildings.filter(b => !b.src && b.zone === 'natur');
+                emptyNatur.sort((a, b) => {
+                    let areaA = a.w * a.h; let areaB = b.w * b.h;
+                    if (areaA !== areaB) return areaB - areaA;
+                    return a.x - b.x;
+                });
+                naturQueue.forEach((src, idx) => {
+                    if(emptyNatur[idx]) { emptyNatur[idx].src = src; emptyNatur[idx].project = 'natur'; }
+                });
+            }
+
+            let anchors = {};
+            PLACES.forEach(p => { if (p.zone !== 'filler') anchors[p.zone] = {x: p.gx, y: p.gy}; });
+
+            for (const [project, queue] of Object.entries(queues)) {
+                if (project === 'natur') continue;
+                
+                let cx = anchors[project] ? anchors[project].x : 0;
+                let cy = anchors[project] ? anchors[project].y : 0;
+                let emptyZone = generatedBuildings.filter(b => !b.src && b.zone === project);
+
+                emptyZone.sort((a, b) => {
+                    let areaA = a.w * a.h; let areaB = b.w * b.h;
+                    let distA = Math.hypot((a.x + a.w/2) - cx, (a.y + a.h/2) - cy);
+                    let distB = Math.hypot((b.x + b.w/2) - cx, (b.y + b.h/2) - cy);
+                    
+                    let scoreA = distA - (areaA * 0.1); 
+                    let scoreB = distB - (areaB * 0.1);
+                    return scoreA - scoreB;
+                });
+
+                queue.forEach((src, idx) => {
+                    if (emptyZone[idx]) { emptyZone[idx].src = src; emptyZone[idx].project = project; }
+                });
+            }
+
+            generatedBuildings.forEach(b => { spawnBlock(fragment, b); });
             drawTransportLines(anchors);
             assets.appendChild(fragment);
-            
             drawCityBounds();
-            resetCameraToFit();
+            resetCameraToFit(); 
+        }
+
+        function drawDiagrammaticDetails() {
+            for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
+                for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
+                    if (x % 3 === 0 && y % 3 === 0) { 
+                        let cx = x * (GRID_UNIT + STREET_GAP) - (STREET_GAP/2);
+                        let cy = y * (GRID_UNIT + STREET_GAP) - (STREET_GAP/2);
+                        const cross = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        cross.setAttribute("d", `M ${cx-6},${cy} L ${cx+6},${cy} M ${cx},${cy-6} L ${cx},${cy+6}`);
+                        cross.setAttribute("stroke", "var(--map-ink)");
+                        cross.setAttribute("stroke-width", "1");
+                        cross.setAttribute("opacity", "0.3");
+                        baseLayer.appendChild(cross);
+                    }
+                }
+            }
+
+            ZONES.forEach(z => {
+                let px = z.minX * (GRID_UNIT + STREET_GAP);
+                let py = z.minY * (GRID_UNIT + STREET_GAP);
+                let pw = (z.maxX - z.minX + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+                let ph = (z.maxY - z.minY + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+                const zColor = ZONE_COLORS[z.id] || "var(--map-ink)";
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", px); rect.setAttribute("y", py);
+                rect.setAttribute("width", pw); rect.setAttribute("height", ph);
+                rect.setAttribute("fill", "none");
+                rect.setAttribute("stroke", zColor);
+                rect.setAttribute("stroke-width", "1");
+                rect.setAttribute("stroke-dasharray", "4 6");
+                rect.setAttribute("opacity", "0.4");
+                surveyorLayer.appendChild(rect);
+
+                const s = 30; 
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", `
+                    M ${px},${py+s} L ${px},${py} L ${px+s},${py}
+                    M ${px+pw-s},${py} L ${px+pw},${py} L ${px+pw},${py+s}
+                    M ${px},${py+ph-s} L ${px},${py+ph} L ${px+s},${py+ph}
+                    M ${px+pw-s},${py+ph} L ${px+pw},${py+ph} L ${px+pw},${py+ph-s}
+                `);
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke", zColor);
+                path.setAttribute("stroke-width", "2");
+                path.setAttribute("opacity", "0.6");
+                surveyorLayer.appendChild(path);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", px + 15); text.setAttribute("y", py + 30);
+                text.setAttribute("fill", zColor);
+                text.setAttribute("font-family", "'Courier Prime', monospace");
+                text.setAttribute("font-size", "14px");
+                text.setAttribute("font-weight", "bold");
+                text.setAttribute("opacity", "0.8");
+                text.textContent = `SEC_NODE:[${z.id.toUpperCase()}]`;
+                surveyorLayer.appendChild(text);
+            });
         }
 
         function drawSVG_BaseLayers() {
             const gridToPx = (gx, gy) => ({ x: gx * GRID_UNIT + (gx * STREET_GAP) + (GRID_UNIT / 2), y: gy * GRID_UNIT + (gy * STREET_GAP) + (GRID_UNIT / 2) });
             
-            // Plazas & Parks
+            let pxMin = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP);
+            let pyMin = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
+            let pWidth = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+            let pHeight = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+            
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            defs.innerHTML = `<clipPath id="map-clip"><rect x="${pxMin}" y="${pyMin}" width="${pWidth}" height="${pHeight}" /></clipPath>`;
+            baseLayer.appendChild(defs);
+            baseLayer.style.clipPath = "url(#map-clip)";
+
             PLACES.forEach(p => {
-                if (p.type === 'square') {
-                    const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    circ.className.baseVal = "map-park";
-                    let pt = gridToPx(p.gx, p.gy);
-                    circ.setAttribute("cx", pt.x); circ.setAttribute("cy", pt.y); circ.setAttribute("r", p.r * (GRID_UNIT + STREET_GAP));
-                    baseLayer.appendChild(circ);
-                } else if (p.type === 'park') {
-                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                    rect.className.baseVal = "map-park";
-                    let x = p.gx * GRID_UNIT + (p.gx * STREET_GAP); let y = p.gy * GRID_UNIT + (p.gy * STREET_GAP);
-                    let w = p.w * GRID_UNIT + (p.w - 1) * STREET_GAP; let h = p.h * GRID_UNIT + (p.h - 1) * STREET_GAP;
-                    rect.setAttribute("x", x); rect.setAttribute("y", y); rect.setAttribute("width", w); rect.setAttribute("height", h);
-                    baseLayer.appendChild(rect);
+                if (p.type === 'park') {
+                    if (p.shape === 'shape-circle-exact') {
+                        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circ.className.baseVal = "map-park";
+                        let pt = gridToPx(p.gx, p.gy);
+                        circ.setAttribute("cx", pt.x); circ.setAttribute("cy", pt.y); circ.setAttribute("r", p.w/2 * (GRID_UNIT + STREET_GAP));
+                        baseLayer.appendChild(circ);
+                    } else {
+                        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                        rect.className.baseVal = "map-park";
+                        let x = p.gx * GRID_UNIT + (p.gx * STREET_GAP); let y = p.gy * GRID_UNIT + (p.gy * STREET_GAP);
+                        let w = p.w * GRID_UNIT + (p.w - 1) * STREET_GAP; let h = p.h * GRID_UNIT + (p.h - 1) * STREET_GAP;
+                        rect.setAttribute("x", x); rect.setAttribute("y", y); rect.setAttribute("width", w); rect.setAttribute("height", h);
+                        baseLayer.appendChild(rect);
+                    }
                 }
             });
 
-            // River
             const rPoints = [];
             for (let dx = -100; dx <= 100; dx += 2) {
                 let gx = CENTER_GX + dx; let gy = CENTER_GY + getRiverY(dx);
@@ -636,26 +664,56 @@
             const gridToPx = (gx, gy) => ({ x: gx * GRID_UNIT + (gx * STREET_GAP) + (GRID_UNIT / 2), y: gy * GRID_UNIT + (gy * STREET_GAP) + (GRID_UNIT / 2) });
             const center = gridToPx(CENTER_GX, CENTER_GY);
             
-            const drawSchematicLine = (points) => {
-                const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-                poly.className.baseVal = "transport-line"; poly.setAttribute("points", points.map(p => `${p.x},${p.y}`).join(" "));
-                transportLayer.appendChild(poly);
-            };
-
-            const drawStation = (p) => {
-                const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circ.className.baseVal = "transport-station"; circ.setAttribute("cx", p.x); circ.setAttribute("cy", p.y); circ.setAttribute("r", 7);
-                transportLayer.appendChild(circ);
-            };
-
             let pxAnchors = {};
             for(let p in anchors) pxAnchors[p] = gridToPx(anchors[p].x, anchors[p].y);
 
-            let schematicSpain = { x: pxAnchors.spain.x - (pxAnchors.spain.y - center.y), y: center.y }; 
-            drawSchematicLine([ pxAnchors.uncertainty, pxAnchors.spain, schematicSpain, center, pxAnchors.berlin, pxAnchors.casitos ]);
-            drawSchematicLine([ center, pxAnchors.selfie ]);
+            // Colored elegant Bezier curves instead of 90-degree lines
+            for(let k in pxAnchors) {
+                let p = pxAnchors[k];
+                let color = ZONE_COLORS[k] || "var(--map-ink)";
+                
+                // Creates a smooth S-curve connecting the central hub to the specific project plaza
+                let ctrlX = center.x + (p.x - center.x) * 0.5;
+                let d = `M ${center.x},${center.y} C ${ctrlX},${center.y} ${ctrlX},${p.y} ${p.x},${p.y}`;
+                
+                const poly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                poly.setAttribute("d", d);
+                poly.setAttribute("fill", "none");
+                poly.setAttribute("stroke", color);
+                poly.setAttribute("stroke-width", "8"); // Much thicker line
+                poly.setAttribute("stroke-dasharray", "24 16"); // Larger dashed pattern
+                poly.setAttribute("stroke-linecap", "round");
+                poly.setAttribute("opacity", "0.9");
+                transportLayer.appendChild(poly);
+                
+                // Diagrammatic station points
+                const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circ.setAttribute("cx", p.x); circ.setAttribute("cy", p.y); circ.setAttribute("r", 16); // Larger station circle
+                circ.setAttribute("fill", "var(--map-bg)");
+                circ.setAttribute("stroke", color);
+                circ.setAttribute("stroke-width", "4");
+                
+                const innerCirc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                innerCirc.setAttribute("cx", p.x); innerCirc.setAttribute("cy", p.y); innerCirc.setAttribute("r", 6); // Larger inner dot
+                innerCirc.setAttribute("fill", color);
+                
+                transportLayer.appendChild(circ);
+                transportLayer.appendChild(innerCirc);
+            }
 
-            [center, pxAnchors.berlin, pxAnchors.spain, pxAnchors.casitos, pxAnchors.uncertainty, pxAnchors.selfie].forEach(drawStation);
+            // Central diagrammatic hub
+            const centerNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            centerNode.setAttribute("x", center.x - 16); centerNode.setAttribute("y", center.y - 16);
+            centerNode.setAttribute("width", 32); centerNode.setAttribute("height", 32);
+            centerNode.setAttribute("fill", "var(--map-bg)");
+            centerNode.setAttribute("stroke", "var(--map-ink)"); centerNode.setAttribute("stroke-width", "4");
+            transportLayer.appendChild(centerNode);
+
+            const centerDot = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            centerDot.setAttribute("x", center.x - 6); centerDot.setAttribute("y", center.y - 6);
+            centerDot.setAttribute("width", 12); centerDot.setAttribute("height", 12);
+            centerDot.setAttribute("fill", "var(--map-ink)");
+            transportLayer.appendChild(centerDot);
         }
 
         function drawCityBounds() {
@@ -670,31 +728,33 @@
             const outerRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             outerRect.setAttribute("x", px); outerRect.setAttribute("y", py);
             outerRect.setAttribute("width", pw); outerRect.setAttribute("height", ph);
-            outerRect.setAttribute("fill", "none"); outerRect.setAttribute("stroke", "var(--map-ink)"); outerRect.setAttribute("stroke-width", "4");
+            outerRect.setAttribute("fill", "none"); outerRect.setAttribute("stroke", "var(--map-ink)"); 
+            outerRect.setAttribute("stroke-width", "16"); 
 
-            const padding = 15; 
+            const padding = 20; 
             const innerRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             innerRect.setAttribute("x", px + padding); innerRect.setAttribute("y", py + padding);
             innerRect.setAttribute("width", pw - (padding * 2)); innerRect.setAttribute("height", ph - (padding * 2));
             innerRect.setAttribute("fill", "none"); innerRect.setAttribute("stroke", "var(--map-ink)");
-            innerRect.setAttribute("stroke-width", "1.5"); innerRect.setAttribute("stroke-dasharray", "8 6");
+            innerRect.setAttribute("stroke-width", "3");
+            innerRect.setAttribute("stroke-dasharray", "10 8");
 
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", px + padding + 15); text.setAttribute("y", py + padding + 30); 
-            text.setAttribute("fill", "var(--map-ink)"); text.setAttribute("font-size", "28px");
+            text.setAttribute("x", px + padding + 15); text.setAttribute("y", py + padding + 35); 
+            text.setAttribute("fill", "var(--map-ink)"); text.setAttribute("font-size", "34px");
             text.setAttribute("font-family", "Georgia, 'Times New Roman', serif");
-            text.setAttribute("font-style", "italic"); text.setAttribute("font-weight", "normal"); 
+            text.setAttribute("font-style", "italic"); text.setAttribute("font-weight", "bold"); 
             text.textContent = "I.";
 
             boundsGroup.appendChild(outerRect); boundsGroup.appendChild(innerRect); boundsGroup.appendChild(text);
             surveyorLayer.appendChild(boundsGroup);
         }
 
-        function spawnBlock(container, b) {
-            let px = b.x * GRID_UNIT + (b.x * STREET_GAP); 
-            let py = b.y * GRID_UNIT + (b.y * STREET_GAP);
-            let pw = b.w * GRID_UNIT + ((b.w-1) * STREET_GAP); 
-            let ph = b.h * GRID_UNIT + ((b.h-1) * STREET_GAP);
+        function spawnBlock(container, buildingData) {
+            let px = buildingData.x * GRID_UNIT + (buildingData.x * STREET_GAP); 
+            let py = buildingData.y * GRID_UNIT + (buildingData.y * STREET_GAP);
+            let pw = buildingData.w * GRID_UNIT + ((buildingData.w-1) * STREET_GAP); 
+            let ph = buildingData.h * GRID_UNIT + ((buildingData.h-1) * STREET_GAP);
 
             const wrapper = document.createElement('div');
             wrapper.className = `map-block`; 
@@ -702,15 +762,16 @@
             wrapper.style.width = `${pw}px`; wrapper.style.height = `${ph}px`;
 
             const inner = document.createElement('div');
-            inner.className = `map-block-inner ${b.shape}`;
+            inner.className = `map-block-inner ${buildingData.shape}`;
 
-            if (b.src) {
-                wrapper.dataset.project = b.project;
+            if (buildingData.src) {
+                wrapper.dataset.project = buildingData.project;
                 const img = document.createElement('img'); 
-                img.src = b.src; 
-                img.setAttribute('loading', 'lazy'); img.setAttribute('decoding', 'async'); 
+                img.src = buildingData.src; 
+                img.setAttribute('loading', 'lazy'); 
+                img.setAttribute('decoding', 'async'); 
                 inner.appendChild(img);
-                wrapper.onmouseenter = () => activateProject(b.project);
+                wrapper.onmouseenter = () => activateProject(buildingData.project);
             } else {
                 const filler = document.createElement('div'); 
                 filler.className = 'filler-bg'; 
@@ -742,10 +803,19 @@
                 surveyBox.setAttribute('x', minX - pad); surveyBox.setAttribute('y', minY - pad);
                 surveyBox.setAttribute('width', (maxX - minX) + (pad*2)); surveyBox.setAttribute('height', (maxY - minY) + (pad*2));
                 surveyBox.style.opacity = 1;
+                
+                if(ZONE_COLORS[project]) {
+                    surveyBox.style.stroke = ZONE_COLORS[project];
+                    surveyBox.style.fill = ZONE_COLORS[project] + "10"; 
+                } else {
+                    surveyBox.style.stroke = "var(--map-ink)";
+                    surveyBox.style.fill = "rgba(217, 56, 41, 0.03)";
+                }
             }
 
             tooltip.innerText = project; tooltip.style.opacity = 1;
             infoTitle.innerText = project; infoDesc.innerText = DESCRIPTIONS[project] || "";
+            infoTitle.style.borderBottomColor = ZONE_COLORS[project] || "var(--highlight)";
             
             flanerieBtnContainer.innerHTML = '';
             if (FIELD_NOTES[project] && FIELD_NOTES[project].length > 0) {
@@ -766,7 +836,6 @@
             infoPanel.classList.add('active');
         }
 
-        // --- LIGHTBOX NAVIGATION LOGIC ---
         function openLightbox(index) { 
             if(currentLightboxImages.length === 0) return;
             currentLightboxIndex = index;
@@ -856,20 +925,23 @@
 
         function applyZoom(factor, pointerX, pointerY) {
             const mapX = (pointerX - pos.x) / scale; const mapY = (pointerY - pos.y) / scale;
-            scale = Math.max(0.15, Math.min(3.5, scale * factor));
+            scale = Math.max(0.01, Math.min(5.0, scale * factor));
             pos.x = pointerX - (mapX * scale); pos.y = pointerY - (mapY * scale); updateCamera();
         }
 
         function resetCameraToFit() {
-            let px = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP); let py = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
-            let pw = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
-            let ph = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+            let pw = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP);
+            let ph = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP);
             
-            let cx = px + (pw / 2); let cy = py + (ph / 2);
+            let px = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP); 
+            let py = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
+            let cx = px + (pw / 2); 
+            let cy = py + (ph / 2);
             
-            // Reduced scale calculation further (0.65) to zoom out more, giving extra breathing room around the site title.
-            scale = Math.min((window.innerWidth * 0.65) / pw, (window.innerHeight * 0.65) / ph, 1.2); 
-            pos.x = (window.innerWidth / 2) - (cx * scale); pos.y = (window.innerHeight / 2) - (cy * scale);
+            scale = Math.min((window.innerWidth * 0.9) / pw, (window.innerHeight * 0.9) / ph); 
+            
+            pos.x = (window.innerWidth / 2) - (cx * scale); 
+            pos.y = (window.innerHeight / 2) - (cy * scale);
             updateCamera();
         }
 
@@ -923,7 +995,7 @@
                 let pointerX = (e.touches[0].clientX + e.touches[1].clientX) / 2; let pointerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 
                 const mapX = (pointerX - pos.x) / scale; const mapY = (pointerY - pos.y) / scale;
-                scale = Math.max(0.15, Math.min(3.5, initialScale * factor));
+                scale = Math.max(0.01, Math.min(5.0, initialScale * factor));
                 pos.x = pointerX - (mapX * scale); pos.y = pointerY - (mapY * scale);
                 
                 if (!ticking) { window.requestAnimationFrame(() => { updateCamera(); ticking = false; }); ticking = true; }
