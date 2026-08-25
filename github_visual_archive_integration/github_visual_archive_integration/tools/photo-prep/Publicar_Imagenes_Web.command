@@ -21,12 +21,8 @@ set -uo pipefail
 
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
-
-# The command lives in tools/photo-prep/, so the repository is two levels up.
-cd "$SCRIPT_DIR/../.." || exit 1
-REPO_ROOT="$(pwd -P)"
-
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SOURCE="$REPO_ROOT/img_originales"
 OUTPUT_DIR="$REPO_ROOT/img"
 
@@ -39,17 +35,6 @@ mkdir -p "$SUPPORT_DIR"
 
 RUN_DATE="$(date '+%Y-%m-%d_%H-%M-%S')"
 LOG_FILE="$SUPPORT_DIR/GitHub_${RUN_DATE}.tsv"
-
-printf "\n=== Portfolio · rutas detectadas ===\n"
-printf "Script:      %s\n" "$SCRIPT_DIR"
-printf "Repositorio: %s\n" "$REPO_ROOT"
-printf "Origen:      %s\n" "$SOURCE"
-printf "Destino:     %s\n\n" "$OUTPUT_DIR"
-
-if [[ "$SOURCE" != /* || "$OUTPUT_DIR" != /* ]]; then
-  echo "ERROR: las rutas no son absolutas."
-  exit 1
-fi
 
 show_error() {
   /usr/bin/osascript - "$1" <<'APPLESCRIPT' >/dev/null
@@ -136,7 +121,6 @@ ensure_brew_pkg() {
 
 MAGICK_BIN="$(ensure_brew_pkg imagemagick bin/magick)"
 EXIFTOOL_BIN="$(ensure_brew_pkg exiftool bin/exiftool)"
-FFMPEG_BIN="$(ensure_brew_pkg ffmpeg bin/ffmpeg)"
 
 SIZE_CHOICE="$(choose_from_list \
   "Portfolio · Preparar imágenes" \
@@ -194,21 +178,15 @@ printf "estado\torigen\tsalida\tdetalle\n" > "$LOG_FILE"
 processed=0
 failed=0
 
-while IFS= read -r -d '' REL; do
-  REL="${REL#./}"
-  SOURCE_FILE="$SOURCE/$REL"
-
-  # Canonicalize from the parent directory. This prevents accidental
-  # loss of /Users/... or any other prefix before handing the file to FFmpeg.
-  SOURCE_PARENT="$(cd "$(dirname "$SOURCE_FILE")" >/dev/null 2>&1 && pwd -P)"
-  SOURCE_FILE="$SOURCE_PARENT/$(basename "$SOURCE_FILE")"
+while IFS= read -r -d '' SOURCE_FILE; do
+  REL="${SOURCE_FILE#$SOURCE/}"
   DIR="$(dirname "$REL")"
   NAME="$(basename "$REL")"
   EXT="${NAME##*.}"
   EXT_LOWER="$(printf '%s' "$EXT" | tr '[:upper:]' '[:lower:]')"
 
   case "$EXT_LOWER" in
-    jpg|jpeg|png|webp|heic|heif|tif|tiff|mp4|mov|m4v) ;;
+    jpg|jpeg|png|webp|heic|heif|tif|tiff) ;;
     *) continue ;;
   esac
 
@@ -221,65 +199,7 @@ while IFS= read -r -d '' REL; do
 
   STEM="${NAME%.*}"
 
-  # ------------------------------------------------------------
-  # VIDEO
-  # ------------------------------------------------------------
-  if [[ "$EXT_LOWER" == "mp4" || "$EXT_LOWER" == "mov" || "$EXT_LOWER" == "m4v" ]]; then
-    OUT="$DEST_DIR/$STEM.mp4"
-
-    printf "Procesando vídeo: %s\n" "$REL"
-    printf "FFmpeg mostrará el progreso debajo. Los vídeos largos pueden tardar varios minutos.\n"
-    printf "Ruta que recibirá FFmpeg: %s\n" "$SOURCE_FILE"
-
-    # H.264 + AAC is broadly supported by browsers/GitHub Pages.
-    # Scale only when needed; preserve aspect ratio and make dimensions even.
-    VIDEO_ERROR_FILE="$SUPPORT_DIR/ffmpeg_${RUN_DATE}_$(printf '%s' "$STEM" | tr '/ :' '___').log"
-    printf "Ruta shell-safe: "
-    printf "%q\n" "$SOURCE_FILE"
-
-    # Robust browser conversion:
-    # - explicitly maps the first video stream
-    # - audio is optional (some Super8 scans have none)
-    # - limits the longest side to MAX_SIZE without enlarging
-    # - forces even pixel dimensions required by H.264
-    # - strips metadata
-    "$FFMPEG_BIN" -hide_banner -y -stats \
-      -i "$SOURCE_FILE" \
-      -map 0:v:0 \
-      -map 0:a:0? \
-      -map_metadata -1 \
-      -vf "scale=w='if(gte(iw,ih),min(iw,${MAX_SIZE}),-2)':h='if(lt(iw,ih),min(ih,${MAX_SIZE}),-2)',scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" \
-      -c:v libx264 \
-      -profile:v high \
-      -level 4.1 \
-      -preset veryfast \
-      -crf 24 \
-      -movflags +faststart \
-      -c:a aac \
-      -b:a 128k \
-      "$OUT" \
-      2> >(tee "$VIDEO_ERROR_FILE" >&2)
-
-    status=$?
-
-    if [[ $status -ne 0 || ! -s "$OUT" ]]; then
-      failed=$((failed + 1))
-      printf "ERROR\t%s\t%s\tffmpeg; ver %s\n" "$SOURCE_FILE" "$OUT" "$VIDEO_ERROR_FILE" >> "$LOG_FILE"
-      printf "\nERROR EN VÍDEO: %s\n" "$REL"
-      printf "Detalles: %s\n" "$VIDEO_ERROR_FILE"
-      rm -f "$OUT"
-      continue
-    fi
-
-    # If conversion worked, discard the temporary ffmpeg log.
-    rm -f "$VIDEO_ERROR_FILE"
-
-    printf "OK\t%s\t%s\tvideo web H.264\n" "$SOURCE_FILE" "$OUT" >> "$LOG_FILE"
-    processed=$((processed + 1))
-    continue
-  fi
-
-  # Preserve website-friendly image extensions where possible.
+  # Preserve website-friendly extensions where possible.
   case "$EXT_LOWER" in
     jpg|jpeg)
       OUT="$DEST_DIR/$NAME"
@@ -301,13 +221,6 @@ while IFS= read -r -d '' REL; do
   esac
 
   printf "Procesando: %s\n" "$REL"
-
-  if [[ ! -f "$SOURCE_FILE" ]]; then
-    failed=$((failed + 1))
-    printf "ERROR\t%s\t\tarchivo de origen no encontrado\n" "$SOURCE_FILE" >> "$LOG_FILE"
-    printf "ERROR: no existe el archivo de origen:\n%s\n" "$SOURCE_FILE"
-    continue
-  fi
 
   status=0
 
@@ -379,10 +292,7 @@ while IFS= read -r -d '' REL; do
   printf "OK\t%s\t%s\tcaras modificadas: %s\n" "$SOURCE_FILE" "$OUT" "$FACE_COUNT" >> "$LOG_FILE"
   processed=$((processed + 1))
 
-done < <(
-  cd "$SOURCE" || exit 1
-  find . -type f -print0
-)
+done < <(find "$SOURCE" -type f -print0)
 
 osascript - "$processed" "$failed" "$OUTPUT_DIR" <<'APPLESCRIPT'
 on run argv
@@ -391,13 +301,10 @@ on run argv
 Procesadas: " & item 1 of argv & "
 Errores: " & item 2 of argv & "
 
-Fotos y vídeos web:
+Copias web:
 " & item 3 of argv & "
 
-Solo la carpeta img/ debe subirse a GitHub. Conserva img_originales/ fuera de Git.
-
-Si algún vídeo falla, el programa deja un registro de FFmpeg en:
-~/Library/Application Support/PreparadorFotosInternet/" with title "Portfolio · Preparar imágenes" buttons {"Aceptar"} default button "Aceptar"
+Solo la carpeta img/ debe subirse a GitHub. Conserva img_originales/ fuera de Git." with title "Portfolio · Preparar imágenes" buttons {"Aceptar"} default button "Aceptar"
 end run
 APPLESCRIPT
 
