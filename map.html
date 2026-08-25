@@ -55,7 +55,7 @@
         #viewport:active { cursor: grabbing; }
 
         #map-world {
-            position: absolute; width: 15000px; height: 10000px;
+            position: absolute; width: 18000px; height: 12000px;
             transform-origin: 0 0; transition: transform 0.1s linear;
         }
 
@@ -81,8 +81,8 @@
             opacity: 0;
         }
 
-        .map-river { fill: none; stroke: var(--river-color); stroke-width: 120px; stroke-linejoin: round; stroke-linecap: round; }
-        .map-river-outline { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 124px; stroke-linejoin: round; stroke-linecap: round; }
+        .map-river { fill: none; stroke: var(--river-color); stroke-width: 140px; stroke-linejoin: round; stroke-linecap: round; }
+        .map-river-outline { fill: none; stroke: rgba(0,0,0,0.08); stroke-width: 144px; stroke-linejoin: round; stroke-linecap: round; }
         .map-park { fill: var(--building-bg); stroke: none; }
 
         /* MAP BLOCKS */
@@ -328,6 +328,14 @@
             uncertainty: '#f72585'    
         };
 
+        // --- CUSTOMIZABLE CONNECTIONS ---
+        const CONNECTIONS = [
+            { from: 'casitos', to: 'berlin', color: '#4361ee', thickness: '16', dash: '40 50' },
+            { from: 'spain', to: 'uncertainty', color: '#2a9d8f', thickness: '16', dash: '40 50' },
+            { from: 'escitalopram', to: 'berlin', color: '#f4a261', thickness: '16', dash: '40 50' },
+            { from: 'selfie', to: 'escitalopram', color: '#7209b7', thickness: '16', dash: '40 50' }
+        ];
+
         const FIELD_NOTES = { 
             berlin: [
                 { time: "09:15", media: [{ type: "img", src: "img/photography/walkthisway/berlin/flaneries/1A2950C0-8FDA-4C61-923C-A82D6E3EAAA6.jpeg" }], text: "Morning encounters. The rhythm of the city starts early." }, 
@@ -356,41 +364,50 @@
         const flanerieBtnContainer = document.getElementById('flanerie-btn-container');
         const surveyBox = document.getElementById('survey-box');
         
+        // --- EXACT ORIGINAL BOUNDARIES & STATIC GRID ---
         const GRID_UNIT = 160; 
-        const STREET_GAP = 6; 
-        const CENTER_GX = 35; 
-        const CENTER_GY = 25;
+        const STREET_GAP = 8; // Restored solid grid structure
+        const CENTER_GX = 42; 
+        const CENTER_GY = 27;
         
-        const LIMIT_MIN_X = 5;
-        const LIMIT_MAX_X = 65;
-        const LIMIT_MIN_Y = 5;
-        const LIMIT_MAX_Y = 45;
+        const LIMIT_MIN_X = 2;
+        const LIMIT_MAX_X = 85;
+        const LIMIT_MIN_Y = 2;
+        const LIMIT_MAX_Y = 60; 
+
+        // Restored straightforward pixel coordinates
+        const getPosX = (x) => x * (GRID_UNIT + STREET_GAP);
+        const getPosY = (y) => y * (GRID_UNIT + STREET_GAP);
+        const getSpanX = (x, w) => w * GRID_UNIT + (w - 1) * STREET_GAP;
+        const getSpanY = (y, h) => h * GRID_UNIT + (h - 1) * STREET_GAP;
 
         let occupiedGrid = {}; 
         let generatedBuildings = [];
 
+        // Zones use massive multi-block units, ensuring images populate perfectly without slicing
         const ZONES = [
-            { id: 'berlin', minX: 5, maxX: 30, minY: 5, maxY: 24, sizes: [{w:3,h:3},{w:2,h:2},{w:1,h:2}], shapes: ['shape-block', 'shape-courtyard'], density: 0.9, streetSpacing: 6 },
-            { id: 'escitalopram', minX: 25, maxX: 45, minY: 5, maxY: 24, sizes: [{w:2,h:2},{w:2,h:1},{w:1,h:2}], shapes: ['shape-block', 'shape-u'], density: 0.9, streetSpacing: 5 },
-            { id: 'spain', minX: 45, maxX: 65, minY: 5, maxY: 24, sizes: [{w:2,h:2},{w:1,h:1}], shapes: ['shape-block'], density: 0.95, streetSpacing: 4 },
-            { id: 'casitos', minX: 5, maxX: 30, minY: 26, maxY: 45, sizes: [{w:2,h:2},{w:1,h:1}], shapes: ['shape-block', 'shape-circle-exact'], density: 0.9, streetSpacing: 5 },
-            { id: 'selfie', minX: 25, maxX: 45, minY: 26, maxY: 45, sizes: [{w:2,h:2},{w:1,h:2}], shapes: ['shape-block', 'shape-poly1'], density: 0.9, streetSpacing: 5 },
-            { id: 'uncertainty', minX: 45, maxX: 65, minY: 26, maxY: 45, sizes: [{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-chamfer-tr'], density: 0.9, streetSpacing: 5 }
+            { id: 'berlin', minX: 5, maxX: 30, minY: 5, maxY: 22, sizes: [{w:5,h:5},{w:4,h:4},{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-courtyard'], density: 0.9 },
+            { id: 'escitalopram', minX: 30, maxX: 50, minY: 5, maxY: 22, sizes: [{w:4,h:4},{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-u'], density: 0.9 },
+            { id: 'spain', minX: 50, maxX: 65, minY: 5, maxY: 22, sizes: [{w:4,h:4},{w:3,h:3},{w:2,h:2}], shapes: ['shape-block'], density: 0.95 },
+            { id: 'casitos', minX: 5, maxX: 30, minY: 36, maxY: 60, sizes: [{w:5,h:5},{w:4,h:4},{w:3,h:3}], shapes: ['shape-block'], density: 0.9 },
+            { id: 'selfie', minX: 30, maxX: 50, minY: 36, maxY: 60, sizes: [{w:4,h:4},{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-poly1'], density: 0.9 },
+            { id: 'uncertainty', minX: 50, maxX: 65, minY: 36, maxY: 60, sizes: [{w:4,h:4},{w:3,h:3},{w:2,h:2}], shapes: ['shape-block', 'shape-chamfer-tr'], density: 0.9 }
         ];
 
         const PLACES = [
-            { gx: 15, gy: 14, w: 4, h: 4, shape: 'shape-courtyard', zone: 'berlin' },
-            { gx: 55, gy: 14, w: 4, h: 4, shape: 'shape-block', zone: 'spain' },
-            { gx: 15, gy: 35, w: 5, h: 5, shape: 'shape-circle-exact', zone: 'casitos' },
-            { gx: 55, gy: 35, w: 4, h: 4, shape: 'shape-poly1', zone: 'uncertainty' },
-            { gx: 35, gy: 35, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'selfie' },
-            { gx: 35, gy: 14, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'escitalopram' }
+            { gx: 17, gy: 13, w: 4, h: 4, shape: 'shape-courtyard', zone: 'berlin' },
+            { gx: 40, gy: 13, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'escitalopram' },
+            { gx: 58, gy: 13, w: 4, h: 4, shape: 'shape-block', zone: 'spain' },
+            { gx: 17, gy: 48, w: 5, h: 5, shape: 'shape-circle-exact', zone: 'casitos' },
+            { gx: 40, gy: 48, w: 4, h: 4, shape: 'shape-circle-exact', zone: 'selfie' },
+            { gx: 58, gy: 48, w: 4, h: 4, shape: 'shape-poly1', zone: 'uncertainty' }
         ];
 
-        for(let i=0; i<15; i++) {
+        // Greatly reduced random scatter parks to only 4 blocks, NO tiny circles
+        for(let i=0; i<4; i++) {
             let px = LIMIT_MIN_X + Math.floor(Math.random() * (LIMIT_MAX_X - LIMIT_MIN_X - 2));
             let py = LIMIT_MIN_Y + Math.floor(Math.random() * (LIMIT_MAX_Y - LIMIT_MIN_Y - 2));
-            PLACES.push({ gx: px, gy: py, w: 2, h: 2, shape: Math.random()>0.5?'shape-circle-exact':'shape-block', zone: 'filler', type: 'park' });
+            PLACES.push({ gx: px, gy: py, w: 3, h: 3, shape: 'shape-block', zone: 'filler', type: 'park' });
         }
 
         let currentLightboxImages = [];
@@ -423,6 +440,19 @@
             for(let x = 0; x < w; x++) for(let y = 0; y < h; y++) occupiedGrid[`${gx+x},${gy+y}`] = true;
         }
 
+        // --- OLD TOWN EUROPEAN AVENUES ---
+        function isAvenue(x, y) {
+            // Winding river-side road
+            let wave1 = Math.floor(22 + Math.sin(y * 0.15) * 4);
+            if (x === wave1 || x === wave1 + 1) return true;
+            
+            // Very occasional diagonal streets
+            if ((x + y) % 22 === 0) return true;
+            if ((x - y + 100) % 28 === 0) return true;
+            
+            return false;
+        }
+
         function initCartography() {
             document.getElementById('loading-overlay').style.opacity = '0';
             setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
@@ -430,7 +460,6 @@
             const fragment = document.createDocumentFragment();
 
             drawSVG_BaseLayers();
-            drawDiagrammaticDetails(); 
 
             let queues = {};
             for(let k in ARCHIVE) queues[k] = [...ARCHIVE[k]];
@@ -445,7 +474,7 @@
             for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
                 let rY = Math.floor(CENTER_GY + getRiverY(x - CENTER_GX));
                 if (Math.random() < 0.9) { 
-                    let sizes = [{w:3,h:3}, {w:2,h:3}, {w:3,h:2}, {w:2,h:2}]; 
+                    let sizes = [{w:5,h:5}, {w:4,h:4}, {w:3,h:3}, {w:2,h:2}]; 
                     let s = sizes[Math.floor(Math.random() * sizes.length)];
                     for (let yOff of [-2, -1, 1, 2].sort(()=>Math.random()-0.5)) {
                         let checkY = rY + yOff;
@@ -465,7 +494,7 @@
                     if (matchingZones.length > 0) {
                         let zone = matchingZones[Math.floor(Math.random() * matchingZones.length)];
                         
-                        if (x % zone.streetSpacing === 0 || y % zone.streetSpacing === 0) continue; 
+                        if (isAvenue(x, y)) continue; 
                         if (isOccupied(x, y, 1, 1)) continue;
 
                         for (let s of zone.sizes) {
@@ -475,7 +504,7 @@
                                 for(let ix=0; ix < s.w; ix++) {
                                     for(let iy=0; iy < s.h; iy++) {
                                         let checkX = x + ix; let checkY = y + iy;
-                                        if (checkX % zone.streetSpacing === 0 || checkY % zone.streetSpacing === 0 || isOccupied(checkX, checkY, 1, 1) || isRiverCorridor(checkX, checkY, 1, 1)) {
+                                        if (isAvenue(checkX, checkY) || isOccupied(checkX, checkY, 1, 1) || isRiverCorridor(checkX, checkY, 1, 1)) {
                                             valid = false; break;
                                         }
                                     }
@@ -495,10 +524,38 @@
                 }
             }
 
+            // --- REDUCED MOSAIC ---
+            // Actively seeks to place large blocks in remaining empty space instead of tiny 1x1 pieces
             for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
                 for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
-                    if (isStrictlyWithinBounds(x, y, 1, 1) && !isOccupied(x, y, 1, 1) && !isRiverCorridor(x, y, 1, 1)) {
-                        if (Math.random() < 0.9) {
+                    if (isStrictlyWithinBounds(x, y, 1, 1) && !isOccupied(x, y, 1, 1) && !isRiverCorridor(x, y, 1, 1) && !isAvenue(x, y)) {
+                        
+                        let placed = false;
+                        let fillerSizes = [{w:4,h:4}, {w:3,h:3}, {w:2,h:2}, {w:2,h:1}, {w:1,h:2}];
+                        
+                        for (let s of fillerSizes) {
+                            let valid = true;
+                            if (!isStrictlyWithinBounds(x, y, s.w, s.h)) { valid = false; continue; }
+                            
+                            for(let ix=0; ix < s.w; ix++) {
+                                for(let iy=0; iy < s.h; iy++) {
+                                    if (isOccupied(x+ix, y+iy, 1, 1) || isAvenue(x+ix, y+iy) || isRiverCorridor(x+ix, y+iy, 1, 1)) {
+                                        valid = false; break;
+                                    }
+                                }
+                                if(!valid) break;
+                            }
+                            
+                            if (valid) {
+                                markOccupied(x, y, s.w, s.h);
+                                generatedBuildings.push({ x, y, w: s.w, h: s.h, shape: 'shape-block', src: null, project: null, zone: 'filler' });
+                                placed = true;
+                                break;
+                            }
+                        }
+
+                        // Only a rare chance of a 1x1 block if nothing else fit
+                        if (!placed && Math.random() < 0.6) {
                             markOccupied(x, y, 1, 1);
                             generatedBuildings.push({ x, y, w: 1, h: 1, shape: 'shape-block', src: null, project: null, zone: 'filler' });
                         }
@@ -551,72 +608,13 @@
             resetCameraToFit(); 
         }
 
-        function drawDiagrammaticDetails() {
-            for (let x = LIMIT_MIN_X; x <= LIMIT_MAX_X; x++) {
-                for (let y = LIMIT_MIN_Y; y <= LIMIT_MAX_Y; y++) {
-                    if (x % 3 === 0 && y % 3 === 0) { 
-                        let cx = x * (GRID_UNIT + STREET_GAP) - (STREET_GAP/2);
-                        let cy = y * (GRID_UNIT + STREET_GAP) - (STREET_GAP/2);
-                        const cross = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        cross.setAttribute("d", `M ${cx-6},${cy} L ${cx+6},${cy} M ${cx},${cy-6} L ${cx},${cy+6}`);
-                        cross.setAttribute("stroke", "var(--map-ink)");
-                        cross.setAttribute("stroke-width", "1");
-                        cross.setAttribute("opacity", "0.3");
-                        baseLayer.appendChild(cross);
-                    }
-                }
-            }
-
-            ZONES.forEach(z => {
-                let px = z.minX * (GRID_UNIT + STREET_GAP);
-                let py = z.minY * (GRID_UNIT + STREET_GAP);
-                let pw = (z.maxX - z.minX + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
-                let ph = (z.maxY - z.minY + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
-                const zColor = ZONE_COLORS[z.id] || "var(--map-ink)";
-
-                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                rect.setAttribute("x", px); rect.setAttribute("y", py);
-                rect.setAttribute("width", pw); rect.setAttribute("height", ph);
-                rect.setAttribute("fill", "none");
-                rect.setAttribute("stroke", zColor);
-                rect.setAttribute("stroke-width", "1");
-                rect.setAttribute("stroke-dasharray", "4 6");
-                rect.setAttribute("opacity", "0.4");
-                surveyorLayer.appendChild(rect);
-
-                const s = 30; 
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                path.setAttribute("d", `
-                    M ${px},${py+s} L ${px},${py} L ${px+s},${py}
-                    M ${px+pw-s},${py} L ${px+pw},${py} L ${px+pw},${py+s}
-                    M ${px},${py+ph-s} L ${px},${py+ph} L ${px+s},${py+ph}
-                    M ${px+pw-s},${py+ph} L ${px+pw},${py+ph} L ${px+pw},${py+ph-s}
-                `);
-                path.setAttribute("fill", "none");
-                path.setAttribute("stroke", zColor);
-                path.setAttribute("stroke-width", "2");
-                path.setAttribute("opacity", "0.6");
-                surveyorLayer.appendChild(path);
-
-                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute("x", px + 15); text.setAttribute("y", py + 30);
-                text.setAttribute("fill", zColor);
-                text.setAttribute("font-family", "'Courier Prime', monospace");
-                text.setAttribute("font-size", "14px");
-                text.setAttribute("font-weight", "bold");
-                text.setAttribute("opacity", "0.8");
-                text.textContent = `SEC_NODE:[${z.id.toUpperCase()}]`;
-                surveyorLayer.appendChild(text);
-            });
-        }
-
         function drawSVG_BaseLayers() {
-            const gridToPx = (gx, gy) => ({ x: gx * GRID_UNIT + (gx * STREET_GAP) + (GRID_UNIT / 2), y: gy * GRID_UNIT + (gy * STREET_GAP) + (GRID_UNIT / 2) });
+            const gridToPx = (gx, gy) => ({ x: getPosX(gx) + (GRID_UNIT / 2), y: getPosY(gy) + (GRID_UNIT / 2) });
             
-            let pxMin = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP);
-            let pyMin = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
-            let pWidth = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
-            let pHeight = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+            let pxMin = getPosX(LIMIT_MIN_X);
+            let pyMin = getPosY(LIMIT_MIN_Y);
+            let pWidth = getSpanX(LIMIT_MIN_X, LIMIT_MAX_X - LIMIT_MIN_X + 1);
+            let pHeight = getSpanY(LIMIT_MIN_Y, LIMIT_MAX_Y - LIMIT_MIN_Y + 1);
             
             const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
             defs.innerHTML = `<clipPath id="map-clip"><rect x="${pxMin}" y="${pyMin}" width="${pWidth}" height="${pHeight}" /></clipPath>`;
@@ -629,13 +627,13 @@
                         const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                         circ.className.baseVal = "map-park";
                         let pt = gridToPx(p.gx, p.gy);
-                        circ.setAttribute("cx", pt.x); circ.setAttribute("cy", pt.y); circ.setAttribute("r", p.w/2 * (GRID_UNIT + STREET_GAP));
+                        circ.setAttribute("cx", pt.x); circ.setAttribute("cy", pt.y); circ.setAttribute("r", getSpanX(p.gx, p.w)/2);
                         baseLayer.appendChild(circ);
                     } else {
                         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                         rect.className.baseVal = "map-park";
-                        let x = p.gx * GRID_UNIT + (p.gx * STREET_GAP); let y = p.gy * GRID_UNIT + (p.gy * STREET_GAP);
-                        let w = p.w * GRID_UNIT + (p.w - 1) * STREET_GAP; let h = p.h * GRID_UNIT + (p.h - 1) * STREET_GAP;
+                        let x = getPosX(p.gx); let y = getPosY(p.gy);
+                        let w = getSpanX(p.gx, p.w); let h = getSpanY(p.gy, p.h);
                         rect.setAttribute("x", x); rect.setAttribute("y", y); rect.setAttribute("width", w); rect.setAttribute("height", h);
                         baseLayer.appendChild(rect);
                     }
@@ -661,100 +659,121 @@
         }
 
         function drawTransportLines(anchors) {
-            const gridToPx = (gx, gy) => ({ x: gx * GRID_UNIT + (gx * STREET_GAP) + (GRID_UNIT / 2), y: gy * GRID_UNIT + (gy * STREET_GAP) + (GRID_UNIT / 2) });
-            const center = gridToPx(CENTER_GX, CENTER_GY);
+            const gridToPx = (gx, gy) => ({ x: getPosX(gx) + (GRID_UNIT / 2), y: getPosY(gy) + (GRID_UNIT / 2) });
             
             let pxAnchors = {};
             for(let p in anchors) pxAnchors[p] = gridToPx(anchors[p].x, anchors[p].y);
 
-            // Colored elegant Bezier curves instead of 90-degree lines
-            for(let k in pxAnchors) {
-                let p = pxAnchors[k];
-                let color = ZONE_COLORS[k] || "var(--map-ink)";
-                
-                // Creates a smooth S-curve connecting the central hub to the specific project plaza
-                let ctrlX = center.x + (p.x - center.x) * 0.5;
-                let d = `M ${center.x},${center.y} C ${ctrlX},${center.y} ${ctrlX},${p.y} ${p.x},${p.y}`;
-                
-                const poly = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                poly.setAttribute("d", d);
-                poly.setAttribute("fill", "none");
-                poly.setAttribute("stroke", color);
-                poly.setAttribute("stroke-width", "8"); // Much thicker line
-                poly.setAttribute("stroke-dasharray", "24 16"); // Larger dashed pattern
-                poly.setAttribute("stroke-linecap", "round");
-                poly.setAttribute("opacity", "0.9");
-                transportLayer.appendChild(poly);
-                
-                // Diagrammatic station points
-                const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circ.setAttribute("cx", p.x); circ.setAttribute("cy", p.y); circ.setAttribute("r", 16); // Larger station circle
-                circ.setAttribute("fill", "var(--map-bg)");
-                circ.setAttribute("stroke", color);
-                circ.setAttribute("stroke-width", "4");
-                
-                const innerCirc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                innerCirc.setAttribute("cx", p.x); innerCirc.setAttribute("cy", p.y); innerCirc.setAttribute("r", 6); // Larger inner dot
-                innerCirc.setAttribute("fill", color);
-                
-                transportLayer.appendChild(circ);
-                transportLayer.appendChild(innerCirc);
-            }
-
-            // Central diagrammatic hub
-            const centerNode = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            centerNode.setAttribute("x", center.x - 16); centerNode.setAttribute("y", center.y - 16);
-            centerNode.setAttribute("width", 32); centerNode.setAttribute("height", 32);
-            centerNode.setAttribute("fill", "var(--map-bg)");
-            centerNode.setAttribute("stroke", "var(--map-ink)"); centerNode.setAttribute("stroke-width", "4");
-            transportLayer.appendChild(centerNode);
-
-            const centerDot = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            centerDot.setAttribute("x", center.x - 6); centerDot.setAttribute("y", center.y - 6);
-            centerDot.setAttribute("width", 12); centerDot.setAttribute("height", 12);
-            centerDot.setAttribute("fill", "var(--map-ink)");
-            transportLayer.appendChild(centerDot);
+            CONNECTIONS.forEach(conn => {
+                let p1 = pxAnchors[conn.from];
+                let p2 = pxAnchors[conn.to];
+                if(p1 && p2) {
+                    let ctrlX = p1.x + (p2.x - p1.x) * 0.5;
+                    let d = `M ${p1.x},${p1.y} C ${ctrlX},${p1.y} ${ctrlX},${p2.y} ${p2.x},${p2.y}`;
+                    
+                    const poly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    poly.setAttribute("d", d);
+                    poly.setAttribute("fill", "none");
+                    poly.setAttribute("stroke", conn.color);
+                    poly.setAttribute("stroke-width", conn.thickness); 
+                    poly.setAttribute("stroke-dasharray", conn.dash); 
+                    poly.setAttribute("stroke-linecap", "round");
+                    poly.setAttribute("opacity", "0.9");
+                    transportLayer.appendChild(poly);
+                }
+            });
+            
+            let renderedNodes = {};
+            CONNECTIONS.forEach(conn => {
+                [conn.from, conn.to].forEach(node => {
+                    if(!renderedNodes[node] && pxAnchors[node]) {
+                        let p = pxAnchors[node];
+                        let color = ZONE_COLORS[node] || "var(--map-ink)";
+                        
+                        const circ = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circ.setAttribute("cx", p.x); circ.setAttribute("cy", p.y); circ.setAttribute("r", 28); 
+                        circ.setAttribute("fill", "var(--map-bg)");
+                        circ.setAttribute("stroke", color);
+                        circ.setAttribute("stroke-width", "6");
+                        
+                        const innerCirc = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        innerCirc.setAttribute("cx", p.x); innerCirc.setAttribute("cy", p.y); innerCirc.setAttribute("r", 10); 
+                        innerCirc.setAttribute("fill", color);
+                        
+                        transportLayer.appendChild(circ);
+                        transportLayer.appendChild(innerCirc);
+                        renderedNodes[node] = true;
+                    }
+                });
+            });
         }
 
         function drawCityBounds() {
             const boundsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
             boundsGroup.id = "city-bounds-group";
             
-            let px = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP); 
-            let py = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
-            let pw = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
-            let ph = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP) - STREET_GAP;
+            let px = getPosX(LIMIT_MIN_X); 
+            let py = getPosY(LIMIT_MIN_Y);
+            let pw = getSpanX(LIMIT_MIN_X, LIMIT_MAX_X - LIMIT_MIN_X + 1);
+            let ph = getSpanY(LIMIT_MIN_Y, LIMIT_MAX_Y - LIMIT_MIN_Y + 1);
 
             const outerRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            outerRect.setAttribute("x", px); outerRect.setAttribute("y", py);
-            outerRect.setAttribute("width", pw); outerRect.setAttribute("height", ph);
-            outerRect.setAttribute("fill", "none"); outerRect.setAttribute("stroke", "var(--map-ink)"); 
-            outerRect.setAttribute("stroke-width", "16"); 
+            outerRect.setAttribute("x", px - 180); outerRect.setAttribute("y", py - 180);
+            outerRect.setAttribute("width", pw + 360); outerRect.setAttribute("height", ph + 360);
+            outerRect.setAttribute("fill", "none"); 
+            outerRect.setAttribute("stroke", "var(--map-ink)"); 
+            outerRect.setAttribute("stroke-width", "8"); 
 
-            const padding = 20; 
             const innerRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            innerRect.setAttribute("x", px + padding); innerRect.setAttribute("y", py + padding);
-            innerRect.setAttribute("width", pw - (padding * 2)); innerRect.setAttribute("height", ph - (padding * 2));
-            innerRect.setAttribute("fill", "none"); innerRect.setAttribute("stroke", "var(--map-ink)");
-            innerRect.setAttribute("stroke-width", "3");
-            innerRect.setAttribute("stroke-dasharray", "10 8");
+            innerRect.setAttribute("x", px - 166); innerRect.setAttribute("y", py - 166);
+            innerRect.setAttribute("width", pw + 332); innerRect.setAttribute("height", ph + 332);
+            innerRect.setAttribute("fill", "none"); 
+            innerRect.setAttribute("stroke", "var(--map-ink)");
+            innerRect.setAttribute("stroke-width", "2");
+
+            for(let i=0; i<=pw; i+=300) {
+                const topTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                topTick.setAttribute("x1", px + i); topTick.setAttribute("y1", py - 180);
+                topTick.setAttribute("x2", px + i); topTick.setAttribute("y2", py - 166);
+                topTick.setAttribute("stroke", "var(--map-ink)"); topTick.setAttribute("stroke-width", "2");
+                boundsGroup.appendChild(topTick);
+                
+                const botTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                botTick.setAttribute("x1", px + i); botTick.setAttribute("y1", py + ph + 180);
+                botTick.setAttribute("x2", px + i); botTick.setAttribute("y2", py + ph + 166);
+                botTick.setAttribute("stroke", "var(--map-ink)"); botTick.setAttribute("stroke-width", "2");
+                boundsGroup.appendChild(botTick);
+            }
+            for(let j=0; j<=ph; j+=300) {
+                const leftTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                leftTick.setAttribute("x1", px - 180); leftTick.setAttribute("y1", py + j);
+                leftTick.setAttribute("x2", px - 166); leftTick.setAttribute("y2", py + j);
+                leftTick.setAttribute("stroke", "var(--map-ink)"); leftTick.setAttribute("stroke-width", "2");
+                boundsGroup.appendChild(leftTick);
+                
+                const rightTick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                rightTick.setAttribute("x1", px + pw + 180); rightTick.setAttribute("y1", py + j);
+                rightTick.setAttribute("x2", px + pw + 166); rightTick.setAttribute("y2", py + j);
+                rightTick.setAttribute("stroke", "var(--map-ink)"); rightTick.setAttribute("stroke-width", "2");
+                boundsGroup.appendChild(rightTick);
+            }
 
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", px + padding + 15); text.setAttribute("y", py + padding + 35); 
-            text.setAttribute("fill", "var(--map-ink)"); text.setAttribute("font-size", "34px");
+            text.setAttribute("x", px - 165); text.setAttribute("y", py - 145); 
+            text.setAttribute("fill", "var(--map-ink)"); text.setAttribute("font-size", "28px");
             text.setAttribute("font-family", "Georgia, 'Times New Roman', serif");
             text.setAttribute("font-style", "italic"); text.setAttribute("font-weight", "bold"); 
-            text.textContent = "I.";
+            text.textContent = "FIG. I";
 
             boundsGroup.appendChild(outerRect); boundsGroup.appendChild(innerRect); boundsGroup.appendChild(text);
             surveyorLayer.appendChild(boundsGroup);
         }
 
         function spawnBlock(container, buildingData) {
-            let px = buildingData.x * GRID_UNIT + (buildingData.x * STREET_GAP); 
-            let py = buildingData.y * GRID_UNIT + (buildingData.y * STREET_GAP);
-            let pw = buildingData.w * GRID_UNIT + ((buildingData.w-1) * STREET_GAP); 
-            let ph = buildingData.h * GRID_UNIT + ((buildingData.h-1) * STREET_GAP);
+            let px = getPosX(buildingData.x); 
+            let py = getPosY(buildingData.y);
+            let pw = getSpanX(buildingData.x, buildingData.w); 
+            let ph = getSpanY(buildingData.y, buildingData.h);
 
             const wrapper = document.createElement('div');
             wrapper.className = `map-block`; 
@@ -930,18 +949,18 @@
         }
 
         function resetCameraToFit() {
-            let pw = (LIMIT_MAX_X - LIMIT_MIN_X + 1) * (GRID_UNIT + STREET_GAP);
-            let ph = (LIMIT_MAX_Y - LIMIT_MIN_Y + 1) * (GRID_UNIT + STREET_GAP);
+            let pw = getSpanX(LIMIT_MIN_X, LIMIT_MAX_X - LIMIT_MIN_X + 1);
+            let ph = getSpanY(LIMIT_MIN_Y, LIMIT_MAX_Y - LIMIT_MIN_Y + 1);
             
-            let px = LIMIT_MIN_X * (GRID_UNIT + STREET_GAP); 
-            let py = LIMIT_MIN_Y * (GRID_UNIT + STREET_GAP);
+            let px = getPosX(LIMIT_MIN_X); 
+            let py = getPosY(LIMIT_MIN_Y);
             let cx = px + (pw / 2); 
             let cy = py + (ph / 2);
             
-            scale = Math.min((window.innerWidth * 0.9) / pw, (window.innerHeight * 0.9) / ph); 
+            scale = Math.min((window.innerWidth * 0.9) / pw, (window.innerHeight * 0.8) / ph); 
             
             pos.x = (window.innerWidth / 2) - (cx * scale); 
-            pos.y = (window.innerHeight / 2) - (cy * scale);
+            pos.y = (window.innerHeight / 2) - (cy * scale) + 120; // Clear the title
             updateCamera();
         }
 
