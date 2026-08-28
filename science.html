@@ -424,6 +424,19 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
   background-color: transparent !important;
 }
 
+
+
+
+
+
+/* Temporarily hide Dérives everywhere in the sidebar. */
+.file-tree a[href="derives.html"] {
+  display: none !important;
+}
+.file-tree div:has(> a[href="derives.html"]) {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -460,7 +473,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
     <details data-tree-id="blog">
       <summary><span class="folder">blog/</span></summary>
       <div class="children">
-        <div><a class="file" href="derives.html">derives</a></div>
+        <div class="hidden-section"><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
           <div><a class="file" href="diary.html">diary</a></div>
       </div>

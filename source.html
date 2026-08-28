@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="source_layout.js"></script>
+<script src="layouts/source_layout.js"></script><!-- published Source composition in /layouts -->
 <script src="source_media_manifest.js"></script>
 <script>
 document.documentElement.classList.add("tree-state-pending");
@@ -309,6 +309,19 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   overflow:visible !important;
 }
 
+
+
+
+
+
+/* Temporarily hide Dérives everywhere in the sidebar. */
+.file-tree a[href="derives.html"] {
+  display: none !important;
+}
+.file-tree div:has(> a[href="derives.html"]) {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -343,7 +356,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     <details data-tree-id="blog">
       <summary><span class="folder">blog/</span></summary>
       <div class="children">
-        <div><a class="file" href="derives.html">derives</a></div>
+        <div class="hidden-section"><a class="file" href="derives.html">derives</a></div>
         <div><a class="file active" href="source.html">source</a></div>
           <div><a class="file" href="diary.html">diary</a></div>
       </div>
@@ -461,7 +474,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   <button id="source-edit-meta">[ edit info ]</button>
   <button id="source-front">[ front ]</button>
   <button id="source-remove">[ remove ]</button>
-  <button id="source-download">[ download layout ]</button>
+  <button id="source-download">[ publish layout ]</button>
   <button id="source-done">[ done ]</button>
 </div>
 
@@ -565,7 +578,20 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   }
 
   function loadSaved(){
+    /*
+      LOCAL editing:
+        localStorage/window.name override layouts/source_layout.js while arranging.
+
+      PUBLIC / GitHub Pages:
+        layouts/source_layout.js is authoritative.
+        Never let an old browser-local copy override the published file.
+    */
+    if (!LOCAL) {
+      return Array.isArray(window.SOURCE_LAYOUT) ? window.SOURCE_LAYOUT : null;
+    }
+
     let saved = null;
+
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) saved = JSON.parse(raw);
@@ -582,6 +608,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     if (!saved && Array.isArray(window.SOURCE_LAYOUT)) {
       saved = window.SOURCE_LAYOUT;
     }
+
     return saved;
   }
 

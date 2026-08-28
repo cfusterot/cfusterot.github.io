@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <script src="archive_media_manifest.js"></script>
-<script src="visual_archive_layout.js"></script>
+<script src="layouts/visual_archive_layout.js"></script>
 <script>
 /* Embedded emergency fallback. External visual_archive_layout.js wins when it loads. */
 if (!window.VISUAL_ARCHIVE_LAYOUT) {
@@ -78,10 +78,10 @@ document.documentElement.classList.add("tree-state-pending");
 <script>
 /*
   Durable published layouts:
-    main -> visual_archive_layout.js
-    photo -> visual_archive_layout_photo.js
-    video -> visual_archive_layout_video.js
-    escitalopram -> visual_archive_layout_escitalopram.js
+    main -> layouts/visual_archive_layout.js
+    photo -> layouts/visual_archive_layout_photo.js
+    video -> layouts/visual_archive_layout_video.js
+    escitalopram -> layouts/visual_archive_layout_escitalopram.js
 
   The view files exported by the editor assign window.VISUAL_ARCHIVE_LAYOUT.
   We capture each one in a per-view cache, then restore the main layout.
@@ -90,9 +90,9 @@ window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS = window.VISUAL_ARCHIVE_PUBLISHED_LAYOUT
 window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS.main = window.VISUAL_ARCHIVE_LAYOUT || null;
 
 function publishedLayoutFilename(view) {
-    if (!view) return "visual_archive_layout.js";
+    if (!view) return "layouts/visual_archive_layout.js";
     if (!["photo", "video", "escitalopram"].includes(view)) return null;
-    return `visual_archive_layout_${view}.js`;
+    return `layouts/visual_archive_layout_${view}.js`;
 }
 
 function loadPublishedLayoutForView(view, done) {
@@ -1220,6 +1220,19 @@ body.collage-play-mode #image-wall .wall-item.dragging{cursor:grabbing;z-index:9
   background-color: transparent !important;
 }
 
+
+
+
+
+
+/* Temporarily hide Dérives everywhere in the sidebar. */
+.file-tree a[href="derives.html"] {
+  display: none !important;
+}
+.file-tree div:has(> a[href="derives.html"]) {
+  display: none !important;
+}
+
 </style>
 </head>
 
@@ -1260,7 +1273,7 @@ body.collage-play-mode #image-wall .wall-item.dragging{cursor:grabbing;z-index:9
     <details data-tree-id="blog">
       <summary><span class="folder">blog/</span></summary>
       <div class="children">
-        <div><a class="file" href="derives.html">derives</a></div>
+        <div class="hidden-section"><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
           <div><a class="file" href="diary.html">diary</a></div>
       </div>
@@ -1756,13 +1769,16 @@ function buildWall() {
 
         item.appendChild(media);
 
-        lightboxItems.push({
-            type: media.tagName === "VIDEO" ? "video" : "img",
-            src: media.getAttribute("src")
+        /*
+          Do not permanently capture a lightbox index here.
+          The saved layout may later remove/reorder items.
+          Resolve the index from the CURRENT visible wall when clicked.
+        */
+        item.addEventListener("click", () => {
+            const src = item.dataset.src;
+            const currentIndex = lightboxItems.findIndex(x => x.src === src);
+            if (currentIndex >= 0) openLightbox(currentIndex);
         });
-
-        const lightboxIndexForItem = lightboxItems.length - 1;
-        item.addEventListener("click", () => openLightbox(lightboxIndexForItem));
 
         wall.appendChild(item);
     });
@@ -1779,6 +1795,22 @@ function buildWall() {
     // Apply the local arrangement saved by visual_archive_editor.html.
     // This is intentionally done AFTER the complete section has been built.
     restoreSavedLayout();
+
+    /*
+      IMPORTANT:
+      Lightbox navigation follows ONLY the items that remain in the current
+      visible layout after saved removals have been applied.
+      This prevents <- / -> from walking through the hidden catalogue.
+    */
+    lightboxItems = Array.from(
+        wall.querySelectorAll(".wall-item")
+    ).map(item => {
+        const media = item.querySelector("img, video");
+        return {
+            type: media && media.tagName === "VIDEO" ? "video" : "img",
+            src: item.dataset.src
+        };
+    });
 }
 /* ----------------------------------------------------------
    MANUAL ARRANGEMENT MODE

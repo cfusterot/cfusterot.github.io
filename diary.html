@@ -329,211 +329,98 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 .diary-main{
   grid-column:2;
   min-height:100vh;
-  padding:64px 7vw 120px;
+  padding:48px 7vw 110px;
   background:transparent;
 }
-
 .diary-wrap{
-  width:min(820px,100%);
+  width:min(760px,100%);
   margin:0 auto;
 }
-
 .diary-header{
-  margin:0 0 72px;
+  margin:0 0 64px;
 }
-
 .diary-header h1{
   margin:0;
-  font-size:22px;
-  line-height:1.1;
+  font-size:16px;
   font-weight:700;
-  color:#111;
 }
-
 .diary-subtitle{
-  margin-top:8px;
-  font-size:12px;
+  margin-top:7px;
+  font-size:10px;
+  color:#666;
+}
+.diary-post{
+  margin:0 0 92px;
+  font-size:14px;
+  line-height:1.65;
+}
+.diary-post h2{
+  margin:0 0 5px;
+  font-size:16px;
+  line-height:1.25;
+}
+.diary-meta{
+  margin:0 0 24px;
+  font-size:10px;
+  color:#777;
+}
+.diary-post p{
+  margin:0 0 18px;
+}
+.diary-post img{
+  display:block;
+  max-width:100%;
+  height:auto;
+  margin:30px auto;
+}
+.diary-post figure{
+  margin:30px 0;
+}
+.diary-post figure img{
+  margin:0 auto;
+}
+.diary-post figcaption{
+  margin-top:7px;
+  font-size:9px;
   line-height:1.4;
   color:#666;
 }
-
-.diary-post{
-  margin:0 0 120px;
-  color:#222;
-  font-size:14px; /* cambiar tamaño de fuente de las entradas */ 
-  line-height:1.78;
-  max-width:760px;
+.diary-post blockquote{
+  margin:26px 0;
+  padding-left:18px;
+  border-left:1px solid #888;
 }
-
-.diary-post + .diary-post{
-  padding-top:54px;
-  border-top:1px dotted #aaa;
-}
-
-.diary-entry-header{
-  margin:0 0 38px;
-}
-
-.diary-post h2{
-  margin:0 0 9px;
-  font-size:28px;
-  line-height:1.15;
-  font-weight:700;
-  color:#111;
-}
-
-.diary-meta{
-  margin:0 0 8px;
-  font-size:11px;
-  line-height:1.4;
-  color:#777;
-}
-
-.diary-deck{
-  margin:12px 0 0;
-  max-width:650px;
-  font-size:15px;
-  line-height:1.55;
-  color:#555;
-}
-
-.diary-post p{
-  margin:0 0 25px;
-}
-
-.diary-post p:first-of-type{
-  margin-top:0;
-}
-
 .diary-post a{
   color:#111;
   text-decoration:underline;
-  text-decoration-thickness:1px;
-  text-underline-offset:3px;
+  text-underline-offset:2px;
 }
-
-.diary-post blockquote{
-  margin:38px 0;
-  padding:4px 0 4px 22px;
-  border-left:1px solid #777;
-  font-size:17px;
-  line-height:1.65;
-  color:#444;
-}
-
-/* Images can be inserted anywhere between paragraphs. */
-.diary-image{
-  margin:44px 0 48px;
-}
-
-.diary-image img{
-  display:block;
-  width:100%;
-  height:auto;
-}
-
-.diary-image figcaption{
-  margin-top:9px;
-  font-size:10px;
-  line-height:1.45;
+.diary-placeholder{
   color:#777;
 }
-
-/* Optional image widths */
-.diary-image.full{
-  width:min(980px,calc(100vw - var(--archive-sidebar) - 60px));
-  max-width:none;
-  margin-left:50%;
-  transform:translateX(-50%);
-}
-
-.diary-image.medium{
-  width:78%;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-.diary-image.small{
-  width:52%;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-/* Optional asymmetric placement */
-.diary-image.left{
-  width:64%;
-  margin-left:0;
-  margin-right:auto;
-}
-
-.diary-image.right{
-  width:64%;
-  margin-left:auto;
-  margin-right:0;
-}
-
-.diary-image-row{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:12px;
-  margin:40px 0;
-}
-
-.diary-image-row img{
-  width:100%;
-  height:260px;
-  object-fit:cover;
-  display:block;
-}
-
 .diary-small{
-  font-size:12px;
-  line-height:1.5;
-  color:#777;
+  font-size:10px;
 }
-
-.diary-source-note{
-  margin:0 0 34px;
-  padding-bottom:12px;
-  border-bottom:1px dotted #aaa;
-  font-size:11px;
-  line-height:1.5;
-  color:#777;
-}
-
 @media(max-width:800px){
   .diary-main{
-    padding:38px 22px 90px;
+    padding:34px 22px 90px;
   }
-
   .diary-header{
-    margin-bottom:50px;
+    margin-bottom:48px;
   }
+}
 
-  .diary-header h1{
-    font-size:20px;
-  }
 
-  .diary-post{
-    font-size:16px;
-    line-height:1.7;
-  }
 
-  .diary-post h2{
-    font-size:23px;
-  }
 
-  .diary-image.full,
-  .diary-image.medium,
-  .diary-image.small,
-  .diary-image.left,
-  .diary-image.right{
-    width:100%;
-    max-width:100%;
-    margin-left:0;
-    margin-right:0;
-    transform:none;
-  }
+
+
+/* Temporarily hide Dérives everywhere in the sidebar. */
+.file-tree a[href="derives.html"] {
+  display: none !important;
+}
+.file-tree div:has(> a[href="derives.html"]) {
+  display: none !important;
 }
 
 </style>
@@ -572,9 +459,9 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
     <details data-tree-id="blog">
       <summary><span class="folder">blog/</span></summary>
       <div class="children">
-        <div><a class="file" href="derives.html">derives</a></div>
+        <div class="hidden-section"><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
-          <div><a class="file active" href="diary.html">diary</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>
@@ -586,42 +473,38 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
   <article class="diary-wrap">
     <header class="diary-header">
       <h1>diary</h1>
-      <div class="diary-subtitle">something is burning / notes </div>
+      <div class="diary-subtitle">something is burning / notes / images / fragments</div>
     </header>
 
-    <section class="diary-post">
-      <div class="diary-entry-header">
-        <div class="diary-meta">Publicado en Substack · febrero de 2026. Escrito durante las navidades de ese mismo año. </div>
-        <h2><!-- Puedes escribir aquí el título de la entrada --> #1</h2>
-        <div class="diary-deck"></div>
-      </div>
+    <!--
+      PASTE NEW ENTRIES BELOW.
 
-      <p>«Estos árboles son muy amorosos. Sí, se dejan abrazar muy bien». Nos lo dijo mirando a los falsos pimenteros de delante de la estación del Portillo. Cogió unas ramas y se las pasó por la cara. «También sirven de antiinflamatorio, pero su uso más común tiene que ver con alejar a los mosquitos».</p>
+      You can copy text from Substack directly inside a .diary-post section.
+      For images, place the files in img/diary/ and use:
 
-      <p>Mi padre consigue encontrar puntos de anclaje hasta en los terrenos de una vieja estación a punto de ser derribada. Cuando estamos en casa, la cosa cambia. Tengo la sensación de que en casa los automatismos son más severos, las conversaciones más predecibles, los temas de conversación, más limitados. Nuestra casa funciona como un ecosistema independiente, con vida propia. No hay árboles a los que abrazar, más bien heridas que esconder.</p>
+      <img src="img/diary/my-image.jpg" alt="">
 
+      Example:
 
-      <figure class="diary-image medium">
-        <img src="img/diary/0.jpg" alt="">
-        <figcaption></figcaption>
-      </figure>
+      <section class="diary-post">
+        <h2>entry title</h2>
+        <div class="diary-meta">28.08.2026</div>
 
-      <p>Llegamos y mi ansiedad no me dejaba pensar, estaba demasiado ocupada intentando predecir las infinitas rutas por las cuales nos podría llevar la conversación, los infinitos puntos de inflexión que podrían desestabilizar nuestro equilibrio. Llevaba un tema pensado en la cabeza, algo sobre lo que hablar antes de que el tema se sacara sólo. Un mecanismo defensivo con el que intentar escapar del paisaje de Waddington que habitamos.</p>
+        <p>Your text goes here.</p>
 
-      <p>Y es que la bolsa de temas recurrentes es muy escueta y casi todos habitan en el enfado. Hablar del pasado, pero con orgullo, sin embargo, suele ser otra cosa.</p>
+        <figure>
+          <img src="img/diary/example.jpg" alt="">
+          <figcaption>optional caption</figcaption>
+        </figure>
+      </section>
+    -->
 
-      <p>Al preguntarle por su abuelo Juan, su cara cambió, también su mirada. Nos contó que era un señor respetado; había estado viviendo en África, sirviendo a un tipo inusualmente amable mientras era cabo primero. No hubiera vuelto al pueblo pero la guerra se acabó. No volvió a trabajar nunca más: se rodeó de mujeres para no tener que hacerlo.</p>
-
-      <p>Aquí es cuando nos empezó a hablar de su abuela Anastasia, la verdadera cabeza de familia, con su largo pelo siempre recogido y su dentadura ausente; con sus nervios que la consumían y no le dejaban parar; con su exquisita cocina y sus habilidades como mondonguera; con su trenza interminable, recogida; con la madera en la cabeza y el pan en la madera.</p>
-
-      <p>Analizaba su vida y me daba cuenta del origen de su malestar. Porque cuando uno ha visto lo que hay abajo, el vértigo es más difícil de sobrellevar. Pero pese a que las historias que contaba eran de pobreza y penurias, el orgullo no abandonó su mirada. Y pensé en cómo el arraigo es capaz de contrarrestarlo todo. El saber de donde viene uno y cómo las cosas se dan.</p>
-      
-     <div class="diary-image-row">
-      <img src="img/diary/1.jpg" alt="">
-      <img src="img/diary/2.jpg" alt="">
-      <img src="img/diary/3.jpg" alt="">
-     </div>
-
+    <section class="diary-post diary-placeholder">
+      <p>something is burning.</p>
+      <p class="diary-small">
+        paste entries here from
+        <a href="https://somethingisburning.substack.com/" target="_blank" rel="noopener">somethingisburning.substack.com</a>
+      </p>
     </section>
   </article>
 </main>
