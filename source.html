@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="source_layout.js"></script>
+<script src="source_media_manifest.js"></script>
 <script>
 document.documentElement.classList.add("tree-state-pending");
 </script>
@@ -13,7 +15,7 @@ document.documentElement.classList.add("tree-state-pending");
 body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospace;overflow-x:hidden}
 :root{--archive-sidebar:250px}
 .archive-shell{min-height:100vh;display:grid;grid-template-columns:var(--archive-sidebar) minmax(0,1fr)}
-.file-sidebar{position:fixed;inset:0 auto 0 0;width:var(--archive-sidebar);height:100vh;overflow-y:auto;z-index:20000;background:#d8d8d8;border-right:2px solid #8b8b8b;box-shadow:inset -1px 0 0 #fff;padding:18px 14px 40px}
+.file-sidebar{position:fixed;inset:0 auto 0 0;width:var(--archive-sidebar);height:100vh;overflow-y:auto;z-index:20000;background: transparent;border-right:2px solid #8b8b8b;box-shadow:inset -1px 0 0 #fff;padding:18px 14px 40px}
 .file-index-title,.file-tree,.file-tree a,.file-tree summary,.file-tree span{font-family:"Courier Prime","Courier New",monospace!important;font-size:12px;line-height:1.58}
 .file-index-title{font-weight:700;padding:0 0 8px;margin:0 0 13px;border-bottom:1px solid #8b8b8b}
 .file-tree details{margin:0;padding:0} .file-tree summary{cursor:pointer;list-style:none;display:flex;align-items:baseline}
@@ -26,21 +28,286 @@ body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospac
 .file-tree .folder::after{content:"";position:absolute;width:6px;height:3px;left:1px;top:1px;transform:translateY(-3px);background:#e8c75c;border:1px solid #574a20;border-bottom:0}
 .file-tree .file::before{content:"";display:inline-block;width:10px;height:13px;margin-right:6px;position:relative;top:2px;background:#f4f4f4;border:1px solid #555;box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 #b8b8b8}
 .file-tree>div>a.file,.file-tree .children>div>a.file{margin-left:14px}
-.source-main{grid-column:2;position:relative;min-height:1450px;overflow:hidden;background-color:#e5e5e2;background-image:radial-gradient(rgba(0,0,0,.08) .45px,transparent .6px);background-size:4px 4px}
+.source-main{
+  grid-column:2;
+  position:relative;
+  min-height:1450px;
+  overflow:hidden;
+  background-color:#e5e5e2;
+  background-image:radial-gradient(rgba(0,0,0,.08) .45px,transparent .6px);
+  background-size:4px 4px
+}
 .source-stage{position:relative;width:100%;min-height:1450px}
-.source-item{position:absolute;display:block;color:#111;text-decoration:none;transform-origin:center;transition:transform .12s ease,filter .12s ease}
-.source-item:hover{z-index:999;transform:translateY(-2px) rotate(0deg)!important}
-.source-item img{display:block;width:100%;height:auto;filter:saturate(.92) contrast(1.03)}
-.source-card{background:#f1eee6;border:1px solid #777;box-shadow:3px 3px 0 rgba(0,0,0,.12);padding:10px}
-.source-label{display:block;margin-top:6px;font-size:11px;line-height:1.3}
-.source-url{font-size:9px;color:#666;word-break:break-all}
-.source-text{font-size:15px;line-height:1.45;max-width:330px}
-.source-text h2{font-size:18px;margin:0 0 8px}
-.flower{width:170px;filter:grayscale(25%) contrast(1.04)}
-.note{background:#f5eaa6;border:1px solid #a8994e;padding:13px;width:240px;box-shadow:2px 3px 0 rgba(0,0,0,.12);font-size:12px;line-height:1.45;transform:rotate(-2deg)}
+.source-item{
+  position:absolute;
+  display:block;
+  color:#111;
+  text-decoration:none;
+  transform-origin:center;
+  cursor:pointer;
+  transition:filter .08s linear,opacity .08s linear;
+  user-select:none
+}
+.source-item:hover{z-index:999;filter:contrast(1.06)}
+.source-image img{
+  display:block;
+  width:100%;
+  max-width:none;
+  height:auto;
+  filter:saturate(.92) contrast(1.03);
+  box-shadow:none;
+  border:0
+}
+.source-concept{
+  font-size:15px;
+  line-height:1.2;
+  width:max-content;
+  max-width:300px;
+  padding:2px 4px;
+  border-bottom:1px dotted #777;
+  background:transparent
+}
+.source-concept:hover{background:rgba(229,229,226,.78)}
+.source-item.selected-source{outline:1px dashed #555;outline-offset:5px}
+
+#source-popover{
+  position:fixed;
+  z-index:99000;
+  max-width:330px;
+  background:#e5e5e2;
+  border:1px solid #777;
+  box-shadow:3px 3px 0 rgba(0,0,0,.12);
+  padding:10px 12px;
+  font-size:11px;
+  line-height:1.45;
+  display:none
+}
+#source-popover.open{display:block}
+#source-popover-title{font-weight:700;margin-bottom:6px;font-size:12px}
+#source-popover-link{display:inline-block;margin-top:8px;color:#111}
+#source-popover-close{
+  position:absolute;right:6px;top:4px;
+  border:0;background:transparent;font:10px "Courier Prime",monospace;cursor:pointer
+}
+
+body.source-edit-mode .source-item.selected-source .source-resize-handle{display:block}
+
+#source-save-status{
+  position:fixed;right:14px;bottom:52px;z-index:96000;
+  display:none;font-size:9px;background:#e5e5e2;border:1px solid #aaa;padding:3px 5px
+}
 @media(max-width:800px){:root{--archive-sidebar:165px}.file-sidebar{padding:12px 9px}.source-main{min-height:1800px}}
 
 html.tree-state-pending .file-tree { visibility: hidden !important; }
+
+
+body.source-edit-mode .source-item.selected-source .source-resize-handle{display:block}
+
+
+/* v12.5 — sidebar uses exactly the page background */
+.file-sidebar,
+.sidebar,
+.archive-sidebar,
+.sidebar-shell,
+.sidebar-panel,
+.archive-tree,
+.file-tree {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+
+/* v12.8 — Source controls: exact Visual Archive editor placement */
+#source-editor-toggle{
+  position:fixed !important;
+  right:22px !important;
+  bottom:20px !important;
+  z-index:90000 !important;
+  display:none;
+  border:0 !important;
+  padding:8px 10px !important;
+  background:rgba(229,229,226,.9) !important;
+  color:#777 !important;
+  font-family:"Courier Prime",monospace !important;
+  font-size:.72rem !important;
+  line-height:normal !important;
+  cursor:pointer;
+}
+
+#source-editor-controls{
+  position:fixed !important;
+  left:20px !important;
+  right:auto !important;
+  bottom:18px !important;
+  z-index:90000 !important;
+  display:none;
+  gap:5px !important;
+  flex-wrap:wrap !important;
+  align-items:center !important;
+  max-width:calc(100vw - 170px) !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:transparent !important;
+}
+
+#source-editor-controls button{
+  border:0 !important;
+  padding:7px 9px !important;
+  background:rgba(229,229,226,.94) !important;
+  color:#666 !important;
+  font-family:"Courier Prime",monospace !important;
+  font-size:.7rem !important;
+  line-height:normal !important;
+  min-height:0 !important;
+  box-shadow:none !important;
+  cursor:pointer;
+}
+
+body.source-edit-mode #source-editor-controls{
+  display:flex !important;
+}
+
+body.source-edit-mode #source-editor-toggle{
+  display:none !important;
+}
+
+#source-save-status{
+  position:fixed !important;
+  left:20px !important;
+  bottom:52px !important;
+  z-index:90001 !important;
+  display:none;
+  font-family:"Courier Prime",monospace !important;
+  font-size:.65rem !important;
+  background:rgba(229,229,226,.94) !important;
+  color:#666 !important;
+  padding:4px 6px !important;
+  border:0 !important;
+}
+
+@media(max-width:800px){
+  #source-editor-controls{
+    max-width:calc(100vw - 100px) !important;
+  }
+}
+
+
+/* v12.9 Source media library + metadata editor */
+#source-library{
+  position:fixed;
+  top:0;
+  right:0;
+  width:min(390px,42vw);
+  height:100vh;
+  z-index:97000;
+  background:rgba(229,229,226,.985);
+  border-left:1px solid #aaa;
+  transform:translateX(102%);
+  transition:transform .15s ease;
+  overflow-y:auto;
+  padding:12px;
+}
+#source-library.open{transform:translateX(0)}
+#source-library-header{
+  position:sticky;top:0;z-index:2;background:rgba(229,229,226,.985);
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #bbb
+}
+#source-library-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.source-library-item{
+  border:1px solid #aaa;
+  background:#efefec;
+  padding:3px;
+  cursor:pointer;
+  font-size:8px;
+  overflow:hidden;
+}
+.source-library-item img{
+  display:block;
+  width:100%;
+  height:90px;
+  object-fit:cover;
+  margin-bottom:3px;
+}
+.source-library-item.used{outline:2px solid #777}
+.source-library-actions{display:flex;gap:5px;flex-wrap:wrap}
+.source-library-actions button{
+  border:0;
+  background:rgba(229,229,226,.94);
+  color:#666;
+  font-family:"Courier Prime",monospace;
+  font-size:.7rem;
+  padding:7px 9px;
+  cursor:pointer;
+}
+#source-meta-editor{
+  position:fixed;
+  left:20px;
+  bottom:58px;
+  z-index:96002;
+  display:none;
+  width:min(420px,calc(100vw - 40px));
+  background:rgba(229,229,226,.97);
+  border:1px solid #aaa;
+  padding:8px;
+  font-size:10px;
+}
+body.source-edit-mode #source-meta-editor.visible{display:block}
+#source-meta-editor input,
+#source-meta-editor textarea{
+  width:100%;
+  font-family:"Courier Prime",monospace;
+  font-size:10px;
+  background:#f4f4f1;
+  border:1px solid #bbb;
+  padding:5px;
+  margin:3px 0 6px;
+}
+#source-meta-editor textarea{min-height:68px;resize:vertical}
+#source-meta-editor .meta-row{display:flex;gap:5px}
+#source-meta-editor .meta-row button{
+  border:0;background:rgba(229,229,226,.94);color:#666;
+  font-family:"Courier Prime",monospace;font-size:.7rem;padding:7px 9px;cursor:pointer
+}
+.source-item.selected-source::after{
+  content:"";
+  position:absolute;inset:-7px;
+  border:1px dashed rgba(0,0,0,.35);
+  pointer-events:none;
+}
+@media(max-width:800px){
+  #source-library{width:68vw}
+  #source-library-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+
+/* v12.10 — reliable resize handles for Source */
+.source-item{
+  position:absolute;
+}
+.source-resize-handle{
+  position:absolute !important;
+  right:-7px !important;
+  bottom:-7px !important;
+  width:14px !important;
+  height:14px !important;
+  display:none !important;
+  background:#e5e5e2 !important;
+  border:1px solid #555 !important;
+  box-sizing:border-box !important;
+  z-index:100005 !important;
+  cursor:nwse-resize !important;
+  pointer-events:auto !important;
+}
+body.source-edit-mode .source-item.selected-source > .source-resize-handle{
+  display:block !important;
+}
+.source-item.selected-source{
+  overflow:visible !important;
+}
 
 </style>
 </head>
@@ -48,7 +315,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 <div class="archive-shell">
 
 <aside class="file-sidebar">
-  <div class="file-index-title">Índice de /archive/</div>
+  <div class="file-index-title">/archive/ index</div>
   <nav class="file-tree">
     <div><a class="file" href="index.html">index.html</a></div>
 
@@ -78,6 +345,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
       <div class="children">
         <div><a class="file" href="derives.html">derives</a></div>
         <div><a class="file active" href="source.html">source</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>
@@ -85,40 +353,49 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 
 
 <main class="source-main">
-<div class="source-stage">
-
-  <a class="source-item source-card" href="https://en.wikipedia.org/wiki/Jean_Rhys" target="_blank" rel="noopener"
-     style="left:7%;top:95px;width:220px;transform:rotate(-2deg)">
-    <img src="img/source/night_moods.jpeg" alt="">
-    <span class="source-label">Jean Rhys</span>
-    <span class="source-url">wikipedia.org/wiki/Jean_Rhys</span>
-  </a>
-
-  <a class="source-item source-card" href="https://pioneerworks.org/broadcast/generation-astrology" target="_blank" rel="noopener"
-     style="left:48%;top:175px;width:245px;transform:rotate(1.5deg)">
-    <img src="img/source/petit_silence.jpeg" alt="">
-    <span class="source-label">Gen Astro — Pioneer Works</span>
-    <span class="source-url">pioneerworks.org/broadcast/generation-astrology</span>
-  </a>
-
-  <a class="source-item source-card" href="https://openlibrary.org/books/OL6500413M/Burning_lights" target="_blank" rel="noopener"
-     style="left:23%;top:690px;width:275px;transform:rotate(.6deg)">
-    <div class="source-text">
-      <h2>Burning Lights</h2>
-      Bella Chagall<br><br>
-      memory / language / ritual / domestic light
-    </div>
-    <span class="source-url">openlibrary.org — Burning Lights</span>
-  </a>
-
-  <img class="source-item flower" src="img/source/flower_cutout.png" alt=""
-       style="left:68%;top:620px;transform:rotate(7deg)">
-
-  <div class="source-item note" style="left:53%;top:980px">
-    source is not a bibliography.<br><br>
-    things found while moving through the web.
+<div class="source-stage" id="source-stage">
+  <div class="source-item source-image" data-source-id="night-moods"
+       data-type="image"
+       data-title="Jean Rhys"
+       data-description="A source-object linked to Jean Rhys; image used here as a visual trigger rather than a bibliographic illustration."
+       data-href="https://en.wikipedia.org/wiki/Jean_Rhys"
+       style="left:5%;top:70px;width:250px;transform:rotate(0deg)">
+    <img src="img/source/night_moods.jpeg" alt="Night Moods of Tchaikovsky">
   </div>
 
+  <div class="source-item source-concept" data-source-id="burning-lights"
+       data-type="concept"
+       data-title="Burning Lights"
+       data-description="Bella Chagall — memory / language / ritual / domestic light."
+       data-href="https://openlibrary.org/books/OL6500413M/Burning_lights"
+       style="left:54%;top:125px;width:235px;transform:rotate(0deg)">
+    Burning Lights
+  </div>
+
+  <div class="source-item source-image" data-source-id="petit-silence"
+       data-type="image"
+       data-title="Generation Astrology"
+       data-description="Generation astrology / Pioneer Works. Kept as a visual association rather than a boxed citation."
+       data-href="https://pioneerworks.org/broadcast/generation-astrology"
+       style="left:28%;top:310px;width:285px;transform:rotate(0deg)">
+    <img src="img/source/petit_silence.jpeg" alt="Le petit Silence illustré">
+  </div>
+
+  <div class="source-item source-concept" data-source-id="memory-language"
+       data-type="concept"
+       data-title="memory / language / ritual"
+       data-description="A loose conceptual node. Clickable concepts can sit between images without becoming cards."
+       style="left:70%;top:435px;width:220px;transform:rotate(0deg)">
+    memory / language / ritual
+  </div>
+
+  <div class="source-item source-concept" data-source-id="source-note"
+       data-type="concept"
+       data-title="source is not a bibliography"
+       data-description="things found while moving through the web."
+       style="left:14%;top:690px;width:240px;transform:rotate(0deg)">
+    source is not a bibliography
+  </div>
 </div>
 </main>
 </div>
@@ -164,5 +441,506 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
     }
 })();
 </script>
+
+<div id="source-popover" role="dialog" aria-live="polite">
+  <button id="source-popover-close" type="button">[x]</button>
+  <div id="source-popover-title"></div>
+  <div id="source-popover-description"></div>
+  <a id="source-popover-link" href="#" target="_blank" rel="noopener">[ open source ]</a>
+</div>
+
+<div id="source-save-status">saved</div>
+
+<button id="source-editor-toggle" type="button">[ arrange ]</button>
+
+<div id="source-editor-controls">
+  <button id="source-save">[ save ]</button>
+  <button id="source-reset">[ reset ]</button>
+  <button id="source-library-open">[ library ]</button>
+  <button id="source-add-text">[ add concept ]</button>
+  <button id="source-edit-meta">[ edit info ]</button>
+  <button id="source-front">[ front ]</button>
+  <button id="source-remove">[ remove ]</button>
+  <button id="source-download">[ download layout ]</button>
+  <button id="source-done">[ done ]</button>
+</div>
+
+<aside id="source-library" aria-hidden="true">
+  <div id="source-library-header">
+    <div style="font-size:11px;font-weight:700;margin-bottom:7px">source media library</div>
+    <div class="source-library-actions">
+      <button id="source-library-refresh">[ refresh ]</button>
+      <button id="source-library-close">[ close ]</button>
+    </div>
+    <div style="font-size:9px;line-height:1.35;margin-top:6px;color:#666">
+      Add files to <code>img_originales/source/</code>, run Publicar v14, then click refresh.
+    </div>
+  </div>
+  <div id="source-library-grid"></div>
+</aside>
+
+<div id="source-meta-editor">
+  <div style="font-weight:700;margin-bottom:5px">edit source item</div>
+  <label>title<input id="source-meta-title"></label>
+  <label>description<textarea id="source-meta-description"></textarea></label>
+  <label>URL<input id="source-meta-href"></label>
+  <div class="meta-row">
+    <button id="source-meta-apply">[ apply ]</button>
+    <button id="source-meta-close">[ close ]</button>
+  </div>
+</div>
+
+
+
+
+
+<script>
+(function(){
+  const LOCAL = location.protocol === "file:" ||
+                location.hostname === "localhost" ||
+                location.hostname === "127.0.0.1";
+
+  const stage = document.getElementById("source-stage");
+  const controls = document.getElementById("source-editor-controls");
+  const status = document.getElementById("source-save-status");
+  const popover = document.getElementById("source-popover");
+  const popTitle = document.getElementById("source-popover-title");
+  const popDescription = document.getElementById("source-popover-description");
+  const popLink = document.getElementById("source-popover-link");
+  const KEY = "sourceManualLayoutV2";
+  const WINDOW_NAME_PREFIX = "SOURCE_LAYOUT_V2:";
+
+  let editing = false;
+  let selected = null;
+  let maxZ = 1000;
+
+  function elements(){ return Array.from(stage.querySelectorAll(".source-item")); }
+
+  function makeId(){
+    return "source-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,7);
+  }
+
+  function ensureHandle(el){
+    if (el.querySelector(":scope > .source-resize-handle")) return;
+    const handle = document.createElement("span");
+    handle.className = "source-resize-handle";
+    el.appendChild(handle);
+    bindResize(el, handle);
+  }
+
+  function recordFor(el){
+    const img = el.querySelector(":scope > img");
+    return {
+      id: el.dataset.sourceId,
+      type: el.dataset.type || (img ? "image" : "concept"),
+      src: img ? img.getAttribute("src") : "",
+      text: img ? "" : el.childNodes[0]?.textContent?.trim() || el.dataset.title || "",
+      title: el.dataset.title || "",
+      description: el.dataset.description || "",
+      href: el.dataset.href || "",
+      left: el.style.left || "20px",
+      top: el.style.top || "20px",
+      width: el.style.width || "",
+      transform: el.style.transform || "",
+      zIndex: el.style.zIndex || ""
+    };
+  }
+
+  function serialize(){ return elements().map(recordFor); }
+
+  function showSaved(){
+    if (!status) return;
+    status.style.display = "block";
+    status.textContent = "saved ✓";
+    clearTimeout(showSaved.timer);
+    showSaved.timer = setTimeout(() => status.style.display = "none", 1200);
+  }
+
+  function saveLocal(show=true){
+    const data = serialize();
+    const raw = JSON.stringify(data);
+    try { localStorage.setItem(KEY, raw); } catch {}
+    try { window.name = WINDOW_NAME_PREFIX + raw; } catch {}
+    if (show) showSaved();
+  }
+
+  function loadSaved(){
+    let saved = null;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) saved = JSON.parse(raw);
+    } catch {}
+
+    if (!saved) {
+      try {
+        if (window.name && window.name.startsWith(WINDOW_NAME_PREFIX)) {
+          saved = JSON.parse(window.name.slice(WINDOW_NAME_PREFIX.length));
+        }
+      } catch {}
+    }
+
+    if (!saved && Array.isArray(window.SOURCE_LAYOUT)) {
+      saved = window.SOURCE_LAYOUT;
+    }
+    return saved;
+  }
+
+  function createElement(item){
+    const el = document.createElement("div");
+    el.className = "source-item " + (item.type === "image" ? "source-image" : "source-concept");
+    el.dataset.sourceId = item.id || makeId();
+    el.dataset.type = item.type || "concept";
+    el.dataset.title = item.title || "";
+    el.dataset.description = item.description || "";
+    el.dataset.href = item.href || "";
+
+    el.style.left = item.left || "20px";
+    el.style.top = item.top || "20px";
+    if (item.width) el.style.width = item.width;
+    if (item.transform !== undefined) el.style.transform = item.transform;
+    if (item.zIndex !== undefined) el.style.zIndex = item.zIndex;
+
+    if (item.type === "image") {
+      const img = document.createElement("img");
+      img.src = item.src || "";
+      img.alt = item.title || "";
+      el.appendChild(img);
+    } else {
+      el.appendChild(document.createTextNode(item.text || item.title || "concept"));
+    }
+
+    stage.appendChild(el);
+    bindItem(el);
+    return el;
+  }
+
+  function rebuild(layout){
+    stage.innerHTML = "";
+    (layout || []).forEach(createElement);
+  }
+
+  function showPopover(el){
+    if (editing) return;
+    popTitle.textContent = el.dataset.title || "source";
+    popDescription.textContent = el.dataset.description || "";
+    const href = el.dataset.href || "";
+    popLink.style.display = href ? "inline-block" : "none";
+    popLink.href = href || "#";
+
+    const r = el.getBoundingClientRect();
+    const width = 330;
+    const left = Math.min(window.innerWidth - width - 14, Math.max(14, r.right + 12));
+    const top = Math.min(window.innerHeight - 170, Math.max(14, r.top));
+    popover.style.left = left + "px";
+    popover.style.top = top + "px";
+    popover.classList.add("open");
+  }
+
+  function select(el){
+    elements().forEach(x => x.classList.remove("selected-source"));
+    ensureHandle(el);
+    el.classList.add("selected-source");
+    selected = el;
+  }
+
+  function bindResize(el, handle){
+    handle.addEventListener("pointerdown", ev => {
+      if (!editing) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      select(el);
+
+      const startX = ev.clientX;
+      const startW = el.getBoundingClientRect().width;
+      handle.setPointerCapture(ev.pointerId);
+
+      const move = e => {
+        el.style.width = Math.max(55, startW + (e.clientX - startX)) + "px";
+      };
+      const up = e => {
+        try { handle.releasePointerCapture(e.pointerId); } catch {}
+        handle.removeEventListener("pointermove", move);
+        handle.removeEventListener("pointerup", up);
+        saveLocal(false);
+      };
+
+      handle.addEventListener("pointermove", move);
+      handle.addEventListener("pointerup", up);
+    });
+  }
+
+  function bindItem(el){
+    ensureHandle(el);
+
+    el.addEventListener("click", ev => {
+      if (editing) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        select(el);
+      } else {
+        ev.preventDefault();
+        ev.stopPropagation();
+        showPopover(el);
+      }
+    });
+
+    el.addEventListener("dblclick", ev => {
+      if (!editing) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      select(el);
+      openMetaEditor(el);
+    });
+
+    el.addEventListener("pointerdown", ev => {
+      if (!editing || ev.target.classList.contains("source-resize-handle")) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      select(el);
+
+      const r = el.getBoundingClientRect();
+      const sr = stage.getBoundingClientRect();
+      const ox = ev.clientX - r.left;
+      const oy = ev.clientY - r.top;
+      el.classList.add("source-dragging");
+      el.setPointerCapture(ev.pointerId);
+
+      const move = e => {
+        el.style.left = Math.max(0, e.clientX - sr.left - ox) + "px";
+        el.style.top = Math.max(0, e.clientY - sr.top - oy) + "px";
+      };
+      const up = e => {
+        try { el.releasePointerCapture(e.pointerId); } catch {}
+        el.classList.remove("source-dragging");
+        el.removeEventListener("pointermove", move);
+        el.removeEventListener("pointerup", up);
+        saveLocal(false);
+      };
+
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerup", up);
+    });
+  }
+
+  document.getElementById("source-popover-close").addEventListener("click", () => {
+    popover.classList.remove("open");
+  });
+
+  document.addEventListener("click", ev => {
+    if (!popover.contains(ev.target) && !ev.target.closest(".source-item")) {
+      popover.classList.remove("open");
+    }
+  });
+
+  const saved = loadSaved();
+  if (Array.isArray(saved) && saved.length) {
+    rebuild(saved);
+  } else {
+    elements().forEach(bindItem);
+  }
+
+  if (!LOCAL) {
+    controls.remove();
+    document.getElementById("source-editor-toggle")?.remove();
+    return;
+  }
+
+  const toggle = document.getElementById("source-editor-toggle");
+  const done = document.getElementById("source-done");
+  toggle.style.display = "block";
+
+  function setEditing(value){
+    editing = !!value;
+    document.body.classList.toggle("source-edit-mode", editing);
+
+    if (!editing) {
+      elements().forEach(x => x.classList.remove("selected-source"));
+      selected = null;
+      metaEditor.classList.remove("visible");
+      libraryPanel.classList.remove("open");
+      saveLocal(false);
+    }
+  }
+
+  toggle.onclick = () => setEditing(true);
+  done.onclick = () => setEditing(false);
+
+
+
+  const libraryPanel = document.getElementById("source-library");
+  const libraryGrid = document.getElementById("source-library-grid");
+  const metaEditor = document.getElementById("source-meta-editor");
+  const metaTitle = document.getElementById("source-meta-title");
+  const metaDescription = document.getElementById("source-meta-description");
+  const metaHref = document.getElementById("source-meta-href");
+
+  function sourceMediaCatalogue(){
+    const media = Array.isArray(window.SOURCE_MEDIA) ? window.SOURCE_MEDIA : [];
+    return media.filter(x => x && x.src);
+  }
+
+  function usedImageSources(){
+    return new Set(
+      elements()
+        .map(el => el.querySelector(":scope > img")?.getAttribute("src"))
+        .filter(Boolean)
+    );
+  }
+
+  function renderSourceLibrary(){
+    libraryGrid.innerHTML = "";
+    const used = usedImageSources();
+
+    sourceMediaCatalogue().forEach(entry => {
+      const card = document.createElement("div");
+      card.className = "source-library-item";
+      if (used.has(entry.src)) card.classList.add("used");
+
+      const img = document.createElement("img");
+      img.src = entry.src;
+      img.alt = entry.title || entry.src.split("/").pop();
+
+      const label = document.createElement("div");
+      label.textContent = entry.title || entry.src.split("/").pop();
+
+      card.append(img,label);
+      card.addEventListener("click", () => {
+        const el = createElement({
+          id: makeId(),
+          type: "image",
+          src: entry.src,
+          title: entry.title || "",
+          description: entry.description || "",
+          href: entry.href || "",
+          left: (60 + Math.random()*520) + "px",
+          top: (70 + Math.random()*700) + "px",
+          width: (160 + Math.random()*120) + "px",
+          transform: "rotate(0deg)"
+        });
+        setEditing(true);
+        select(el);
+        openMetaEditor(el);
+        saveLocal(false);
+        renderSourceLibrary();
+      });
+
+      libraryGrid.appendChild(card);
+    });
+  }
+
+  function openMetaEditor(el){
+    if (!el) return;
+    selected = el;
+    metaTitle.value = el.dataset.title || "";
+    metaDescription.value = el.dataset.description || "";
+    metaHref.value = el.dataset.href || "";
+    metaEditor.classList.add("visible");
+  }
+
+  document.getElementById("source-library-open").onclick = () => {
+    renderSourceLibrary();
+    libraryPanel.classList.add("open");
+    libraryPanel.setAttribute("aria-hidden","false");
+  };
+
+  document.getElementById("source-library-close").onclick = () => {
+    libraryPanel.classList.remove("open");
+    libraryPanel.setAttribute("aria-hidden","true");
+  };
+
+  document.getElementById("source-library-refresh").onclick = () => {
+    /* source_media_manifest.js is a static file. Reloading the page is the
+       reliable way to pick up a freshly generated manifest on file:// and
+       GitHub Pages. The local Source arrangement survives via localStorage. */
+    location.reload();
+  };
+
+  document.getElementById("source-edit-meta").onclick = () => {
+    if (selected) openMetaEditor(selected);
+  };
+
+  document.getElementById("source-meta-apply").onclick = () => {
+    if (!selected) return;
+    selected.dataset.title = metaTitle.value.trim();
+    selected.dataset.description = metaDescription.value.trim();
+    selected.dataset.href = metaHref.value.trim();
+
+    if (selected.dataset.type === "concept") {
+      const handle = selected.querySelector(":scope > .source-resize-handle");
+      selected.childNodes[0].textContent = metaTitle.value.trim() || "concept";
+      if (handle && handle.parentNode !== selected) selected.appendChild(handle);
+    } else {
+      const img = selected.querySelector(":scope > img");
+      if (img) img.alt = metaTitle.value.trim();
+    }
+
+    saveLocal(false);
+    showSaved();
+  };
+
+  document.getElementById("source-meta-close").onclick = () => {
+    metaEditor.classList.remove("visible");
+  };
+
+  document.getElementById("source-add-text").onclick = () => {
+    const text = prompt("Concept / text");
+    if (!text) return;
+    const description = prompt("Description shown when clicked") || "";
+    const href = prompt("Optional URL") || "";
+
+    const el = createElement({
+      id: makeId(),
+      type: "concept",
+      text,
+      title: text,
+      description,
+      href,
+      left: (90 + Math.random()*520) + "px",
+      top: (100 + Math.random()*650) + "px",
+      width: (150 + Math.random()*120) + "px",
+      transform: "rotate(0deg)"
+    });
+    setEditing(true);
+    select(el);
+    saveLocal(false);
+  };
+
+  document.getElementById("source-remove").onclick = () => {
+    if (!selected) return;
+    selected.remove();
+    selected = null;
+    metaEditor.classList.remove("visible");
+    saveLocal(false);
+  };
+
+  document.getElementById("source-front").onclick = () => {
+    if (!selected) return;
+    selected.style.zIndex = ++maxZ;
+    saveLocal(false);
+  };
+
+  document.getElementById("source-save").onclick = () => saveLocal(true);
+
+  document.getElementById("source-reset").onclick = () => {
+    try { localStorage.removeItem(KEY); } catch {}
+    if (window.name.startsWith(WINDOW_NAME_PREFIX)) window.name = "";
+    location.reload();
+  };
+
+  document.getElementById("source-download").onclick = () => {
+    const js = "window.SOURCE_LAYOUT = " + JSON.stringify(serialize(), null, 2) + ";\\n";
+    const blob = new Blob([js], {type:"text/javascript"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "source_layout.js";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+})();
+</script>
+
 </body>
 </html>

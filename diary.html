@@ -5,102 +5,11 @@
 document.documentElement.classList.add("tree-state-pending");
 </script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Science | Coral Fustero-Torre</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<title>diary | /archive/blog/</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-        :root {
-            --text-color: #1a1a1a;
-            --light-grey: #666;
-            --border-color: #eee;
-        }
-
-        body {
-            font-family: 'Courier Prime', monospace;
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-            background-color: #fff;
-            line-height: 1.6;
-        }
-
-        header {
-            padding: 4rem 2rem 1rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .logo { 
-            text-decoration: none; 
-            color: #000; 
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        nav a { 
-            text-decoration: none; 
-            color: var(--light-grey); 
-            font-size: 0.9rem;
-            margin-left: 20px;
-        }
-
-        nav a:hover { color: var(--text-color); }
-
-        main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 2rem 5rem 2rem;
-        }
-
-        section { margin-bottom: 4rem; }
-
-        h2 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-            margin-bottom: 1.5rem;
-        }
-
-        ul { list-style: none; padding: 0; }
-        .list-item { margin-bottom: 0.8rem; }
-
-        /* Publicaciones */
-        .pub-item { margin-bottom: 1.5rem; }
-        .pub-link { text-decoration: none; color: inherit; }
-        .pub-link:hover .pub-title { text-decoration: underline; }
-        .pub-title { font-weight: 700; display: block; }
-        .pub-journal { font-style: italic; color: var(--light-grey); font-size: 0.95rem; }
-
-        /* CV Entries */
-        .cv-entry { display: flex; justify-content: space-between; margin-bottom: 2.5rem; }
-        .cv-main { flex: 1; }
-        .cv-date { color: var(--light-grey); font-size: 0.85rem; text-align: right; min-width: 140px; }
-        .cv-role { font-weight: 700; display: block; font-size: 1rem; }
-        .cv-inst { font-style: italic; color: var(--light-grey); display: block; margin-bottom: 8px; }
-        .cv-description { font-size: 0.95rem; margin: 0; padding: 0; list-style: none; }
-        .cv-description li { margin-bottom: 5px; position: relative; padding-left: 15px; }
-        .cv-description li::before { content: "+"; position: absolute; left: 0; }
-
-        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.95rem; }
-
-        footer {
-            padding: 3rem 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
-            color: var(--light-grey);
-        }
-
-        @media (max-width: 600px) {
-            .cv-entry { flex-direction: column; }
-            .cv-date { text-align: left; margin-top: 5px; }
-        }
-    
+*{box-sizing:border-box;font-family:"Courier Prime",monospace}
+body{margin:0;background:#e5e5e2;color:#444}
 
 /* ==========================================================
    SHARED /archive/ FILE BROWSER — classic 90s desktop
@@ -254,17 +163,8 @@ document.documentElement.classList.add("tree-state-pending");
     .archive-main { padding: 14px 10px 60px; }
 }
 
-
-body { background:#e5e5e2 !important; }
-.archive-content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 3vh 2rem 7rem;
-}
-.archive-content section { margin-bottom:4rem; }
-.archive-content h2 { border-bottom:1px solid rgba(0,0,0,.12); }
-.archive-content a { color:inherit; }
-
+.derive-placeholder{max-width:650px;margin:10vh auto;font-size:13px;line-height:1.6}
+.derive-placeholder h1{font-size:1.35rem;font-weight:700}
 
 /* v3 polish */
 .file-index-title {
@@ -424,6 +324,218 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
   background-color: transparent !important;
 }
 
+
+/* diary */
+.diary-main{
+  grid-column:2;
+  min-height:100vh;
+  padding:64px 7vw 120px;
+  background:transparent;
+}
+
+.diary-wrap{
+  width:min(820px,100%);
+  margin:0 auto;
+}
+
+.diary-header{
+  margin:0 0 72px;
+}
+
+.diary-header h1{
+  margin:0;
+  font-size:22px;
+  line-height:1.1;
+  font-weight:700;
+  color:#111;
+}
+
+.diary-subtitle{
+  margin-top:8px;
+  font-size:12px;
+  line-height:1.4;
+  color:#666;
+}
+
+.diary-post{
+  margin:0 0 120px;
+  color:#222;
+  font-size:14px; /* cambiar tamaño de fuente de las entradas */ 
+  line-height:1.78;
+  max-width:760px;
+}
+
+.diary-post + .diary-post{
+  padding-top:54px;
+  border-top:1px dotted #aaa;
+}
+
+.diary-entry-header{
+  margin:0 0 38px;
+}
+
+.diary-post h2{
+  margin:0 0 9px;
+  font-size:28px;
+  line-height:1.15;
+  font-weight:700;
+  color:#111;
+}
+
+.diary-meta{
+  margin:0 0 8px;
+  font-size:11px;
+  line-height:1.4;
+  color:#777;
+}
+
+.diary-deck{
+  margin:12px 0 0;
+  max-width:650px;
+  font-size:15px;
+  line-height:1.55;
+  color:#555;
+}
+
+.diary-post p{
+  margin:0 0 25px;
+}
+
+.diary-post p:first-of-type{
+  margin-top:0;
+}
+
+.diary-post a{
+  color:#111;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+}
+
+.diary-post blockquote{
+  margin:38px 0;
+  padding:4px 0 4px 22px;
+  border-left:1px solid #777;
+  font-size:17px;
+  line-height:1.65;
+  color:#444;
+}
+
+/* Images can be inserted anywhere between paragraphs. */
+.diary-image{
+  margin:44px 0 48px;
+}
+
+.diary-image img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.diary-image figcaption{
+  margin-top:9px;
+  font-size:10px;
+  line-height:1.45;
+  color:#777;
+}
+
+/* Optional image widths */
+.diary-image.full{
+  width:min(980px,calc(100vw - var(--archive-sidebar) - 60px));
+  max-width:none;
+  margin-left:50%;
+  transform:translateX(-50%);
+}
+
+.diary-image.medium{
+  width:78%;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.diary-image.small{
+  width:52%;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Optional asymmetric placement */
+.diary-image.left{
+  width:64%;
+  margin-left:0;
+  margin-right:auto;
+}
+
+.diary-image.right{
+  width:64%;
+  margin-left:auto;
+  margin-right:0;
+}
+
+.diary-image-row{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin:40px 0;
+}
+
+.diary-image-row img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+  display:block;
+}
+
+.diary-small{
+  font-size:12px;
+  line-height:1.5;
+  color:#777;
+}
+
+.diary-source-note{
+  margin:0 0 34px;
+  padding-bottom:12px;
+  border-bottom:1px dotted #aaa;
+  font-size:11px;
+  line-height:1.5;
+  color:#777;
+}
+
+@media(max-width:800px){
+  .diary-main{
+    padding:38px 22px 90px;
+  }
+
+  .diary-header{
+    margin-bottom:50px;
+  }
+
+  .diary-header h1{
+    font-size:20px;
+  }
+
+  .diary-post{
+    font-size:16px;
+    line-height:1.7;
+  }
+
+  .diary-post h2{
+    font-size:23px;
+  }
+
+  .diary-image.full,
+  .diary-image.medium,
+  .diary-image.small,
+  .diary-image.left,
+  .diary-image.right{
+    width:100%;
+    max-width:100%;
+    margin-left:0;
+    margin-right:0;
+    transform:none;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -437,7 +549,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
     <div><a class="file" href="index.html">index.html</a></div>
 
     <details data-tree-id="science">
-      <summary><a href="science.html"><span class="folder active">science/</span></a></summary>
+      <summary><a href="science.html"><span class="folder">science/</span></a></summary>
       <div class="children">
         <div><a class="file" href="cv.html">cv.html</a></div>
         <details data-tree-id="science-projects">
@@ -462,7 +574,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
       <div class="children">
         <div><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
-          <div><a class="file" href="diary.html">diary</a></div>
+          <div><a class="file active" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>
@@ -470,58 +582,48 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 
 
 
-<main class="archive-main">
-<div class="archive-content">
+<main class="diary-main">
+  <article class="diary-wrap">
+    <header class="diary-header">
+      <h1>diary</h1>
+      <div class="diary-subtitle">something is burning / notes </div>
+    </header>
 
-        <section id="research">
-            <h2>Research Areas</h2>
-            <ul>
-                <li class="list-item">• Single-cell and long-read sequencing technologies</li>
-                <li class="list-item">• Mitochondrial lineage tracing</li>
-                <li class="list-item">• Development of custom analytical tools and pipelines </li>
-                <li class="list-item">• Computational modeling of cellular complexity and evolution</li>
-            </ul>
-        </section>
-		
-        <section id="publications">
-            <h2>Selected Publications</h2>
-            <div class="pub-item">
-                <a href="https://pubmed.ncbi.nlm.nih.gov/41152985/" target="_blank" class="pub-link">
-                    <span class="pub-title">Resolving intra-tumor heterogeneity and clonal evolution of CBF-AML.</span>
-                    <span class="pub-journal">Experimental Hematology and Oncology, 2025.</span>
-                </a>
-            </div>
-            <div class="pub-item">
-                <a href="https://pubmed.ncbi.nlm.nih.gov/39186651/" target="_blank" class="pub-link">
-                    <span class="pub-title">Type I interferon signaling pathway enhances immune-checkpoint inhibition.</span>
-                    <span class="pub-journal">Cancer Discovery, 2024.</span>
-                </a>
-            </div>
-            <div class="pub-item">
-                <a href="https://pubmed.ncbi.nlm.nih.gov/36854674/" target="_blank" class="pub-link">
-                    <span class="pub-title">Genomic and immune landscape of metastatic pheochromocytoma and paraganglioma.</span>
-                    <span class="pub-journal">Nature Communications, 2023.</span>
-                </a>
-            </div>
-            <div class="pub-item">
-                <a href="https://pubmed.ncbi.nlm.nih.gov/34788788/" target="_blank" class="pub-link">
-                    <span class="pub-title">bollito: a flexible pipeline for comprehensive single-cell RNA-seq analyses.</span>
-                    <span class="pub-journal">Bioinformatics, 2022.</span>
-                </a>
-            </div>
-            <div class="pub-item">
-                <a href="https://pubmed.ncbi.nlm.nih.gov/34911571/" target="_blank" class="pub-link">
-                    <span class="pub-title">Beyondcell: targeting cancer therapeutic heterogeneity in scRNA-seq.</span>
-                    <span class="pub-journal">Genome Medicine, 2021.</span>
-                </a>
-            </div>
-			<a href="https://www.researchgate.net/profile/Coral-Fustero-Torre?ev=hdr_xprf" target="_blank" class="external-link">View more on ResearchGate →</a>
-        </section>
-		
-        
-		
-    
-</div>
+    <section class="diary-post">
+      <div class="diary-entry-header">
+        <div class="diary-meta">Publicado en Substack · febrero de 2026. Escrito durante las navidades de ese mismo año. </div>
+        <h2><!-- Puedes escribir aquí el título de la entrada --> #1</h2>
+        <div class="diary-deck"></div>
+      </div>
+
+      <p>«Estos árboles son muy amorosos. Sí, se dejan abrazar muy bien». Nos lo dijo mirando a los falsos pimenteros de delante de la estación del Portillo. Cogió unas ramas y se las pasó por la cara. «También sirven de antiinflamatorio, pero su uso más común tiene que ver con alejar a los mosquitos».</p>
+
+      <p>Mi padre consigue encontrar puntos de anclaje hasta en los terrenos de una vieja estación a punto de ser derribada. Cuando estamos en casa, la cosa cambia. Tengo la sensación de que en casa los automatismos son más severos, las conversaciones más predecibles, los temas de conversación, más limitados. Nuestra casa funciona como un ecosistema independiente, con vida propia. No hay árboles a los que abrazar, más bien heridas que esconder.</p>
+
+
+      <figure class="diary-image medium">
+        <img src="img/diary/0.jpg" alt="">
+        <figcaption></figcaption>
+      </figure>
+
+      <p>Llegamos y mi ansiedad no me dejaba pensar, estaba demasiado ocupada intentando predecir las infinitas rutas por las cuales nos podría llevar la conversación, los infinitos puntos de inflexión que podrían desestabilizar nuestro equilibrio. Llevaba un tema pensado en la cabeza, algo sobre lo que hablar antes de que el tema se sacara sólo. Un mecanismo defensivo con el que intentar escapar del paisaje de Waddington que habitamos.</p>
+
+      <p>Y es que la bolsa de temas recurrentes es muy escueta y casi todos habitan en el enfado. Hablar del pasado, pero con orgullo, sin embargo, suele ser otra cosa.</p>
+
+      <p>Al preguntarle por su abuelo Juan, su cara cambió, también su mirada. Nos contó que era un señor respetado; había estado viviendo en África, sirviendo a un tipo inusualmente amable mientras era cabo primero. No hubiera vuelto al pueblo pero la guerra se acabó. No volvió a trabajar nunca más: se rodeó de mujeres para no tener que hacerlo.</p>
+
+      <p>Aquí es cuando nos empezó a hablar de su abuela Anastasia, la verdadera cabeza de familia, con su largo pelo siempre recogido y su dentadura ausente; con sus nervios que la consumían y no le dejaban parar; con su exquisita cocina y sus habilidades como mondonguera; con su trenza interminable, recogida; con la madera en la cabeza y el pan en la madera.</p>
+
+      <p>Analizaba su vida y me daba cuenta del origen de su malestar. Porque cuando uno ha visto lo que hay abajo, el vértigo es más difícil de sobrellevar. Pero pese a que las historias que contaba eran de pobreza y penurias, el orgullo no abandonó su mirada. Y pensé en cómo el arraigo es capaz de contrarrestarlo todo. El saber de donde viene uno y cómo las cosas se dan.</p>
+      
+     <div class="diary-image-row">
+      <img src="img/diary/1.jpg" alt="">
+      <img src="img/diary/2.jpg" alt="">
+      <img src="img/diary/3.jpg" alt="">
+     </div>
+
+    </section>
+  </article>
 </main>
 </div>
 

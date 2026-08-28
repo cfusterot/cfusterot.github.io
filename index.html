@@ -36,7 +36,7 @@ body{
     height: 100vh;
     overflow-y: auto;
     z-index: 20000;
-    background: #d8d8d8;
+    background: transparent;
     border-right: 2px solid #8b8b8b;
     box-shadow: inset -1px 0 0 #fff;
     padding: 18px 14px 40px;
@@ -335,6 +335,19 @@ body{
 
 html.tree-state-pending .file-tree { visibility: hidden !important; }
 
+
+/* v12.5 — sidebar uses exactly the page background */
+.file-sidebar,
+.sidebar,
+.archive-sidebar,
+.sidebar-shell,
+.sidebar-panel,
+.archive-tree,
+.file-tree {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 </style>
 </head>
 <body>
@@ -343,7 +356,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 
 
 <aside class="file-sidebar">
-  <div class="file-index-title">Índice de /archive/</div>
+  <div class="file-index-title">/archive/ index</div>
   <nav class="file-tree">
     <div><a class="file active" href="index.html">index.html</a></div>
 
@@ -373,6 +386,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
       <div class="children">
         <div><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>

@@ -595,7 +595,7 @@ footer {
     width: var(--archive-sidebar);
     overflow-y: auto;
     z-index: 8000;
-    background: rgba(229,229,226,.97);
+    background: transparent;
     border-right: 1px solid rgba(0,0,0,.18);
     padding: 18px 14px 40px;
 }
@@ -657,7 +657,7 @@ footer {
 /* ===== 1990s desktop / classic file-browser styling ===== */
 
 .file-sidebar {
-    background: #d8d8d8;
+    background: transparent;
     border-right: 2px solid #8b8b8b;
     box-shadow: inset -1px 0 0 #ffffff;
 }
@@ -855,7 +855,7 @@ footer {
     height: 100vh;
     overflow-y: auto;
     z-index: 20000;
-    background: #d8d8d8;
+    background: transparent;
     border-right: 2px solid #8b8b8b;
     box-shadow: inset -1px 0 0 #fff;
     padding: 18px 14px 40px;
@@ -1165,6 +1165,22 @@ background:#000080;color:#fff;font-size:8px;padding:2px 3px}
 white-space:nowrap;background:#ddd}
 @media(max-width:800px){#media-library{width:65vw}#library-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+#editor-view-wrap{position:fixed;right:14px;bottom:54px;z-index:90002}
+#editor-view{font-family:"Courier Prime",monospace;font-size:10px;border:1px solid #777;background:#e5e5e2;padding:4px 6px}
+
+/* v12.5 — sidebar uses exactly the page background */
+.file-sidebar,
+.sidebar,
+.archive-sidebar,
+.sidebar-shell,
+.sidebar-panel,
+.archive-tree,
+.file-tree {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 </style>
 </head>
 
@@ -1178,7 +1194,7 @@ white-space:nowrap;background:#ddd}
 
 
 <aside class="file-sidebar">
-  <div class="file-index-title">Índice de /archive/</div>
+  <div class="file-index-title">/archive/ index</div>
   <nav class="file-tree">
     <div><a class="file" href="index.html">index.html</a></div>
 
@@ -1194,12 +1210,12 @@ white-space:nowrap;background:#ddd}
     </details>
 
     <details data-tree-id="visual-archive">
-      <summary><a href="visual_archive.html"><span class="folder active">visual_archive/</span></a></summary>
+      <summary><a href="visual_archive_editor.html"><span class="folder active">visual_archive/</span></a></summary>
       <div class="children">
         <!-- Future visual-specific CV can be added here, but remains hidden for now. -->
-        <div><a href="visual_archive.html?view=escitalopram" data-archive-view="escitalopram"><span class="folder">escitalopram/</span></a></div>
-        <div><a href="visual_archive.html?view=photo" data-archive-view="photo"><span class="folder">photo/</span></a></div>
-        <div><a href="visual_archive.html?view=video" data-archive-view="video"><span class="folder">video/</span></a></div>
+        <div><a href="visual_archive_editor.html?view=escitalopram" data-archive-view="escitalopram"><span class="folder">escitalopram/</span></a></div>
+        <div><a href="visual_archive_editor.html?view=photo" data-archive-view="photo"><span class="folder">photo/</span></a></div>
+        <div><a href="visual_archive_editor.html?view=video" data-archive-view="video"><span class="folder">video/</span></a></div>
       </div>
     </details>
 
@@ -1208,6 +1224,7 @@ white-space:nowrap;background:#ddd}
       <div class="children">
         <div><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>
@@ -1358,10 +1375,18 @@ white-space:nowrap;background:#ddd}
 
 <footer>&copy; 2026 Coral Fustero-Torre</footer>
 
+<div id="editor-view-wrap">
+<select id="editor-view" title="section to edit">
+  <option value="">visual archive</option>
+  <option value="photo">photo</option>
+  <option value="video">video</option>
+  <option value="escitalopram">collage</option>
+</select>
+</div>
 <button id="editor-toggle" type="button">[ arrange ]</button>
 
 <div id="editor-panel">
-    <button type="button" id="save-layout">[ save ]</button>
+    <button type="button" id="save-layout">[ save local ]</button>
     <button type="button" id="reset-layout">[ reset ]</button>
     <button type="button" id="toggle-silhouette">[ silhouette ]</button>
     <button type="button" id="cycle-shape">[ next shape ]</button>
@@ -1413,7 +1438,7 @@ white-space:nowrap;background:#ddd}
     <button type="button" id="clear-wall">[ clear wall ]</button>
     <button type="button" id="open-library">[ library ]</button>
     <button type="button" id="delete-item">[ remove ]</button>
-    <button type="button" id="export-layout">[ download layout ]</button>
+    <button type="button" id="export-layout">[ publish layout ]</button>
     <button type="button" id="import-layout">[ load layout ]</button>
     <input type="file" id="layout-file-input" accept=".js,.json,application/json,text/javascript" hidden>
 </div>
@@ -1492,7 +1517,8 @@ let lightboxIndex = 0;
 let selectedItem = null;
 let maxZ = 100;
 
-const STORAGE_KEY = "visualArchiveManualLayout_v4";
+const archiveView = new URLSearchParams(window.location.search).get("view") || "";
+const STORAGE_KEY = "visualArchiveManualLayout_v5" + (archiveView ? "_" + archiveView : "_main");
 
 /* deterministic randomness: same automatic collage after reload */
 function mulberry32(seed) {
@@ -1595,9 +1621,29 @@ function findPackedPosition(w, h, placed, containerWidth) {
 }
 
 function buildWall() {
-    const originals = Array.from(
+    let originals = Array.from(
         source.querySelectorAll(":scope > img, :scope > video")
     );
+
+    if (archiveView === "photo") {
+        originals = originals.filter(el => {
+            const src = el.getAttribute("src") || "";
+            return el.tagName === "IMG" &&
+                   src.includes("/photography/") &&
+                   !src.includes("/photography/derives/");
+        });
+    } else if (archiveView === "video") {
+        originals = originals.filter(el => {
+            const src = el.getAttribute("src") || "";
+            return el.tagName === "VIDEO" &&
+                   src.includes("/super8/");
+        });
+    } else if (archiveView === "escitalopram") {
+        originals = originals.filter(el =>
+            (el.getAttribute("src") || "").includes("/collage/") ||
+            el.dataset.project === "escitalopram"
+        );
+    }
 
     wall.innerHTML = "";
     lightboxItems = [];
@@ -1987,6 +2033,10 @@ document.getElementById("delete-item").addEventListener("click", () => {
 
 document.getElementById("save-layout").addEventListener("click", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeLayout()));
+    const btn = document.getElementById("save-layout");
+    const oldText = btn.textContent;
+    btn.textContent = "[ saved ✓ ]";
+    setTimeout(() => { btn.textContent = oldText; }, 1000);
 });
 
 document.getElementById("reset-layout").addEventListener("click", () => {
@@ -2006,7 +2056,9 @@ document.getElementById("export-layout").addEventListener("click", async () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "visual_archive_layout.js";
+    a.download = archiveView
+        ? `visual_archive_layout_${archiveView}.js`
+        : "visual_archive_layout.js";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -2059,7 +2111,7 @@ function restoreSavedLayout() {
 
     const savedHasItems = saved && Array.isArray(saved.items) && saved.items.length > 0;
 
-    if (!savedHasItems && window.VISUAL_ARCHIVE_LAYOUT &&
+    if (!archiveView && !savedHasItems && window.VISUAL_ARCHIVE_LAYOUT &&
         Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items) &&
         window.VISUAL_ARCHIVE_LAYOUT.items.length > 0) {
         saved = window.VISUAL_ARCHIVE_LAYOUT;
@@ -2183,73 +2235,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!EDITOR_IS_LOCAL) {
         document.getElementById("editor-toggle")?.remove();
         document.getElementById("editor-panel")?.remove();
+        document.getElementById("editor-view-wrap")?.remove();
     }
 });
 
 
 
 
-
-/* Local editor folder views. No media is deleted by filtering. */
-(function () {
-    function matchesView(item, view) {
-        if (!view) return true;
-
-        const src = item.dataset.src || "";
-        const media = item.querySelector("img, video");
-        const tag = media ? media.tagName : "";
-
-        if (view === "escitalopram") {
-            return item.dataset.project === "escitalopram" ||
-                   src.includes("/collage/");
-        }
-
-        if (view === "photo") {
-            return tag === "IMG" &&
-                   src.includes("/photography/");
-        }
-
-        if (view === "video") {
-            return tag === "VIDEO" ||
-                   src.includes("/super8/");
-        }
-
-        return true;
-    }
-
-    function applyArchiveView(view) {
-        document.querySelectorAll(".wall-item").forEach(item => {
-            item.style.display = matchesView(item, view) ? "" : "none";
-        });
-
-        document.querySelectorAll("[data-archive-view]").forEach(link => {
-            const folder = link.querySelector(".folder");
-            if (folder) folder.classList.toggle("active", link.dataset.archiveView === view);
-        });
-
-        const visualFolder = document.querySelector('a[href="visual_archive.html"] .folder');
-        if (visualFolder) visualFolder.classList.toggle("active", !view);
-
-        if (typeof growWallToContent === "function") growWallToContent();
-    }
-
-    window.addEventListener("load", () => {
-        document.querySelectorAll("[data-archive-view]").forEach(link => {
-            link.addEventListener("click", event => {
-                event.preventDefault();
-                applyArchiveView(link.dataset.archiveView);
-            });
-        });
-
-        const visualLink = document.querySelector('a[href="visual_archive.html"]');
-        if (visualLink) {
-            visualLink.addEventListener("click", event => {
-                event.preventDefault();
-                applyArchiveView(null);
-            });
-        }
-    });
-})();
 
 </script>
 
@@ -2442,8 +2434,39 @@ window.addEventListener("load", () => {
   const saved = window.VISUAL_ARCHIVE_LAYOUT;
   const n = saved && Array.isArray(saved.items) ? saved.items.length : 0;
   const wallN = document.querySelectorAll("#image-wall .wall-item").length;
-  el.textContent = `layout: ${n} / wall: ${wallN}`;
+  const catalogueN = Array.isArray(window.ARCHIVE_MEDIA) ? window.ARCHIVE_MEDIA.length : 0;
+  el.textContent = `${archiveView || "visual archive"} · layout: ${n} / wall: ${wallN} / catalogue: ${catalogueN}`;
 });
+</script>
+
+
+<script>
+(function(){
+  const sel = document.getElementById("editor-view");
+  if (!sel) return;
+  sel.value = archiveView;
+  sel.addEventListener("change", () => {
+    const url = new URL("visual_archive_editor.html", location.href);
+    if (sel.value) url.searchParams.set("view", sel.value);
+    location.href = url.toString();
+  });
+})();
+</script>
+
+
+<script>
+(function(){
+  if (typeof EDITOR_IS_LOCAL !== "undefined" && !EDITOR_IS_LOCAL) return;
+  document.querySelectorAll("[data-archive-view]").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      const url = new URL("visual_archive_editor.html", location.href);
+      const view = link.dataset.archiveView || "";
+      if (view) url.searchParams.set("view", view);
+      location.href = url.toString();
+    });
+  });
+})();
 </script>
 
 </body>

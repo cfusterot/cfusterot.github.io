@@ -588,7 +588,7 @@ footer {
     width: var(--archive-sidebar);
     overflow-y: auto;
     z-index: 8000;
-    background: rgba(229,229,226,.97);
+    background: transparent;
     border-right: 1px solid rgba(0,0,0,.18);
     padding: 18px 14px 40px;
 }
@@ -651,7 +651,7 @@ footer {
 /* ===== 1990s desktop / classic file-browser styling ===== */
 
 .file-sidebar {
-    background: #d8d8d8;
+    background: transparent;
     border-right: 2px solid #8b8b8b;
     box-shadow: inset -1px 0 0 #ffffff;
 }
@@ -846,7 +846,7 @@ footer {
     height: 100vh;
     overflow-y: auto;
     z-index: 20000;
-    background: #d8d8d8;
+    background: transparent;
     border-right: 2px solid #8b8b8b;
     box-shadow: inset -1px 0 0 #fff;
     padding: 18px 14px 40px;
@@ -1131,6 +1131,31 @@ footer {
 
 html.tree-state-pending .file-tree { visibility: hidden !important; }
 
+
+#collage-play-controls{
+  position:fixed;right:14px;bottom:14px;z-index:95000;
+  display:none;gap:5px;font-size:10px;
+}
+#collage-play-controls button{
+  font-family:"Courier Prime",monospace;font-size:10px;
+  border:1px solid #777;background:#e5e5e2;padding:4px 7px;cursor:pointer;
+}
+body.collage-play-mode #image-wall .wall-item{cursor:grab}
+body.collage-play-mode #image-wall .wall-item.dragging{cursor:grabbing;z-index:99999}
+
+
+/* v12.5 — sidebar uses exactly the page background */
+.file-sidebar,
+.sidebar,
+.archive-sidebar,
+.sidebar-shell,
+.sidebar-panel,
+.archive-tree,
+.file-tree {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 </style>
 </head>
 
@@ -1143,7 +1168,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 
 
 <aside class="file-sidebar">
-  <div class="file-index-title">Índice de /archive/</div>
+  <div class="file-index-title">/archive/ index</div>
   <nav class="file-tree">
     <div><a class="file" href="index.html">index.html</a></div>
 
@@ -1173,6 +1198,7 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
       <div class="children">
         <div><a class="file" href="derives.html">derives</a></div>
         <div><a class="file" href="source.html">source</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
       </div>
     </details>
   </nav>
@@ -1398,7 +1424,14 @@ let lightboxIndex = 0;
 let selectedItem = null;
 let maxZ = 100;
 
-const STORAGE_KEY = "visualArchiveManualLayout_v4";
+function currentArchiveViewForLayout() {
+    return new URLSearchParams(window.location.search).get("view") || "";
+}
+
+function currentLayoutStorageKey() {
+    const view = currentArchiveViewForLayout();
+    return "visualArchiveManualLayout_v5" + (view ? "_" + view : "_main");
+}
 
 /* deterministic randomness: same automatic collage after reload */
 function mulberry32(seed) {
@@ -1455,6 +1488,15 @@ const SHAPES = [
     "shape-octagon",
     "shape-parallelogram",
     "shape-chevron"
+];
+
+const COLLAGE_PLAY_SHAPES = [
+  "shape-block","shape-oval","shape-circle","shape-arch","shape-ticket",
+  "shape-diamond","shape-soft-diamond","shape-trapezoid",
+  "shape-torn-1","shape-torn-2","shape-organic","shape-pill",
+  "shape-halfmoon","shape-doily-round","shape-coaster-flower",
+  "shape-triangle-up","shape-triangle-down","shape-hexagon",
+  "shape-octagon","shape-parallelogram","shape-chevron"
 ];
 
 const PRINTS = [
@@ -1537,11 +1579,13 @@ function buildWall() {
 
             if (archiveView === "photo") {
                 return el.tagName === "IMG" &&
-                       src.includes("/photography/");
+                       src.includes("/photography/") &&
+                       !src.includes("/photography/derives/");
             }
 
             if (archiveView === "video") {
-                return el.tagName === "VIDEO";
+                return el.tagName === "VIDEO" &&
+                       src.includes("/super8/");
             }
 
             return true;
@@ -1615,7 +1659,10 @@ function buildWall() {
             item.classList.add(
                 original.dataset.kind === "cutout"
                     ? "shape-block"
-                    : (original.dataset.shape || choice(SHAPES))
+                    : (original.dataset.shape ||
+                       choice(archiveView === "escitalopram"
+                         ? COLLAGE_PLAY_SHAPES
+                         : SHAPES))
             );
 
             const print = original.dataset.kind === "cutout"
@@ -1664,6 +1711,10 @@ function buildWall() {
         : 500;
 
     wall.style.height = `${bottom + 80}px`;
+
+    // Apply the local arrangement saved by visual_archive_editor.html.
+    // This is intentionally done AFTER the complete section has been built.
+    restoreSavedLayout();
 }
 /* ----------------------------------------------------------
    MANUAL ARRANGEMENT MODE
@@ -1952,7 +2003,7 @@ document.getElementById("delete-item")?.addEventListener("click", () => {
 
 
 function restoreSavedLayout() {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(currentLayoutStorageKey());
     if (!raw) return;
 
     let saved;
@@ -2132,5 +2183,103 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 })();
 </script>
+
+<div id="collage-play-controls">
+  <button type="button" id="collage-play-toggle">[ rearrange ]</button>
+  <button type="button" id="collage-play-reset">[ reset ]</button>
+</div>
+
+
+<script>
+(function(){
+  const view = new URLSearchParams(location.search).get("view");
+  if (view !== "escitalopram") return;
+
+  const controls = document.getElementById("collage-play-controls");
+  const toggle = document.getElementById("collage-play-toggle");
+  const reset = document.getElementById("collage-play-reset");
+  const wall = document.getElementById("image-wall");
+  const KEY = "publicCollagePlayLayoutV1";
+  controls.style.display = "flex";
+
+  let enabled = false;
+
+  function items(){ return Array.from(wall.querySelectorAll(".wall-item")); }
+
+  function save(){
+    const data = items().map(el => ({
+      src: el.dataset.src,
+      left: el.style.left,
+      top: el.style.top,
+      zIndex: el.style.zIndex || ""
+    }));
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function restore(){
+    let data;
+    try { data = JSON.parse(localStorage.getItem(KEY) || "null"); } catch {}
+    if (!Array.isArray(data)) return;
+    const map = new Map(data.map(x => [x.src,x]));
+    items().forEach(el => {
+      const x = map.get(el.dataset.src);
+      if (!x) return;
+      el.style.left = x.left;
+      el.style.top = x.top;
+      el.style.zIndex = x.zIndex;
+    });
+  }
+
+  function bind(el){
+    el.addEventListener("pointerdown", ev => {
+      if (!enabled) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      const rect = el.getBoundingClientRect();
+      const wallRect = wall.getBoundingClientRect();
+      const offsetX = ev.clientX - rect.left;
+      const offsetY = ev.clientY - rect.top;
+      el.classList.add("dragging");
+      el.setPointerCapture(ev.pointerId);
+
+      const move = e => {
+        const x = e.clientX - wallRect.left - offsetX;
+        const y = e.clientY - wallRect.top - offsetY;
+        el.style.left = Math.max(0,x) + "px";
+        el.style.top = Math.max(0,y) + "px";
+      };
+
+      const up = e => {
+        el.releasePointerCapture(e.pointerId);
+        el.classList.remove("dragging");
+        el.removeEventListener("pointermove", move);
+        el.removeEventListener("pointerup", up);
+        save();
+      };
+
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerup", up);
+    });
+  }
+
+  window.addEventListener("load", () => {
+    restore();
+    items().forEach(bind);
+  });
+
+  toggle.addEventListener("click", () => {
+    enabled = !enabled;
+    document.body.classList.toggle("collage-play-mode", enabled);
+    toggle.textContent = enabled ? "[ done ]" : "[ rearrange ]";
+  });
+
+  reset.addEventListener("click", () => {
+    localStorage.removeItem(KEY);
+    location.reload();
+  });
+})();
+</script>
+
 </body>
 </html>

@@ -1,0 +1,72 @@
+window.SOURCE_LAYOUT = [
+  {
+    "id": "night-moods",
+    "type": "image",
+    "src": "img/source/night_moods.jpeg",
+    "text": "",
+    "title": "Jean Rhys",
+    "description": "A source-object linked to Jean Rhys; image used here as a visual trigger rather than a bibliographic illustration.",
+    "href": "https://en.wikipedia.org/wiki/Jean_Rhys",
+    "left": "55px",
+    "top": "90px",
+    "width": "245px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "burning-lights",
+    "type": "concept",
+    "src": "",
+    "text": "Burning Lights",
+    "title": "Burning Lights",
+    "description": "Bella Chagall — memory / language / ritual / domestic light.",
+    "href": "https://openlibrary.org/books/OL6500413M/Burning_lights",
+    "left": "610px",
+    "top": "145px",
+    "width": "210px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "petit-silence",
+    "type": "image",
+    "src": "img/source/petit_silence.jpeg",
+    "text": "",
+    "title": "Generation Astrology",
+    "description": "Generation astrology / Pioneer Works. Kept as a visual association rather than a boxed citation.",
+    "href": "https://pioneerworks.org/broadcast/generation-astrology",
+    "left": "335px",
+    "top": "330px",
+    "width": "275px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "memory-language",
+    "type": "concept",
+    "src": "",
+    "text": "memory / language / ritual",
+    "title": "memory / language / ritual",
+    "description": "A loose conceptual node. Clickable concepts can sit between images without becoming cards.",
+    "href": "",
+    "left": "760px",
+    "top": "500px",
+    "width": "220px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "source-note",
+    "type": "concept",
+    "src": "",
+    "text": "source is not a bibliography",
+    "title": "source is not a bibliography",
+    "description": "things found while moving through the web.",
+    "href": "",
+    "left": "150px",
+    "top": "690px",
+    "width": "235px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  }
+];
