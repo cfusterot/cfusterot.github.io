@@ -1,404 +1,275 @@
 #!/bin/bash
-set -uo pipefail
+set -euo pipefail
 
-# ================================================================
-# PREPARAR IMÁGENES DEL PORTFOLIO PARA GITHUB PAGES
-#
-# Estructura esperada:
-#
-#   repo/
-#   ├── img_originales/     <- NO se sube a GitHub
-#   ├── img/                <- copias web procesadas, SÍ se suben
-#   ├── tools/photo-prep/
-#   │   ├── Publicar_Imagenes_Web.command
-#   │   └── proteger_caras.py
-#   └── visual_archive.html
-#
-# Mantiene la estructura de subcarpetas de img_originales dentro de img.
-# JPG/JPEG y PNG conservan su nombre de archivo para que los src del HTML
-# puedan apuntar directamente a img/... sin pasos posteriores.
-# ================================================================
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd -P)"
-
-# The command lives in tools/photo-prep/, so the repository is two levels up.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 cd "$SCRIPT_DIR/../.." || exit 1
-REPO_ROOT="$(pwd -P)"
+ROOT="$(pwd -P)"
 
-SOURCE="$REPO_ROOT/img_originales"
-OUTPUT_DIR="$REPO_ROOT/img"
+VISUAL_SOURCE="$ROOT/img_originales/visual_archive"
+VISUAL_OUTPUT="$ROOT/img/visual_archive"
 
-SUPPORT_DIR="$HOME/Library/Application Support/PreparadorFotosInternet"
-FACE_VENV="$SUPPORT_DIR/venv-caras"
-FACE_PYTHON="$FACE_VENV/bin/python"
-FACE_HELPER="$SCRIPT_DIR/proteger_caras.py"
+SOURCE_SOURCE_PRIMARY="$ROOT/img_originales/source"
+SOURCE_SOURCE_LEGACY="$ROOT/img_originales/visual_archive/source"
+SOURCE_OUTPUT="$ROOT/img/source"
 
-mkdir -p "$SUPPORT_DIR"
+echo "Repositorio: $ROOT"
+echo "Visual Archive origen:  $VISUAL_SOURCE"
+echo "Visual Archive destino: $VISUAL_OUTPUT"
+echo "Source destino:         $SOURCE_OUTPUT"
+echo
 
-RUN_DATE="$(date '+%Y-%m-%d_%H-%M-%S')"
-LOG_FILE="$SUPPORT_DIR/GitHub_${RUN_DATE}.tsv"
-
-printf "\n=== Portfolio · rutas detectadas ===\n"
-printf "Script:      %s\n" "$SCRIPT_DIR"
-printf "Repositorio: %s\n" "$REPO_ROOT"
-printf "Origen:      %s\n" "$SOURCE"
-printf "Destino:     %s\n\n" "$OUTPUT_DIR"
-
-if [[ "$SOURCE" != /* || "$OUTPUT_DIR" != /* ]]; then
-  echo "ERROR: las rutas no son absolutas."
-  exit 1
+if [[ ! -d "$VISUAL_SOURCE" ]]; then
+    echo "ERROR: no existe: $VISUAL_SOURCE"
+    exit 1
 fi
 
-show_error() {
-  /usr/bin/osascript - "$1" <<'APPLESCRIPT' >/dev/null
-on run argv
-  display alert "Portfolio · Preparar imágenes" message (item 1 of argv) as critical buttons {"Aceptar"} default button "Aceptar"
-end run
-APPLESCRIPT
-}
-
-choose_from_list() {
-  local title="$1"
-  local prompt="$2"
-  shift 2
-  local joined
-  joined="$(printf '%s\n' "$@")"
-  /usr/bin/osascript - "$title" "$prompt" "$joined" <<'APPLESCRIPT'
-on run argv
-  set theTitle to item 1 of argv
-  set thePrompt to item 2 of argv
-  set rawOptions to item 3 of argv
-  set AppleScript's text item delimiters to linefeed
-  set optionsList to text items of rawOptions
-  set AppleScript's text item delimiters to ""
-  set chosenItem to choose from list optionsList with title theTitle with prompt thePrompt default items {item 1 of optionsList} OK button name "Continuar" cancel button name "Cancelar"
-  if chosenItem is false then return ""
-  return item 1 of chosenItem
-end run
-APPLESCRIPT
-}
-
-ask_text() {
-  local prompt="$1"
-  local default_value="$2"
-  /usr/bin/osascript - "$prompt" "$default_value" <<'APPLESCRIPT'
-on run argv
-  try
-    set d to display dialog (item 1 of argv) default answer (item 2 of argv) with title "Portfolio · Preparar imágenes" buttons {"Cancelar", "Continuar"} default button "Continuar" cancel button "Cancelar"
-    return text returned of d
-  on error number -128
-    return "__CANCEL__"
-  end try
-end run
-APPLESCRIPT
-}
-
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  show_error "Este script está preparado para macOS."
-  exit 1
+BREW="$(command -v brew || true)"
+if [[ -z "$BREW" ]]; then
+    echo "ERROR: Homebrew no está disponible."
+    exit 1
 fi
 
-if [[ ! -d "$SOURCE" ]]; then
-  mkdir -p "$SOURCE"
-  show_error "He creado la carpeta:
+command -v magick >/dev/null 2>&1 || "$BREW" install imagemagick
+command -v ffmpeg >/dev/null 2>&1 || "$BREW" install ffmpeg
 
-$SOURCE
+PYTHON="$(command -v python3 || true)"
+MAGICK="$(command -v magick || true)"
+FFMPEG="$(command -v ffmpeg || true)"
 
-Pon ahí los originales manteniendo las mismas subcarpetas que quieres publicar dentro de img/ y ejecuta de nuevo el script.
+[[ -n "$PYTHON" ]] || { echo "ERROR: python3 no está disponible."; exit 1; }
+[[ -n "$MAGICK" ]] || { echo "ERROR: ImageMagick no está disponible."; exit 1; }
+[[ -n "$FFMPEG" ]] || { echo "ERROR: FFmpeg no está disponible."; exit 1; }
 
-Esta carpeta debe permanecer fuera de Git."
-  exit 0
-fi
+export VISUAL_SOURCE VISUAL_OUTPUT SOURCE_SOURCE_PRIMARY SOURCE_SOURCE_LEGACY SOURCE_OUTPUT MAGICK FFMPEG
 
-BREW_BIN=""
-for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
-  [[ -x "$candidate" ]] && BREW_BIN="$candidate" && break
-done
+"$PYTHON" <<'PY'
+from pathlib import Path
+import os
+import shutil
+import subprocess
+import sys
 
-if [[ -z "$BREW_BIN" ]]; then
-  show_error "No encuentro Homebrew. Instálalo desde brew.sh."
-  exit 1
-fi
+visual_source = Path(os.environ["VISUAL_SOURCE"]).resolve()
+visual_output = Path(os.environ["VISUAL_OUTPUT"]).resolve()
 
-ensure_brew_pkg() {
-  local pkg="$1"
-  local binary_rel="$2"
-  local prefix
-  prefix="$("$BREW_BIN" --prefix "$pkg" 2>/dev/null || true)"
-  if [[ ! -x "$prefix/$binary_rel" ]]; then
-    "$BREW_BIN" install "$pkg" || exit 1
-    prefix="$("$BREW_BIN" --prefix "$pkg")"
-  fi
-  printf '%s' "$prefix/$binary_rel"
-}
+source_primary = Path(os.environ["SOURCE_SOURCE_PRIMARY"]).resolve()
+source_legacy = Path(os.environ["SOURCE_SOURCE_LEGACY"]).resolve()
+source_output = Path(os.environ["SOURCE_OUTPUT"]).resolve()
 
-MAGICK_BIN="$(ensure_brew_pkg imagemagick bin/magick)"
-EXIFTOOL_BIN="$(ensure_brew_pkg exiftool bin/exiftool)"
-FFMPEG_BIN="$(ensure_brew_pkg ffmpeg bin/ffmpeg)"
+magick = os.environ["MAGICK"]
+ffmpeg = os.environ["FFMPEG"]
 
-SIZE_CHOICE="$(choose_from_list \
-  "Portfolio · Preparar imágenes" \
-  "Tamaño máximo del lado más largo" \
-  "1600 px — web ligera" \
-  "2000 px — recomendado" \
-  "2500 px — más detalle")"
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".heic", ".heif", ".webp"}
+VIDEO_EXTS = {".mp4", ".mov", ".m4v"}
 
-case "$SIZE_CHOICE" in
-  "1600 px — web ligera") MAX_SIZE=1600 ;;
-  "2000 px — recomendado") MAX_SIZE=2000 ;;
-  "2500 px — más detalle") MAX_SIZE=2500 ;;
-  *) exit 0 ;;
-esac
+processed = 0
+errors = 0
 
-FACE_CHOICE="$(choose_from_list \
-  "Portfolio · Preparar imágenes" \
-  "Protección de caras" \
-  "Sin modificar caras" \
-  "Pixelar caras" \
-  "Difuminar caras")"
+print("Comprobando estructura…")
 
-case "$FACE_CHOICE" in
-  "Sin modificar caras") FACE_MODE="none" ;;
-  "Pixelar caras") FACE_MODE="pixelate" ;;
-  "Difuminar caras") FACE_MODE="blur" ;;
-  *) exit 0 ;;
-esac
+def process_tree(source: Path, output: Path, *, skip_top_level=None):
+    global processed, errors
 
-AUTHOR="$(ask_text "Autora/copyright (puedes dejarlo vacío)" "")"
-[[ "$AUTHOR" == "__CANCEL__" ]] && exit 0
+    if not source.exists():
+        return
 
-RIGHTS_TEXT="Todos los derechos reservados."
-[[ -n "$AUTHOR" ]] && RIGHTS_TEXT="© $(date '+%Y') $AUTHOR. Todos los derechos reservados."
-NO_AI_TEXT="No autorizado para entrenamiento de inteligencia artificial, aprendizaje automático, minería de datos ni generación de contenido derivado."
+    skip_top_level = set(skip_top_level or [])
 
-if [[ "$FACE_MODE" != "none" ]]; then
-  PYTHON_PREFIX="$("$BREW_BIN" --prefix python@3.13 2>/dev/null || true)"
-  PYTHON_BIN="$PYTHON_PREFIX/bin/python3.13"
-  if [[ ! -x "$PYTHON_BIN" ]]; then
-    "$BREW_BIN" install python@3.13 || exit 1
-    PYTHON_PREFIX="$("$BREW_BIN" --prefix python@3.13)"
-    PYTHON_BIN="$PYTHON_PREFIX/bin/python3.13"
-  fi
+    output.mkdir(parents=True, exist_ok=True)
 
-  if [[ ! -x "$FACE_PYTHON" ]]; then
-    "$PYTHON_BIN" -m venv "$FACE_VENV" || exit 1
-    "$FACE_PYTHON" -m pip install --disable-pip-version-check --only-binary=:all: "opencv-python-headless==5.0.0.93" || exit 1
-  fi
-fi
+    # Mirror directories, but skip any redirected top-level directory.
+    for directory in sorted(p for p in source.rglob("*") if p.is_dir()):
+        rel = directory.relative_to(source)
+        if rel.parts and rel.parts[0] in skip_top_level:
+            continue
+        (output / rel).mkdir(parents=True, exist_ok=True)
 
-mkdir -p "$OUTPUT_DIR"
-printf "estado\torigen\tsalida\tdetalle\n" > "$LOG_FILE"
+    def run(cmd):
+        subprocess.run(cmd, check=True)
 
-processed=0
-failed=0
+    for src in sorted(p for p in source.rglob("*") if p.is_file()):
+        rel = src.relative_to(source)
 
-while IFS= read -r -d '' REL; do
-  REL="${REL#./}"
-  SOURCE_FILE="$SOURCE/$REL"
+        # Example: visual_archive/source/... belongs to img/source/, not img/visual_archive/.
+        if rel.parts and rel.parts[0] in skip_top_level:
+            continue
 
-  # Canonicalize from the parent directory. This prevents accidental
-  # loss of /Users/... or any other prefix before handing the file to FFmpeg.
-  SOURCE_PARENT="$(cd "$(dirname "$SOURCE_FILE")" >/dev/null 2>&1 && pwd -P)"
-  SOURCE_FILE="$SOURCE_PARENT/$(basename "$SOURCE_FILE")"
-  DIR="$(dirname "$REL")"
-  NAME="$(basename "$REL")"
-  EXT="${NAME##*.}"
-  EXT_LOWER="$(printf '%s' "$EXT" | tr '[:upper:]' '[:lower:]')"
+        ext = src.suffix.lower()
+        if ext not in IMAGE_EXTS | VIDEO_EXTS:
+            continue
 
-  case "$EXT_LOWER" in
-    jpg|jpeg|png|webp|heic|heif|tif|tiff|mp4|mov|m4v) ;;
-    *) continue ;;
-  esac
+        dest_dir = output / rel.parent
+        dest_dir.mkdir(parents=True, exist_ok=True)
 
-  if [[ "$DIR" == "." ]]; then
-    DEST_DIR="$OUTPUT_DIR"
-  else
-    DEST_DIR="$OUTPUT_DIR/$DIR"
-  fi
-  mkdir -p "$DEST_DIR"
+        try:
+            if ext in {".jpg", ".jpeg"}:
+                dest = dest_dir / src.name
+                print(f"FOTO   {rel}")
+                run([
+                    magick, str(src),
+                    "-auto-orient",
+                    "-resize", "2000x2000>",
+                    "-colorspace", "sRGB",
+                    "-strip",
+                    "-sampling-factor", "4:2:0",
+                    "-interlace", "Plane",
+                    "-quality", "85",
+                    str(dest),
+                ])
 
-  STEM="${NAME%.*}"
+            elif ext == ".png":
+                dest = dest_dir / src.name
+                print(f"PNG    {rel}")
+                run([
+                    magick, str(src),
+                    "-auto-orient",
+                    "-resize", "2000x2000>",
+                    "-colorspace", "sRGB",
+                    "-alpha", "on",
+                    "-strip",
+                    "-define", "png:compression-level=8",
+                    str(dest),
+                ])
 
-  # ------------------------------------------------------------
-  # VIDEO
-  # ------------------------------------------------------------
-  if [[ "$EXT_LOWER" == "mp4" || "$EXT_LOWER" == "mov" || "$EXT_LOWER" == "m4v" ]]; then
-    OUT="$DEST_DIR/$STEM.mp4"
+            elif ext in {".tif", ".tiff", ".heic", ".heif", ".webp"}:
+                dest = dest_dir / f"{src.stem}.jpg"
+                print(f"FOTO   {rel}")
+                run([
+                    magick, str(src),
+                    "-auto-orient",
+                    "-resize", "2000x2000>",
+                    "-colorspace", "sRGB",
+                    "-background", "white",
+                    "-alpha", "remove",
+                    "-strip",
+                    "-quality", "85",
+                    str(dest),
+                ])
 
-    printf "Procesando vídeo: %s\n" "$REL"
-    printf "FFmpeg mostrará el progreso debajo. Los vídeos largos pueden tardar varios minutos.\n"
-    printf "Ruta que recibirá FFmpeg: %s\n" "$SOURCE_FILE"
+            elif ext in VIDEO_EXTS:
+                dest = dest_dir / f"{src.stem}.mp4"
+                print(f"VIDEO  {rel}")
+                print(f"       input : {src}")
+                print(f"       output: {dest}")
+                run([
+                    ffmpeg,
+                    "-hide_banner",
+                    "-y",
+                    "-i", str(src),
+                    "-map", "0:v:0",
+                    "-map", "0:a:0?",
+                    "-map_metadata", "-1",
+                    "-vf", "scale='if(gt(iw,2000),2000,iw)':-2,format=yuv420p",
+                    "-c:v", "libx264",
+                    "-preset", "veryfast",
+                    "-crf", "24",
+                    "-c:a", "aac",
+                    "-b:a", "128k",
+                    "-movflags", "+faststart",
+                    str(dest),
+                ])
 
-    # H.264 + AAC is broadly supported by browsers/GitHub Pages.
-    # Scale only when needed; preserve aspect ratio and make dimensions even.
-    VIDEO_ERROR_FILE="$SUPPORT_DIR/ffmpeg_${RUN_DATE}_$(printf '%s' "$STEM" | tr '/ :' '___').log"
-    printf "Ruta shell-safe: "
-    printf "%q\n" "$SOURCE_FILE"
+            processed += 1
 
-    # Robust browser conversion:
-    # - explicitly maps the first video stream
-    # - audio is optional (some Super8 scans have none)
-    # - limits the longest side to MAX_SIZE without enlarging
-    # - forces even pixel dimensions required by H.264
-    # - strips metadata
-    "$FFMPEG_BIN" -hide_banner -y -stats \
-      -i "$SOURCE_FILE" \
-      -map 0:v:0 \
-      -map 0:a:0? \
-      -map_metadata -1 \
-      -vf "scale=w='if(gte(iw,ih),min(iw,${MAX_SIZE}),-2)':h='if(lt(iw,ih),min(ih,${MAX_SIZE}),-2)',scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" \
-      -c:v libx264 \
-      -profile:v high \
-      -level 4.1 \
-      -preset veryfast \
-      -crf 24 \
-      -movflags +faststart \
-      -c:a aac \
-      -b:a 128k \
-      "$OUT" \
-      2> >(tee "$VIDEO_ERROR_FILE" >&2)
+        except subprocess.CalledProcessError as exc:
+            errors += 1
+            print(f"ERROR procesando: {src}", file=sys.stderr)
+            print(f"Comando terminó con código {exc.returncode}", file=sys.stderr)
+            try:
+                if dest.exists():
+                    dest.unlink()
+            except Exception:
+                pass
 
-    status=$?
 
-    if [[ $status -ne 0 || ! -s "$OUT" ]]; then
-      failed=$((failed + 1))
-      printf "ERROR\t%s\t%s\tffmpeg; ver %s\n" "$SOURCE_FILE" "$OUT" "$VIDEO_ERROR_FILE" >> "$LOG_FILE"
-      printf "\nERROR EN VÍDEO: %s\n" "$REL"
-      printf "Detalles: %s\n" "$VIDEO_ERROR_FILE"
-      rm -f "$OUT"
-      continue
-    fi
+# Clean legacy mistakes from older versions.
+for bad in [visual_output / "per8", visual_output / "source"]:
+    if bad.exists():
+        print(f"Limpiando salida antigua incorrecta: {bad}")
+        shutil.rmtree(bad)
 
-    # If conversion worked, discard the temporary ffmpeg log.
-    rm -f "$VIDEO_ERROR_FILE"
+# 1) Visual Archive: everything except a mistakenly nested "source/" directory.
+print()
+print("=== VISUAL ARCHIVE ===")
+process_tree(visual_source, visual_output, skip_top_level={"source"})
 
-    printf "OK\t%s\t%s\tvideo web H.264\n" "$SOURCE_FILE" "$OUT" >> "$LOG_FILE"
-    processed=$((processed + 1))
-    continue
-  fi
+# 2) Source: preferred location is img_originales/source/.
+#    For backwards compatibility, if it is still inside visual_archive/source/,
+#    process it to img/source/ instead of img/visual_archive/source/.
+source_inputs = []
+if source_primary.exists():
+    source_inputs.append(("principal", source_primary))
+if source_legacy.exists():
+    source_inputs.append(("legacy", source_legacy))
 
-  # Preserve website-friendly image extensions where possible.
-  case "$EXT_LOWER" in
-    jpg|jpeg)
-      OUT="$DEST_DIR/$NAME"
-      FORMAT_KIND="jpeg"
-      ;;
-    png)
-      OUT="$DEST_DIR/$NAME"
-      FORMAT_KIND="png"
-      ;;
-    webp)
-      OUT="$DEST_DIR/$NAME"
-      FORMAT_KIND="webp"
-      ;;
-    *)
-      OUT="$DEST_DIR/$STEM.jpg"
-      FORMAT_KIND="jpeg"
-      printf "AVISO: %s se publicará como %s\n" "$REL" "${OUT#$REPO_ROOT/}"
-      ;;
-  esac
+if source_inputs:
+    print()
+    print("=== SOURCE ===")
+    source_output.mkdir(parents=True, exist_ok=True)
 
-  printf "Procesando: %s\n" "$REL"
+    for label, source_root in source_inputs:
+        print(f"Source ({label}): {source_root}")
+        process_tree(source_root, source_output)
+else:
+    print()
+    print("SOURCE: no se encontró img_originales/source/ ni visual_archive/source/; se omite.")
 
-  if [[ ! -f "$SOURCE_FILE" ]]; then
-    failed=$((failed + 1))
-    printf "ERROR\t%s\t\tarchivo de origen no encontrado\n" "$SOURCE_FILE" >> "$LOG_FILE"
-    printf "ERROR: no existe el archivo de origen:\n%s\n" "$SOURCE_FILE"
-    continue
-  fi
+# Generate a static JS media manifest.
+# GitHub Pages cannot enumerate a directory at runtime, so the browser reads this file instead.
+manifest = visual_output.parent.parent / "archive_media_manifest.js"
 
-  status=0
+records = []
+for p in sorted(x for x in visual_output.rglob("*") if x.is_file()):
+    ext = p.suffix.lower()
+    if ext not in {".jpg", ".jpeg", ".png", ".mp4"}:
+        continue
 
-  case "$FORMAT_KIND" in
-    jpeg)
-      "$MAGICK_BIN" "$SOURCE_FILE" \
-        -auto-orient \
-        -resize "${MAX_SIZE}x${MAX_SIZE}>" \
-        -colorspace sRGB \
-        -background white -alpha remove -alpha off \
-        -strip \
-        -sampling-factor 4:2:0 \
-        -interlace Plane \
-        -quality 85 \
-        "$OUT" || status=$?
-      ;;
-    png)
-      # PNG preserves transparency, useful for future cut-out silhouettes.
-      "$MAGICK_BIN" "$SOURCE_FILE" \
-        -auto-orient \
-        -resize "${MAX_SIZE}x${MAX_SIZE}>" \
-        -colorspace sRGB \
-        -strip \
-        -define png:compression-level=8 \
-        "$OUT" || status=$?
-      ;;
-    webp)
-      "$MAGICK_BIN" "$SOURCE_FILE" \
-        -auto-orient \
-        -resize "${MAX_SIZE}x${MAX_SIZE}>" \
-        -colorspace sRGB \
-        -strip \
-        -quality 84 \
-        "$OUT" || status=$?
-      ;;
-  esac
+    rel = p.relative_to(visual_output)
+    parts = rel.parts
+    top = parts[0] if parts else ""
 
-  if [[ $status -ne 0 || ! -s "$OUT" ]]; then
-    failed=$((failed + 1))
-    printf "ERROR\t%s\t%s\tImageMagick\n" "$SOURCE_FILE" "$OUT" >> "$LOG_FILE"
-    continue
-  fi
+    entry = {
+        "src": "img/visual_archive/" + rel.as_posix(),
+        "type": "video" if ext == ".mp4" else "img",
+    }
 
-  FACE_COUNT=0
-  if [[ "$FACE_MODE" != "none" ]]; then
-    FACE_RESULT="$("$FACE_PYTHON" "$FACE_HELPER" "$OUT" "$FACE_MODE" 2>/dev/null || true)"
-    [[ "$FACE_RESULT" =~ ^[0-9]+$ ]] && FACE_COUNT="$FACE_RESULT"
-  fi
+    if top == "cutouts":
+        entry["kind"] = "cutout"
+        entry["project"] = "cutouts"
+    elif top == "collage":
+        entry["project"] = "escitalopram"
+    elif top == "super8":
+        entry["project"] = "video"
+    elif top == "photography":
+        # photography/<project>/file.ext -> project name
+        entry["project"] = parts[1] if len(parts) >= 3 else "photo"
+    else:
+        entry["project"] = top or "archive"
 
-  META_ARGS=(
-    -overwrite_original
-    -all=
-    -TagsFromFile "$SOURCE_FILE"
-    -DateTimeOriginal
-    -CreateDate
-    "-XMP-dc:Rights=$RIGHTS_TEXT"
-    "-XMP-xmpRights:Marked=True"
-    "-XMP-xmpRights:UsageTerms=$NO_AI_TEXT"
-    "-IPTC:CopyrightNotice=$RIGHTS_TEXT"
-    "-IPTC:SpecialInstructions=$NO_AI_TEXT"
-  )
+    records.append(entry)
 
-  if [[ -n "$AUTHOR" ]]; then
-    META_ARGS+=("-Artist=$AUTHOR" "-XMP-dc:Creator=$AUTHOR" "-IPTC:By-line=$AUTHOR")
-  fi
-
-  "$EXIFTOOL_BIN" "${META_ARGS[@]}" "$OUT" >/dev/null 2>&1 || true
-
-  printf "OK\t%s\t%s\tcaras modificadas: %s\n" "$SOURCE_FILE" "$OUT" "$FACE_COUNT" >> "$LOG_FILE"
-  processed=$((processed + 1))
-
-done < <(
-  cd "$SOURCE" || exit 1
-  find . -type f -print0
+import json
+manifest.write_text(
+    "/* Auto-generated by Publicar_Imagenes_Web.command. Do not edit by hand. */\n"
+    "window.ARCHIVE_MEDIA = "
+    + json.dumps(records, ensure_ascii=False, indent=2)
+    + ";\n",
+    encoding="utf-8",
 )
 
-osascript - "$processed" "$failed" "$OUTPUT_DIR" <<'APPLESCRIPT'
-on run argv
-  display dialog "Listo.
+print()
+print(f"Manifest generado: {manifest}")
+print(f"Elementos catalogados: {len(records)}")
+print()
+print(f"Listo. Procesados: {processed} | Errores: {errors}")
+print(f"Visual Archive: {visual_output}")
+print(f"Source:         {source_output}")
+print()
+print("Carpetas de salida:")
+for d in sorted(p for p in visual_output.iterdir() if p.is_dir()):
+    print(" -", d.name + "/")
 
-Procesadas: " & item 1 of argv & "
-Errores: " & item 2 of argv & "
-
-Fotos y vídeos web:
-" & item 3 of argv & "
-
-Solo la carpeta img/ debe subirse a GitHub. Conserva img_originales/ fuera de Git.
-
-Si algún vídeo falla, el programa deja un registro de FFmpeg en:
-~/Library/Application Support/PreparadorFotosInternet/" with title "Portfolio · Preparar imágenes" buttons {"Aceptar"} default button "Aceptar"
-end run
-APPLESCRIPT
-
-open "$OUTPUT_DIR"
+sys.exit(1 if errors else 0)
+PY

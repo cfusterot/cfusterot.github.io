@@ -10,67 +10,6 @@ if (!window.VISUAL_ARCHIVE_LAYOUT) {
 }
 </script>
 <script>
-/* Change Visual Archive folders without reloading the page. */
-(function () {
-    function currentView() {
-        return new URLSearchParams(window.location.search).get("view");
-    }
-
-    function updateArchiveNavigation() {
-        const view = currentView();
-
-        document.querySelectorAll("[data-archive-view]").forEach(link => {
-            const folder = link.querySelector(".folder");
-            if (folder) folder.classList.toggle("active", link.dataset.archiveView === view);
-        });
-
-        const rootFolder = document.querySelector('a[href="visual_archive.html"] .folder');
-        if (rootFolder) rootFolder.classList.toggle("active", !view);
-
-        document.title =
-            view === "escitalopram" ? "Escitalopram | Visual Archive" :
-            view === "photo" ? "Photo | Visual Archive" :
-            view === "video" ? "Video | Visual Archive" :
-            "Visual Archive | Coral Fustero-Torre";
-    }
-
-    function changeView(view, push=true) {
-        const url = new URL(window.location.href);
-
-        if (view) url.searchParams.set("view", view);
-        else url.searchParams.delete("view");
-
-        if (push) history.pushState({archiveView:view || null}, "", url);
-
-        buildWall();
-        updateArchiveNavigation();
-        window.scrollTo({top:0, behavior:"auto"});
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll("[data-archive-view]").forEach(link => {
-            link.addEventListener("click", event => {
-                event.preventDefault();
-                changeView(link.dataset.archiveView);
-            });
-        });
-
-        const rootLink = document.querySelector('a[href="visual_archive.html"]');
-        if (rootLink) {
-            rootLink.addEventListener("click", event => {
-                event.preventDefault();
-                changeView(null);
-            });
-        }
-
-        updateArchiveNavigation();
-    });
-
-    window.addEventListener("popstate", () => changeView(currentView(), false));
-})();
-
-</script>
-<script>
 document.documentElement.classList.add("tree-state-pending");
 </script>
 <meta charset="UTF-8">
@@ -455,7 +394,75 @@ main {
    EDIT MODE
    ========================================================== */
 
+#editor-toggle {
+    position: fixed;
+    right: 22px;
+    bottom: 20px;
+    z-index: 90000;
+    border: 0;
+    padding: 8px 10px;
+    background: rgba(229,229,226,.9);
+    color: #777;
+    font-size: .72rem;
+    cursor: pointer;
+}
 
+#editor-panel {
+    position: fixed;
+    left: 20px;
+    bottom: 18px;
+    z-index: 90000;
+    display: none;
+    gap: 5px;
+    flex-wrap: wrap;
+    max-width: calc(100vw - 170px);
+}
+
+body.edit-mode #editor-panel { display: flex; }
+
+#editor-panel button {
+    border: 0;
+    padding: 7px 9px;
+    background: rgba(229,229,226,.94);
+    color: #666;
+    font-size: .7rem;
+    cursor: pointer;
+}
+
+
+#shape-select {
+    border: 0;
+    padding: 7px 26px 7px 9px;
+    background: rgba(229,229,226,.94);
+    color: #666;
+    font-size: .7rem;
+    cursor: pointer;
+    appearance: auto;
+}
+
+body.edit-mode .wall-item {
+    cursor: grab;
+    outline: 1px dashed transparent;
+}
+
+body.edit-mode .wall-item.selected {
+    outline-color: rgba(0,0,0,.35);
+    z-index: 50000 !important;
+}
+
+.resize-handle {
+    display: none;
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    background: var(--paper);
+    border: 1px solid #555;
+    z-index: 10;
+}
+
+body.edit-mode .wall-item.selected .resize-handle {
+    display: block;
+}
 
 .resize-handle.nw {
     left: -6px;
@@ -646,7 +653,6 @@ footer {
     .archive-main { padding: 14px 10px 60px; }
 }
 
-.resize-handle{display:none!important;}
 
 /* ===== 1990s desktop / classic file-browser styling ===== */
 
@@ -825,6 +831,9 @@ footer {
     margin: 0 0 13px 0 !important;
     border-bottom: 1px solid #8b8b8b !important;
 }
+
+
+
 
 
 
@@ -1131,10 +1140,36 @@ footer {
 
 html.tree-state-pending .file-tree { visibility: hidden !important; }
 
+
+#media-library{
+position:fixed;top:0;right:0;width:min(390px,42vw);height:100vh;z-index:95000;
+background:rgba(216,216,216,.985);border-left:2px solid #8b8b8b;
+box-shadow:inset 1px 0 0 #fff;transform:translateX(102%);
+transition:transform .16s ease;overflow-y:auto;padding:14px}
+#media-library.open{transform:translateX(0)}
+.library-head{position:sticky;top:0;z-index:5;background:rgba(216,216,216,.985);
+padding:0 0 10px;border-bottom:1px solid #999;margin-bottom:10px}
+.library-title{font-size:12px;font-weight:700;margin-bottom:8px}
+.library-controls{display:flex;gap:5px;flex-wrap:wrap}
+.library-controls button,.library-controls select{font-family:"Courier Prime",monospace;font-size:10px;
+border:1px solid #777;background:#eee;padding:4px 6px;cursor:pointer}
+#library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.library-item{position:relative;min-height:95px;background:#c7c7c7;border:1px solid #999;cursor:pointer;overflow:hidden}
+.library-item img,.library-item video{width:100%;height:95px;object-fit:cover;display:block;filter:grayscale(100%)}
+.library-item[data-kind="cutout"] img{object-fit:contain;background:#efefef}
+.library-item:hover img,.library-item:hover video{filter:none}
+.library-item.on-wall{outline:2px solid #000080}
+.library-item.on-wall::after{content:"ON WALL";position:absolute;right:2px;bottom:18px;
+background:#000080;color:#fff;font-size:8px;padding:2px 3px}
+.library-name{display:block;font-size:8px;padding:3px;overflow:hidden;text-overflow:ellipsis;
+white-space:nowrap;background:#ddd}
+@media(max-width:800px){#media-library{width:65vw}#library-grid{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 </head>
 
 <body>
+<div id="editor-layout-status" style="position:fixed;top:8px;right:8px;z-index:99999;font:10px Courier Prime,monospace;background:#eee;border:1px solid #777;padding:3px 5px;">layout: loading…</div>
 
 
 <div class="archive-shell">
@@ -1323,7 +1358,84 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 
 <footer>&copy; 2026 Coral Fustero-Torre</footer>
 
+<button id="editor-toggle" type="button">[ arrange ]</button>
 
+<div id="editor-panel">
+    <button type="button" id="save-layout">[ save ]</button>
+    <button type="button" id="reset-layout">[ reset ]</button>
+    <button type="button" id="toggle-silhouette">[ silhouette ]</button>
+    <button type="button" id="cycle-shape">[ next shape ]</button>
+    <select id="shape-select" aria-label="Choose shape">
+        <option value="">shape…</option>
+        <optgroup label="basic">
+            <option value="shape-block">rectangle</option>
+            <option value="shape-circle">circle</option>
+            <option value="shape-oval">oval</option>
+            <option value="shape-triangle-up">triangle ↑</option>
+            <option value="shape-triangle-down">triangle ↓</option>
+            <option value="shape-triangle-left">triangle ←</option>
+            <option value="shape-triangle-right">triangle →</option>
+            <option value="shape-diamond">diamond</option>
+            <option value="shape-soft-diamond">soft diamond</option>
+            <option value="shape-hexagon">hexagon</option>
+            <option value="shape-octagon">octagon</option>
+            <option value="shape-trapezoid">trapezoid</option>
+            <option value="shape-inverse-trapezoid">inverse trapezoid</option>
+            <option value="shape-parallelogram">parallelogram</option>
+            <option value="shape-chevron">chevron</option>
+        </optgroup>
+        <optgroup label="cut / editorial">
+            <option value="shape-chamfer-tr">cut corner ↗</option>
+            <option value="shape-chamfer-bl">cut corner ↙</option>
+            <option value="shape-slant-top">slanted top</option>
+            <option value="shape-slant-bottom">slanted bottom</option>
+            <option value="shape-corner-cut">double corner cut</option>
+            <option value="shape-tab-left">tab left</option>
+            <option value="shape-tab-right">tab right</option>
+            <option value="shape-ticket">ticket</option>
+            <option value="shape-arch">arch</option>
+            <option value="shape-halfmoon">half moon</option>
+        </optgroup>
+        <optgroup label="paper / organic">
+            <option value="shape-torn-1">torn paper 1</option>
+            <option value="shape-torn-2">torn paper 2</option>
+            <option value="shape-organic">organic</option>
+            <option value="shape-pill">pill</option>
+            <option value="shape-doily-round">doily round</option>
+            <option value="shape-doily-square">doily square</option>
+            <option value="shape-beermat-round">beer mat round</option>
+            <option value="shape-beermat-square">beer mat square</option>
+            <option value="shape-lace-strip">lace strip</option>
+            <option value="shape-coaster-flower">flower coaster</option>
+        </optgroup>
+    </select>
+    <button type="button" id="bring-front">[ front ]</button>
+    <button type="button" id="clear-wall">[ clear wall ]</button>
+    <button type="button" id="open-library">[ library ]</button>
+    <button type="button" id="delete-item">[ remove ]</button>
+    <button type="button" id="export-layout">[ download layout ]</button>
+    <button type="button" id="import-layout">[ load layout ]</button>
+    <input type="file" id="layout-file-input" accept=".js,.json,application/json,text/javascript" hidden>
+</div>
+
+
+<aside id="media-library" aria-hidden="true">
+  <div class="library-head">
+    <div class="library-title">media library</div>
+    <div class="library-controls">
+      <select id="library-filter">
+        <option value="all">all</option>
+        <option value="photo">photo</option>
+        <option value="video">video</option>
+        <option value="cutout">cutouts</option>
+        <option value="escitalopram">escitalopram</option>
+      </select>
+      <button type="button" id="add-visible-library">[ add visible ]</button>
+      <button type="button" id="close-library">[ close ]</button>
+    </div>
+  </div>
+  <div id="library-grid"></div>
+</aside>
 
 <div id="lightbox" onclick="closeLightbox()">
     <button id="lightbox-close"
@@ -1349,34 +1461,14 @@ const wall = document.getElementById("image-wall");
 const source = document.getElementById("source-media");
 
 function syncArchiveManifest() {
+    if (!Array.isArray(window.ARCHIVE_MEDIA)) return;
+
     const existing = new Set(
         Array.from(source.querySelectorAll(":scope > img, :scope > video"))
              .map(el => el.getAttribute("src"))
     );
 
-    const catalogue = Array.isArray(window.ARCHIVE_MEDIA)
-        ? [...window.ARCHIVE_MEDIA]
-        : [];
-
-    /* The curated layout itself is also a valid source catalogue.
-       This guarantees the saved composition can render even if the
-       generated manifest is missing or stale. */
-    if (window.VISUAL_ARCHIVE_LAYOUT &&
-        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items)) {
-        window.VISUAL_ARCHIVE_LAYOUT.items.forEach(item => {
-            if (!item?.src) return;
-            catalogue.push({
-                src: item.src,
-                type: /\.(mp4|mov|m4v)$/i.test(item.src) ? "video" : "img",
-                kind: item.src.includes("/cutouts/") ? "cutout" : "",
-                project:
-                    item.src.includes("/collage/") ? "escitalopram" :
-                    item.src.includes("/super8/") ? "video" : ""
-            });
-        });
-    }
-
-    catalogue.forEach(entry => {
+    window.ARCHIVE_MEDIA.forEach(entry => {
         if (!entry || !entry.src || existing.has(entry.src)) return;
 
         const media = document.createElement(entry.type === "video" ? "video" : "img");
@@ -1384,6 +1476,8 @@ function syncArchiveManifest() {
 
         if (entry.project) media.dataset.project = entry.project;
         if (entry.kind) media.dataset.kind = entry.kind;
+
+        /* Cutouts are real transparent objects, never random CSS cut-shapes. */
         if (entry.kind === "cutout") media.dataset.shape = "shape-block";
 
         source.appendChild(media);
@@ -1410,7 +1504,7 @@ function mulberry32(seed) {
     };
 }
 
-let rand = mulberry32(1981);
+const rand = mulberry32(1981);
 
 function choice(arr) {
     return arr[Math.floor(rand() * arr.length)];
@@ -1501,58 +1595,9 @@ function findPackedPosition(w, h, placed, containerWidth) {
 }
 
 function buildWall() {
-    const allOriginals = Array.from(
+    const originals = Array.from(
         source.querySelectorAll(":scope > img, :scope > video")
     );
-
-    const archiveView = new URLSearchParams(window.location.search).get("view");
-
-    /*
-      IMPORTANT:
-      - root Visual Archive = curated summary, optionally using visual_archive_layout.js
-      - photo/video/escitalopram = complete catalogue views, NEVER affected by summary removals/layout
-    */
-    let originals;
-
-    if (!archiveView && window.VISUAL_ARCHIVE_LAYOUT &&
-        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items)) {
-
-        const wanted = new Set(
-            window.VISUAL_ARCHIVE_LAYOUT.items.map(item => item.src)
-        );
-
-        originals = allOriginals.filter(el =>
-            wanted.has(el.getAttribute("src"))
-        );
-    } else {
-        originals = allOriginals.filter(el => {
-            if (!archiveView) return true;
-
-            const src = el.getAttribute("src") || "";
-
-            if (archiveView === "escitalopram") {
-                return el.dataset.project === "escitalopram" ||
-                       src.includes("/collage/");
-            }
-
-            if (archiveView === "photo") {
-                return el.tagName === "IMG" &&
-                       src.includes("/photography/");
-            }
-
-            if (archiveView === "video") {
-                return el.tagName === "VIDEO";
-            }
-
-            return true;
-        });
-    }
-
-    /* Each catalogue view starts its own layout from the top. */
-    const viewSeed = archiveView
-        ? Array.from(archiveView).reduce((n, ch) => n + ch.charCodeAt(0), 0)
-        : 0;
-    rand = mulberry32(1981 + viewSeed);
 
     wall.innerHTML = "";
     lightboxItems = [];
@@ -1562,13 +1607,6 @@ function buildWall() {
     const placed = [];
     const containerWidth = wall.clientWidth;
 
-    const savedLayout =
-        !archiveView &&
-        window.VISUAL_ARCHIVE_LAYOUT &&
-        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items)
-            ? new Map(window.VISUAL_ARCHIVE_LAYOUT.items.map(x => [x.src, x]))
-            : null;
-
     originals.forEach((original, index) => {
         const item = document.createElement("div");
         item.className = "wall-item";
@@ -1576,60 +1614,45 @@ function buildWall() {
         item.dataset.src = original.getAttribute("src");
         if (original.dataset.kind) item.dataset.kind = original.dataset.kind;
         item.dataset.project = original.dataset.project || "";
+        if (original.dataset.summary === "true") item.dataset.summary = "true";
 
-        const saved = savedLayout?.get(item.dataset.src);
+        let [w, h] = choice(SIZE_PRESETS);
 
-        let w, h, x, y;
+        /*
+          Preserve a strong mixture:
+          occasional tiny fragments, occasional dominant images.
+        */
+        const roll = rand();
 
-        if (saved) {
-            w = parseFloat(saved.width) || 180;
-            h = parseFloat(saved.height) || 140;
-            x = parseFloat(saved.left) || 0;
-            y = parseFloat(saved.top) || 0;
-
-            item.style.width = saved.width || `${w}px`;
-            item.style.height = saved.height || `${h}px`;
-            item.style.left = saved.left || `${x}px`;
-            item.style.top = saved.top || `${y}px`;
-            item.style.zIndex = saved.zIndex || "";
-
-            item.classList.add(saved.shape || "shape-block");
-            if (saved.silhouette) item.classList.add("silhouette");
-        } else {
-            [w, h] = choice(SIZE_PRESETS);
-
-            const roll = rand();
-            if (roll < .12) {
-                [w, h] = choice([[45,45],[50,70],[65,45],[70,55]]);
-            } else if (roll > .94) {
-                [w, h] = choice([[320,230],[300,300],[340,190]]);
-            }
-
-            w *= scale;
-            h *= scale;
-
-            item.style.width = `${Math.round(w)}px`;
-            item.style.height = `${Math.round(h)}px`;
-
-            /* transparent cutouts should stay as their real silhouette */
-            item.classList.add(
-                original.dataset.kind === "cutout"
-                    ? "shape-block"
-                    : (original.dataset.shape || choice(SHAPES))
-            );
-
-            const print = original.dataset.kind === "cutout"
-                ? ""
-                : (original.dataset.treatment || choice(PRINTS));
-            if (print) item.classList.add(print);
-
-            const pos = findPackedPosition(w, h, placed, containerWidth);
-            x = pos.x; y = pos.y;
-            item.style.left = `${Math.round(x)}px`;
-            item.style.top = `${Math.round(y)}px`;
+        if (roll < .12) {
+            const tiny = choice([[45,45],[50,70],[65,45],[70,55]]);
+            w = tiny[0];
+            h = tiny[1];
+        } else if (roll > .94) {
+            const big = choice([[320,230],[300,300],[340,190]]);
+            w = big[0];
+            h = big[1];
         }
 
-        placed.push({x, y, w, h});
+        w *= scale;
+        h *= scale;
+
+        item.style.width = `${Math.round(w)}px`;
+        item.style.height = `${Math.round(h)}px`;
+
+        item.classList.add(
+            original.dataset.shape || choice(SHAPES)
+        );
+
+        const print = original.dataset.treatment || choice(PRINTS);
+        if (print) item.classList.add(print);
+
+        const pos = findPackedPosition(w, h, placed, containerWidth);
+
+        item.style.left = `${Math.round(pos.x)}px`;
+        item.style.top = `${Math.round(pos.y)}px`;
+
+        placed.push({x: pos.x, y: pos.y, w, h});
 
         const media = original.cloneNode(true);
         media.removeAttribute("data-project-desc");
@@ -1645,26 +1668,43 @@ function buildWall() {
 
         item.appendChild(media);
 
+        ["nw", "ne", "sw", "se"].forEach(corner => {
+            const handle = document.createElement("div");
+            handle.className = `resize-handle ${corner}`;
+            handle.dataset.corner = corner;
+            item.appendChild(handle);
+            enableResizing(item, handle, corner);
+        });
+
         lightboxItems.push({
             type: media.tagName === "VIDEO" ? "video" : "img",
             src: media.getAttribute("src")
         });
 
-        const lightboxIndexForItem = lightboxItems.length - 1;
-        item.addEventListener("click", () => openLightbox(lightboxIndexForItem));
+        item.addEventListener("click", e => {
+            if (document.body.classList.contains("edit-mode")) {
+                e.stopPropagation();
+                selectItem(item);
+                return;
+            }
+
+            openLightbox(index);
+        });
+
+        enableDragging(item);
 
         wall.appendChild(item);
     });
 
-    const rendered = Array.from(wall.querySelectorAll(".wall-item"));
-    const bottom = rendered.length
-        ? Math.max(...rendered.map(el =>
-            (parseFloat(el.style.top) || 0) + el.offsetHeight
-          ))
+    const bottom = placed.length
+        ? Math.max(...placed.map(p => p.y + p.h))
         : 500;
 
     wall.style.height = `${bottom + 80}px`;
+
+    restoreSavedLayout();
 }
+
 /* ----------------------------------------------------------
    MANUAL ARRANGEMENT MODE
    ---------------------------------------------------------- */
@@ -1809,7 +1849,7 @@ function growWallToContent() {
     wall.style.height = `${bottom + 100}px`;
 }
 
-document.getElementById("editor-toggle")?.addEventListener("click", () => {
+document.getElementById("editor-toggle").addEventListener("click", () => {
     document.body.classList.toggle("edit-mode");
 
     document.getElementById("editor-toggle").textContent =
@@ -1822,7 +1862,7 @@ document.getElementById("editor-toggle")?.addEventListener("click", () => {
     }
 });
 
-document.getElementById("toggle-silhouette")?.addEventListener("click", () => {
+document.getElementById("toggle-silhouette").addEventListener("click", () => {
     if (!selectedItem) return;
     selectedItem.classList.toggle("silhouette");
 });
@@ -1865,7 +1905,7 @@ const EDIT_SHAPES = [
     "shape-chevron"
 ];
 
-document.getElementById("cycle-shape")?.addEventListener("click", () => {
+document.getElementById("cycle-shape").addEventListener("click", () => {
     if (!selectedItem) return;
 
     let current = EDIT_SHAPES.findIndex(c => selectedItem.classList.contains(c));
@@ -1876,14 +1916,14 @@ document.getElementById("cycle-shape")?.addEventListener("click", () => {
 });
 
 
-document.getElementById("shape-select")?.addEventListener("change", e => {
+document.getElementById("shape-select").addEventListener("change", e => {
     if (!selectedItem || !e.target.value) return;
 
     EDIT_SHAPES.forEach(c => selectedItem.classList.remove(c));
     selectedItem.classList.add(e.target.value);
 });
 
-document.getElementById("bring-front")?.addEventListener("click", () => {
+document.getElementById("bring-front").addEventListener("click", () => {
     if (!selectedItem) return;
     maxZ += 1;
     selectedItem.style.zIndex = maxZ;
@@ -1916,7 +1956,7 @@ function serializeLayout() {
 }
 
 
-document.getElementById("delete-item")?.addEventListener("click", () => {
+document.getElementById("delete-item").addEventListener("click", () => {
     if (!selectedItem) return;
 
     const src = selectedItem.dataset.src;
@@ -1945,23 +1985,87 @@ document.getElementById("delete-item")?.addEventListener("click", () => {
     growWallToContent();
 });
 
+document.getElementById("save-layout").addEventListener("click", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeLayout()));
+});
+
+document.getElementById("reset-layout").addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+});
+
+document.getElementById("export-layout").addEventListener("click", async () => {
+    const layout = serializeLayout();
+    const js =
+        "/* Durable Visual Archive summary layout. Keep this file when updating HTML. */\n" +
+        "window.VISUAL_ARCHIVE_LAYOUT = " +
+        JSON.stringify(layout, null, 2) +
+        ";\n";
+
+    const blob = new Blob([js], {type: "text/javascript"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "visual_archive_layout.js";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    try {
+        await navigator.clipboard.writeText(JSON.stringify(layout, null, 2));
+    } catch {}
+
+    alert("Downloaded visual_archive_layout.js. Put it in the repository root and keep it when replacing HTML files.");
+});
 
 
+document.getElementById("import-layout").addEventListener("click", () => {
+    document.getElementById("layout-file-input").click();
+});
 
+document.getElementById("layout-file-input").addEventListener("change", async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
+    const text = await file.text();
+    let layout = null;
 
+    try {
+        if (file.name.toLowerCase().endsWith(".json")) {
+            layout = JSON.parse(text);
+        } else {
+            const match = text.match(/window\.VISUAL_ARCHIVE_LAYOUT\s*=\s*([\s\S]*);\s*$/);
+            if (!match) throw new Error("Invalid layout JS");
+            layout = JSON.parse(match[1]);
+        }
+    } catch (err) {
+        alert("Could not read this layout file.");
+        return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
+    location.reload();
+});
 
 function restoreSavedLayout() {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
+    let saved = null;
 
-    let saved;
-
-    try {
-        saved = JSON.parse(raw);
-    } catch {
-        return;
+    if (raw) {
+        try { saved = JSON.parse(raw); }
+        catch { saved = null; }
     }
+
+    const savedHasItems = saved && Array.isArray(saved.items) && saved.items.length > 0;
+
+    if (!savedHasItems && window.VISUAL_ARCHIVE_LAYOUT &&
+        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items) &&
+        window.VISUAL_ARCHIVE_LAYOUT.items.length > 0) {
+        saved = window.VISUAL_ARCHIVE_LAYOUT;
+    }
+
+    if (!saved || !Array.isArray(saved.items) || saved.items.length === 0) return;
 
     /*
       Backward compatibility:
@@ -2086,7 +2190,66 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 
+/* Local editor folder views. No media is deleted by filtering. */
+(function () {
+    function matchesView(item, view) {
+        if (!view) return true;
 
+        const src = item.dataset.src || "";
+        const media = item.querySelector("img, video");
+        const tag = media ? media.tagName : "";
+
+        if (view === "escitalopram") {
+            return item.dataset.project === "escitalopram" ||
+                   src.includes("/collage/");
+        }
+
+        if (view === "photo") {
+            return tag === "IMG" &&
+                   src.includes("/photography/");
+        }
+
+        if (view === "video") {
+            return tag === "VIDEO" ||
+                   src.includes("/super8/");
+        }
+
+        return true;
+    }
+
+    function applyArchiveView(view) {
+        document.querySelectorAll(".wall-item").forEach(item => {
+            item.style.display = matchesView(item, view) ? "" : "none";
+        });
+
+        document.querySelectorAll("[data-archive-view]").forEach(link => {
+            const folder = link.querySelector(".folder");
+            if (folder) folder.classList.toggle("active", link.dataset.archiveView === view);
+        });
+
+        const visualFolder = document.querySelector('a[href="visual_archive.html"] .folder');
+        if (visualFolder) visualFolder.classList.toggle("active", !view);
+
+        if (typeof growWallToContent === "function") growWallToContent();
+    }
+
+    window.addEventListener("load", () => {
+        document.querySelectorAll("[data-archive-view]").forEach(link => {
+            link.addEventListener("click", event => {
+                event.preventDefault();
+                applyArchiveView(link.dataset.archiveView);
+            });
+        });
+
+        const visualLink = document.querySelector('a[href="visual_archive.html"]');
+        if (visualLink) {
+            visualLink.addEventListener("click", event => {
+                event.preventDefault();
+                applyArchiveView(null);
+            });
+        }
+    });
+})();
 
 </script>
 
@@ -2132,5 +2295,156 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 })();
 </script>
+<script>
+(function(){
+const library=document.getElementById("media-library");
+const grid=document.getElementById("library-grid");
+const filter=document.getElementById("library-filter");
+const catalogue=()=>Array.from(source.querySelectorAll(":scope > img, :scope > video"));
+const wallSet=()=>new Set(Array.from(wall.querySelectorAll(".wall-item")).map(x=>x.dataset.src));
+
+function bucket(m){
+ const s=m.getAttribute("src")||"";
+ if(m.dataset.kind==="cutout"||s.includes("/cutouts/"))return"cutout";
+ if(m.tagName==="VIDEO"||s.includes("/super8/"))return"video";
+ if(m.dataset.project==="escitalopram"||s.includes("/collage/"))return"escitalopram";
+ return"photo";
+}
+
+function addOne(original){
+ const src=original.getAttribute("src");
+ if(!src||wallSet().has(src))return;
+ const item=document.createElement("div");
+ item.className="wall-item shape-block";
+ item.dataset.src=src;
+ item.dataset.project=original.dataset.project||"";
+ if(original.dataset.kind)item.dataset.kind=original.dataset.kind;
+
+ const media=original.cloneNode(true);
+ if(media.tagName==="IMG")media.loading="lazy";
+ if(media.tagName==="VIDEO"){media.muted=true;media.loop=true;media.playsInline=true;media.autoplay=true}
+
+ const w=(original.dataset.kind==="cutout"?150:180);
+ const h=(original.dataset.kind==="cutout"?220:140);
+ item.style.width=w+"px";
+ item.style.height=h+"px";
+
+ /* Find a free place using the same collision logic as the initial wall.
+    This prevents late additions from landing on top of an item that the
+    user has already moved manually. */
+ const placed=Array.from(wall.querySelectorAll(".wall-item")).map(el=>({
+   x:parseFloat(el.style.left)||0,
+   y:parseFloat(el.style.top)||0,
+   w:el.offsetWidth||parseFloat(el.style.width)||100,
+   h:el.offsetHeight||parseFloat(el.style.height)||100
+ }));
+ const pos=(typeof findPackedPosition==="function")
+   ? findPackedPosition(w,h,placed,wall.clientWidth)
+   : {x:20,y:placed.length?Math.max(...placed.map(p=>p.y+p.h))+20:20};
+
+ item.style.left=Math.round(pos.x)+"px";
+ item.style.top=Math.round(pos.y)+"px";
+ item.appendChild(media);
+
+ /* New library items must receive exactly the same editing machinery
+    as items created by buildWall(). */
+ ["nw","ne","sw","se"].forEach(corner=>{
+   const handle=document.createElement("div");
+   handle.className=`resize-handle ${corner}`;
+   handle.dataset.corner=corner;
+   item.appendChild(handle);
+   if(typeof enableResizing==="function")enableResizing(item,handle,corner);
+ });
+
+ item.addEventListener("click",ev=>{
+   if(document.body.classList.contains("edit-mode")){
+     ev.stopPropagation();
+     selectItem(item);
+     return;
+   }
+   const idx=lightboxItems.findIndex(x=>x.src===src);
+   if(idx>=0)openLightbox(idx);
+ });
+
+ if(typeof enableDragging==="function")enableDragging(item);
+
+ wall.appendChild(item);
+
+ if(!lightboxItems.some(x=>x.src===src)){
+   lightboxItems.push({type:media.tagName==="VIDEO"?"video":"img",src});
+ }
+
+ if(typeof growWallToContent==="function")growWallToContent();
+}
+
+function removeOne(src){
+ wall.querySelectorAll(".wall-item").forEach(x=>{if(x.dataset.src===src)x.remove()});
+ if(typeof growWallToContent==="function")growWallToContent();
+}
+
+function render(){
+ if(!grid)return;
+ grid.innerHTML="";
+ const current=wallSet(), chosen=filter?.value||"all";
+ catalogue().forEach(m=>{
+   const b=bucket(m);
+   if(chosen!=="all"&&b!==chosen)return;
+   const src=m.getAttribute("src");
+   const card=document.createElement("div");
+   card.className="library-item";
+   card.dataset.kind=m.dataset.kind||"";
+   if(current.has(src))card.classList.add("on-wall");
+   const preview=m.cloneNode(true);
+   if(preview.tagName==="VIDEO"){preview.muted=true;preview.playsInline=true;preview.preload="metadata"}
+   const label=document.createElement("span");
+   label.className="library-name";label.textContent=src.split("/").pop();
+   card.append(preview,label);
+   card.onclick=()=>{wallSet().has(src)?removeOne(src):addOne(m);render()};
+   grid.appendChild(card);
+ });
+}
+
+document.getElementById("clear-wall")?.addEventListener("click",()=>{
+ if(!confirm("Remove every image/video from the current wall? Source files stay untouched."))return;
+ wall.innerHTML="";
+ selectedItem=null;
+ if(typeof growWallToContent==="function")growWallToContent();
+ render();
+});
+document.getElementById("open-library")?.addEventListener("click",()=>{render();library?.classList.add("open")});
+document.getElementById("close-library")?.addEventListener("click",()=>library?.classList.remove("open"));
+filter?.addEventListener("change",render);
+document.getElementById("add-visible-library")?.addEventListener("click",()=>{
+ const chosen=filter?.value||"all";
+ catalogue().forEach(m=>{if(chosen==="all"||bucket(m)===chosen)addOne(m)});
+ render();
+});
+})();
+</script>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  try {
+    if (typeof syncArchiveManifest === "function") syncArchiveManifest();
+    if (typeof buildWall === "function") buildWall();
+    if (typeof restoreSavedLayout === "function") restoreSavedLayout();
+  } catch (err) {
+    console.error("Visual Archive editor init failed:", err);
+  }
+});
+</script>
+
+
+<script>
+window.addEventListener("load", () => {
+  const el = document.getElementById("editor-layout-status");
+  if (!el) return;
+  const saved = window.VISUAL_ARCHIVE_LAYOUT;
+  const n = saved && Array.isArray(saved.items) ? saved.items.length : 0;
+  const wallN = document.querySelectorAll("#image-wall .wall-item").length;
+  el.textContent = `layout: ${n} / wall: ${wallN}`;
+});
+</script>
+
 </body>
 </html>

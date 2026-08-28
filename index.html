@@ -1,167 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coral Fustero-Torre | PhD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --text-color: #555; 
-            --accent-red: #d9432f; 
-            --paper-bg: #e5e5e2; 
-            --ink-texture: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxjaXJjbGUgY3g9IjEiIGN5PSIxIiByPSIwLjUiIGZpbGw9IiM3NzciIGZpbGwtb3BhY2l0eT0iMC4yNSIgLz48L3N2Zz4=');
-        }
+<script>
+document.documentElement.classList.add("tree-state-pending");
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coral Fustero-Torre | /archive/</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    background:#e5e5e2;
+    color:#444;
+    font-family:"Courier Prime",monospace;
+    line-height:1.6;
+}
 
-        body {
-            font-family: 'Courier Prime', monospace;
-            margin: 0;
-            background-color: var(--paper-bg);
-            color: var(--text-color);
-            line-height: 1.6;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxm Filter id="n"><ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSI0IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0ibm9uZSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjA4Ii8+PC9zdmc+');
-        }
+/* ==========================================================
+   SHARED /archive/ FILE BROWSER — classic 90s desktop
+   ========================================================== */
+:root { --archive-sidebar: 250px; }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+.archive-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: var(--archive-sidebar) minmax(0, 1fr);
+}
 
-        header { padding: 6rem 0 3rem 0; }
+.file-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--archive-sidebar);
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 20000;
+    background: #d8d8d8;
+    border-right: 2px solid #8b8b8b;
+    box-shadow: inset -1px 0 0 #fff;
+    padding: 18px 14px 40px;
+    color: #111;
+}
 
-        h1 {
-            font-weight: 700;
-            font-size: 1.6rem;
-            margin: 0;
-            color: #333;
-        }
+.file-index-title,
+.file-tree,
+.file-tree a,
+.file-tree summary,
+.file-tree span,
+.archive-path {
+    font-family: "Courier Prime", "Courier New", Courier, monospace !important;
+    letter-spacing: 0;
+}
 
-        main { padding: 1rem 0 5rem 0; }
+/* text only — deliberately NOT a button */
+.file-index-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0 0 11px;
+    margin: 0 0 13px;
+    border-bottom: 1px solid #8b8b8b;
+}
 
-        .bio {
-            font-size: 1rem;
-            margin-bottom: 6rem;
-            text-align: justify;
-            max-width: 900px;
-            color: #444;
-        }
+.file-tree {
+    font-size: 12px;
+    line-height: 1.58;
+    color: #111;
+}
+.file-tree details { margin: 1px 0; }
+.file-tree summary {
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+}
+.file-tree summary::-webkit-details-marker { display: none; }
+.file-tree summary::before {
+    content: "▶";
+    display: inline-block;
+    width: 12px;
+    margin-right: 2px;
+    font-size: 8px;
+    vertical-align: 1px;
+}
+.file-tree details[open] > summary::before { content: "▼"; }
 
-        .nav-section { margin-bottom: 6rem; }
+.file-tree .folder,
+.file-tree .file {
+    position: relative;
+    display: inline-block;
+    color: #111;
+}
 
-        /* --- SECTION HEADERS (No Underlines) --- */
-        .section-header {
-            display: inline-flex;
-            align-items: baseline;
-            margin-bottom: 2rem;
-            text-decoration: none;
-            transition: opacity 0.3s;
-            color: inherit;
-        }
+/* classic folder */
+.file-tree .folder::before {
+    content: "";
+    display: inline-block;
+    width: 13px;
+    height: 9px;
+    margin-right: 5px;
+    position: relative;
+    top: 1px;
+    background: #e8c75c;
+    border: 1px solid #574a20;
+    box-shadow: inset 1px 1px 0 #fff5b0, inset -1px -1px 0 #a1832d;
+}
+.file-tree .folder::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    left: 1px;
+    top: 1px;
+    transform: translateY(-3px);
+    background: #e8c75c;
+    border: 1px solid #574a20;
+    border-bottom: 0;
+    box-shadow: inset 1px 1px 0 #fff5b0;
+}
 
-        .section-header:hover { opacity: 0.6; }
+/* classic document */
+.file-tree .file::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 13px;
+    margin-right: 6px;
+    position: relative;
+    top: 2px;
+    background: #f4f4f4;
+    border: 1px solid #555;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #b8b8b8;
+}
 
-        .section-header h2 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin: 0;
-        }
+.file-tree .children { margin-left: 16px; }
+.file-tree a { color: #111; text-decoration: none; }
+.file-tree a:hover, .file-tree a:focus {
+    color: #fff;
+    background: #000080;
+    text-decoration: none;
+    outline: none;
+}
+.file-tree .active { font-weight: 700; }
 
-        .art-head h2 { color: var(--accent-red); }
+.archive-main {
+    grid-column: 2;
+    min-width: 0;
+    padding: 18px 22px 80px;
+}
+.archive-path {
+    display: inline-block;
+    font-size: 12px;
+    color: #111;
+    background: #f1f1f1;
+    border: 1px solid #9a9a9a;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #c0c0c0;
+    padding: 4px 7px;
+    margin: 0 0 24px;
+}
 
-        .section-arrow {
-            margin-left: 10px;
-            font-size: 0.9rem;
-            opacity: 0.4;
-        }
+@media (max-width: 800px) {
+    :root { --archive-sidebar: 165px; }
+    .file-sidebar { padding: 12px 9px 30px; }
+    .file-index-title { font-size: 14px; }
+    .file-tree { font-size: 10px; }
+    .archive-main { padding: 14px 10px 60px; }
+}
 
-        /* --- ARE.NA GRID SYSTEM --- */
-        .arena-grid {
-            display: grid;
-            gap: 30px;
-        }
+.repo-home {
+    max-width: 900px;
+    padding: 8vh 3vw 12vh;
+}
+.repo-home h1 {
+    margin:0 0 3rem;
+    font-size:1.45rem;
+    color:#333;
+}
+.repo-description {
+    max-width:820px;
+    font-size:1rem;
+    text-align:justify;
+}
+.repo-meta {
+    margin-top:5rem;
+    font-size:.75rem;
+    color:#888;
+}
 
-        /* PRIMARY SECTION (Science) */
-        .grid-science {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Larger Boxes */
-        }
+/* v3 polish */
+.file-index-title {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 1.58 !important;
+    padding-bottom: 8px !important;
+}
+/* Path labels such as /archive/projects/cv.html are intentionally removed */
+.archive-path { display: none !important; }
 
-        .arena-box {
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            position: relative;
-            transition: all 0.4s ease-in-out;
-        }
 
-        .arena-box span {
-            font-size: 0.9rem;
-            z-index: 3;
-            transition: font-weight 0.2s;
-        }
+/* ===== v5 hierarchy + type consistency ===== */
+.file-index-title,
+.file-tree,
+.file-tree summary,
+.file-tree summary > a,
+.file-tree .folder,
+.file-tree .file,
+.file-tree a {
+    font-size: 12px !important;
+    line-height: 1.58 !important;
+    font-weight: 400;
+}
 
-        /* Science Styling: Professional, Minimalist */
-        .science-box { 
-            color: #333; 
-            background-color: rgba(255,255,255,0.4); 
-            border: 1px solid rgba(0,0,0,0.1); 
-        }
-        .science-box:hover { background: #fff; transform: translateY(-3px); }
+.file-index-title {
+    font-weight: 700 !important;
+}
 
-        footer {
-            padding: 4rem 0;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            font-size: 0.75rem;
-            color: #999;
-            display: flex;
-            justify-content: space-between;
-        }
+.file-tree .active {
+    font-weight: 700 !important;
+}
 
-        @media (max-width: 768px) {
-            .grid-science { grid-template-columns: repeat(2, 1fr); }
-            h1 { font-size: 1.3rem; }
-        }
-    </style>
+/* The disclosure row itself must never shrink in nested folders. */
+.file-tree details,
+.file-tree details > summary,
+.file-tree details > summary > a,
+.file-tree details > summary > span {
+    font-size: 12px !important;
+}
+
+/* Future science projects placeholder should occupy no visual space yet. */
+.science-projects-placeholder:empty {
+    display: none;
+}
+
+/* No debug labels over collage items. */
+.wall-item[data-summary="true"]::after {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* ===== v6 precise directory indentation ===== */
+.file-tree {
+    --tree-indent: 18px;
+}
+
+/* Every row has the same baseline box model. */
+.file-tree > div,
+.file-tree > details,
+.file-tree .children > div,
+.file-tree .children > details {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Top-level entries all start at exactly the same x-position. */
+.file-tree > div,
+.file-tree > details > summary {
+    padding-left: 0 !important;
+}
+
+/* Children are indented by one fixed unit per nesting level. */
+.file-tree .children {
+    margin-left: var(--tree-indent) !important;
+    padding-left: 0 !important;
+}
+
+/* Nested children add one more identical unit, never an arbitrary extra offset. */
+.file-tree .children .children {
+    margin-left: var(--tree-indent) !important;
+}
+
+/* Keep disclosure triangles in a fixed-width column, so folder labels line up. */
+.file-tree summary {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 0 !important;
+}
+
+.file-tree summary::before {
+    flex: 0 0 12px !important;
+    width: 12px !important;
+    margin-right: 2px !important;
+}
+
+/* Plain top-level files (index.html) need the same icon column as folder summaries. */
+.file-tree > div > a.file {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin-left: 14px !important; /* 12px triangle column + 2px gap */
+}
+
+/* For nested files, align their document icon with nested folder icons. */
+.file-tree .children > div > a.file {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin-left: 14px !important;
+}
+
+/* Main folder names all use identical typography and line box. */
+.file-tree > details > summary > a,
+.file-tree > details > summary > span,
+.file-tree > details > summary .folder {
+    font-size: 12px !important;
+    line-height: 1.58 !important;
+    font-weight: 400 !important;
+}
+
+/* Current active main folder may be bold, but never shifted. */
+.file-tree > details > summary .folder.active {
+    font-weight: 700 !important;
+}
+
+/* Prevent links inside summary from creating browser-default spacing. */
+.file-tree summary > a {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Make folder/document icons occupy consistent width. */
+.file-tree .folder::before {
+    width: 13px !important;
+    flex: 0 0 13px !important;
+}
+.file-tree .file::before {
+    width: 10px !important;
+    flex: 0 0 10px !important;
+}
+
+
+html.tree-state-pending .file-tree { visibility: hidden !important; }
+
+</style>
 </head>
 <body>
+<div class="archive-shell">
 
-    <div class="container">
-        <header>
-            <h1>Coral Fustero-Torre, PhD</h1>
-        </header>
 
-        <main>
-            <section class="bio">
-                Coral Fustero-Torre is a <strong>computational biologist</strong> investigating cellular systems through advanced computational methods. She specializes in single-cell sequencing and the development of analytical tools to decipher biological complexity. Alongside her scientific practice, she explores the use of analog photography, collage, and Super8 filmmaking as tools to decode her surrounding <strong>microenvironment</strong>.
-            </section>
 
-            <div class="nav-section">
-                <a href="science.html" class="section-header">
-                    <h2>Computational biologist</h2>
-                    <span class="section-arrow">→</span>
-                </a>
-                <div class="arena-grid grid-science">
-                    <a href="science.html#research" class="science-box arena-box"><span>Research</span></a>
-                    <a href="science.html#publications" class="science-box arena-box"><span>Publications</span></a>
-                    <a href="science.html#cv" class="science-box arena-box"><span>CV</span></a>
-                </div>
-            </div>
+<aside class="file-sidebar">
+  <div class="file-index-title">Índice de /archive/</div>
+  <nav class="file-tree">
+    <div><a class="file active" href="index.html">index.html</a></div>
 
-            <div class="nav-section">
-                <a href="visual_archive.html" class="section-header art-head">
-                    <h2>Visual archive</h2>
-                    <span class="section-arrow">→</span>
-                </a>
-            </div>
-        </main>
+    <details data-tree-id="science">
+      <summary><a href="science.html"><span class="folder">science/</span></a></summary>
+      <div class="children">
+        <div><a class="file" href="cv.html">cv.html</a></div>
+        <details data-tree-id="science-projects">
+          <summary><span class="folder">projects/</span></summary>
+          <div class="children science-projects-placeholder"></div>
+        </details>
+      </div>
+    </details>
 
-        <footer>
-            <div>&copy; 2026 Coral Fustero-Torre</div>
-            <div>Computational Biologist | Visual Artist</div>
-        </footer>
-    </div>
+    <details data-tree-id="visual-archive">
+      <summary><a href="visual_archive.html"><span class="folder">visual_archive/</span></a></summary>
+      <div class="children">
+        <!-- Future visual-specific CV can be added here, but remains hidden for now. -->
+        <div><a href="visual_archive.html?view=escitalopram" data-archive-view="escitalopram"><span class="folder">escitalopram/</span></a></div>
+        <div><a href="visual_archive.html?view=photo" data-archive-view="photo"><span class="folder">photo/</span></a></div>
+        <div><a href="visual_archive.html?view=video" data-archive-view="video"><span class="folder">video/</span></a></div>
+      </div>
+    </details>
 
+    <details data-tree-id="blog">
+      <summary><span class="folder">blog/</span></summary>
+      <div class="children">
+        <div><a class="file" href="derives.html">derives</a></div>
+        <div><a class="file" href="source.html">source</a></div>
+      </div>
+    </details>
+  </nav>
+</aside>
+
+
+
+<main class="archive-main">
+<div class="repo-home">
+    <h1>Coral Fustero-Torre, PhD</h1>
+    <section class="repo-description">Coral Fustero-Torre is a <strong>computational biologist</strong> investigating cellular systems through advanced computational methods. She specializes in single-cell sequencing and the development of analytical tools to decipher biological complexity. Alongside her scientific practice, she explores the use of analog photography, collage, and Super8 filmmaking as tools to decode her surrounding <strong>microenvironment</strong>.</section>
+    <div class="repo-meta">Coral Fustero-Torre / repository / 2026</div>
+  </div>
+</main>
+</div>
+
+<script>
+/* Persist the user's folder state. First visit = all closed. */
+(function () {
+    const KEY = "archiveTreeOpenStateV2";
+
+    function loadState() {
+        try { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+        catch { return {}; }
+    }
+
+    function saveState(state) {
+        try { localStorage.setItem(KEY, JSON.stringify(state)); }
+        catch {}
+    }
+
+    function restoreTree() {
+        const state = loadState();
+
+        document.querySelectorAll(".file-tree details[data-tree-id]").forEach(details => {
+            const id = details.dataset.treeId;
+            details.open = Object.prototype.hasOwnProperty.call(state, id)
+                ? !!state[id]
+                : false;
+
+            details.addEventListener("toggle", () => {
+                const current = loadState();
+                current[id] = details.open;
+                saveState(current);
+            });
+        });
+
+        document.documentElement.classList.remove("tree-state-pending");
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", restoreTree, {once:true});
+    } else {
+        restoreTree();
+    }
+})();
+</script>
 </body>
 </html>

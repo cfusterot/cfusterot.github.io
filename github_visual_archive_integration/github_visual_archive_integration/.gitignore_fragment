@@ -1,6 +1,0 @@
-# Originals for local web-photo preparation.
-# Never push these files to GitHub.
-img_originales/
-
-# macOS
-.DS_Store
