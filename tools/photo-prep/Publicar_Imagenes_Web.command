@@ -17,6 +17,8 @@ SOURCE_OUTPUT="$ROOT/img/source"
 DIARY_SOURCE="$ROOT/img_originales/diary"
 DIARY_OUTPUT="$ROOT/img/diary"
 
+echo "Web images: max 1600px long edge / JPEG quality 80"
+echo "Web video:  max 1280px wide / H.264 CRF 26"
 echo "Repositorio: $ROOT"
 echo "Visual Archive origen:  $VISUAL_SOURCE"
 echo "Visual Archive destino: $VISUAL_OUTPUT"
@@ -118,12 +120,12 @@ def process_tree(source: Path, output: Path, *, skip_top_level=None):
                 run([
                     magick, str(src),
                     "-auto-orient",
-                    "-resize", "2000x2000>",
+                    "-resize", "1600x1600>",
                     "-colorspace", "sRGB",
                     "-strip",
                     "-sampling-factor", "4:2:0",
                     "-interlace", "Plane",
-                    "-quality", "85",
+                    "-quality", "80",
                     str(dest),
                 ])
 
@@ -133,7 +135,7 @@ def process_tree(source: Path, output: Path, *, skip_top_level=None):
                 run([
                     magick, str(src),
                     "-auto-orient",
-                    "-resize", "2000x2000>",
+                    "-resize", "1600x1600>",
                     "-colorspace", "sRGB",
                     "-alpha", "on",
                     "-strip",
@@ -147,12 +149,13 @@ def process_tree(source: Path, output: Path, *, skip_top_level=None):
                 run([
                     magick, str(src),
                     "-auto-orient",
-                    "-resize", "2000x2000>",
+                    "-resize", "1600x1600>",
                     "-colorspace", "sRGB",
                     "-background", "white",
                     "-alpha", "remove",
                     "-strip",
-                    "-quality", "85",
+                    "-interlace", "Plane",
+                    "-quality", "80",
                     str(dest),
                 ])
 
@@ -169,10 +172,10 @@ def process_tree(source: Path, output: Path, *, skip_top_level=None):
                     "-map", "0:v:0",
                     "-map", "0:a:0?",
                     "-map_metadata", "-1",
-                    "-vf", "scale='if(gt(iw,2000),2000,iw)':-2,format=yuv420p",
+                    "-vf", "scale='if(gt(iw,1280),1280,iw)':-2,format=yuv420p",
                     "-c:v", "libx264",
                     "-preset", "veryfast",
-                    "-crf", "24",
+                    "-crf", "26",
                     "-c:a", "aac",
                     "-b:a", "128k",
                     "-movflags", "+faststart",

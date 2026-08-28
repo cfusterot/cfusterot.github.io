@@ -42,9 +42,11 @@ if (!window.VISUAL_ARCHIVE_LAYOUT) {
 
         if (push) history.pushState({archiveView:view || null}, "", url);
 
-        buildWall();
-        updateArchiveNavigation();
-        window.scrollTo({top:0, behavior:"auto"});
+        loadPublishedLayoutForView(view, () => {
+            buildWall();
+            updateArchiveNavigation();
+            window.scrollTo({top:0, behavior:"auto"});
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -72,6 +74,68 @@ if (!window.VISUAL_ARCHIVE_LAYOUT) {
 </script>
 <script>
 document.documentElement.classList.add("tree-state-pending");
+</script>
+<script>
+/*
+  Durable published layouts:
+    main -> visual_archive_layout.js
+    photo -> visual_archive_layout_photo.js
+    video -> visual_archive_layout_video.js
+    escitalopram -> visual_archive_layout_escitalopram.js
+
+  The view files exported by the editor assign window.VISUAL_ARCHIVE_LAYOUT.
+  We capture each one in a per-view cache, then restore the main layout.
+*/
+window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS = window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS || {};
+window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS.main = window.VISUAL_ARCHIVE_LAYOUT || null;
+
+function publishedLayoutFilename(view) {
+    if (!view) return "visual_archive_layout.js";
+    if (!["photo", "video", "escitalopram"].includes(view)) return null;
+    return `visual_archive_layout_${view}.js`;
+}
+
+function loadPublishedLayoutForView(view, done) {
+    const key = view || "main";
+
+    if (Object.prototype.hasOwnProperty.call(window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS, key)) {
+        done();
+        return;
+    }
+
+    const filename = publishedLayoutFilename(view);
+    if (!filename) {
+        window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS[key] = null;
+        done();
+        return;
+    }
+
+    const mainLayout = window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS.main || null;
+    window.VISUAL_ARCHIVE_LAYOUT = null;
+
+    const script = document.createElement("script");
+    script.src = filename;
+
+    script.onload = () => {
+        window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS[key] =
+            window.VISUAL_ARCHIVE_LAYOUT || null;
+        window.VISUAL_ARCHIVE_LAYOUT = mainLayout;
+        done();
+    };
+
+    script.onerror = () => {
+        window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS[key] = null;
+        window.VISUAL_ARCHIVE_LAYOUT = mainLayout;
+        done();
+    };
+
+    document.head.appendChild(script);
+}
+
+function activePublishedLayout() {
+    const view = new URLSearchParams(window.location.search).get("view") || "";
+    return window.VISUAL_ARCHIVE_PUBLISHED_LAYOUTS[view || "main"] || null;
+}
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1548,19 +1612,21 @@ function buildWall() {
     );
 
     const archiveView = new URLSearchParams(window.location.search).get("view");
+    const durableLayout = activePublishedLayout();
 
     /*
       IMPORTANT:
-      - root Visual Archive = curated summary, optionally using visual_archive_layout.js
-      - photo/video/escitalopram = complete catalogue views, NEVER affected by summary removals/layout
+      - root Visual Archive = curated summary
+      - photo/video/escitalopram = complete catalogue views
+      - each view may have its OWN durable published coordinates
     */
     let originals;
 
-    if (!archiveView && window.VISUAL_ARCHIVE_LAYOUT &&
-        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items)) {
+    if (!archiveView && durableLayout &&
+        Array.isArray(durableLayout.items)) {
 
         const wanted = new Set(
-            window.VISUAL_ARCHIVE_LAYOUT.items.map(item => item.src)
+            durableLayout.items.map(item => item.src)
         );
 
         originals = allOriginals.filter(el =>
@@ -1607,10 +1673,8 @@ function buildWall() {
     const containerWidth = wall.clientWidth;
 
     const savedLayout =
-        !archiveView &&
-        window.VISUAL_ARCHIVE_LAYOUT &&
-        Array.isArray(window.VISUAL_ARCHIVE_LAYOUT.items)
-            ? new Map(window.VISUAL_ARCHIVE_LAYOUT.items.map(x => [x.src, x]))
+        durableLayout && Array.isArray(durableLayout.items)
+            ? new Map(durableLayout.items.map(x => [x.src, x]))
             : null;
 
     originals.forEach((original, index) => {
@@ -2119,7 +2183,10 @@ document.addEventListener("keydown", e => {
     }
 });
 
-window.addEventListener("DOMContentLoaded", buildWall);
+window.addEventListener("DOMContentLoaded", () => {
+    const initialView = new URLSearchParams(window.location.search).get("view") || "";
+    loadPublishedLayoutForView(initialView, () => buildWall());
+});
 
 const EDITOR_IS_LOCAL =
     location.protocol === "file:" ||
