@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+document.documentElement.classList.add("tree-state-pending");
+</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CV | Coral Fustero-Torre</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+        :root {
+            --text-color: #1a1a1a;
+            --light-grey: #666;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 4rem 2rem 1rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .logo { 
+            text-decoration: none; 
+            color: #000; 
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        nav a { 
+            text-decoration: none; 
+            color: var(--light-grey); 
+            font-size: 0.9rem;
+            margin-left: 20px;
+        }
+
+        nav a:hover { color: var(--text-color); }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 2rem 5rem 2rem;
+        }
+
+        section { margin-bottom: 4rem; }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        ul { list-style: none; padding: 0; }
+        .list-item { margin-bottom: 0.8rem; }
+
+        /* Publicaciones */
+        .pub-item { margin-bottom: 1.5rem; }
+        .pub-link { text-decoration: none; color: inherit; }
+        .pub-link:hover .pub-title { text-decoration: underline; }
+        .pub-title { font-weight: 700; display: block; }
+        .pub-journal { font-style: italic; color: var(--light-grey); font-size: 0.95rem; }
+
+        /* CV Entries */
+        .cv-entry { display: flex; justify-content: space-between; margin-bottom: 2.5rem; }
+        .cv-main { flex: 1; }
+        .cv-date { color: var(--light-grey); font-size: 0.85rem; text-align: right; min-width: 140px; }
+        .cv-role { font-weight: 700; display: block; font-size: 1rem; }
+        .cv-inst { font-style: italic; color: var(--light-grey); display: block; margin-bottom: 8px; }
+        .cv-description { font-size: 0.95rem; margin: 0; padding: 0; list-style: none; }
+        .cv-description li { margin-bottom: 5px; position: relative; padding-left: 15px; }
+        .cv-description li::before { content: "+"; position: absolute; left: 0; }
+
+        .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.95rem; }
+
+        footer {
+            padding: 3rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+
+        @media (max-width: 600px) {
+            .cv-entry { flex-direction: column; }
+            .cv-date { text-align: left; margin-top: 5px; }
+        }
+    
+
+/* ==========================================================
+   SHARED /archive/ FILE BROWSER — classic 90s desktop
+   ========================================================== */
+:root { --archive-sidebar: 250px; }
+
+.archive-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: var(--archive-sidebar) minmax(0, 1fr);
+}
+
+.file-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--archive-sidebar);
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 20000;
+    background: transparent;
+    border-right: 2px solid #8b8b8b;
+    box-shadow: inset -1px 0 0 #fff;
+    padding: 18px 14px 40px;
+    color: #111;
+}
+
+.file-index-title,
+.file-tree,
+.file-tree a,
+.file-tree summary,
+.file-tree span,
+.archive-path {
+    font-family: "Courier Prime", "Courier New", Courier, monospace !important;
+    letter-spacing: 0;
+}
+
+/* text only — deliberately NOT a button */
+.file-index-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0 0 11px;
+    margin: 0 0 13px;
+    border-bottom: 1px solid #8b8b8b;
+}
+
+.file-tree {
+    font-size: 12px;
+    line-height: 1.58;
+    color: #111;
+}
+.file-tree details { margin: 1px 0; }
+.file-tree summary {
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+}
+.file-tree summary::-webkit-details-marker { display: none; }
+.file-tree summary::before {
+    content: "▶";
+    display: inline-block;
+    width: 12px;
+    margin-right: 2px;
+    font-size: 8px;
+    vertical-align: 1px;
+}
+.file-tree details[open] > summary::before { content: "▼"; }
+
+.file-tree .folder,
+.file-tree .file {
+    position: relative;
+    display: inline-block;
+    color: #111;
+}
+
+/* classic folder */
+.file-tree .folder::before {
+    content: "";
+    display: inline-block;
+    width: 13px;
+    height: 9px;
+    margin-right: 5px;
+    position: relative;
+    top: 1px;
+    background: #e8c75c;
+    border: 1px solid #574a20;
+    box-shadow: inset 1px 1px 0 #fff5b0, inset -1px -1px 0 #a1832d;
+}
+.file-tree .folder::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    left: 1px;
+    top: 1px;
+    transform: translateY(-3px);
+    background: #e8c75c;
+    border: 1px solid #574a20;
+    border-bottom: 0;
+    box-shadow: inset 1px 1px 0 #fff5b0;
+}
+
+/* classic document */
+.file-tree .file::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 13px;
+    margin-right: 6px;
+    position: relative;
+    top: 2px;
+    background: #f4f4f4;
+    border: 1px solid #555;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #b8b8b8;
+}
+
+.file-tree .children { margin-left: 16px; }
+.file-tree a { color: #111; text-decoration: none; }
+.file-tree a:hover, .file-tree a:focus {
+    color: #fff;
+    background: #000080;
+    text-decoration: none;
+    outline: none;
+}
+.file-tree .active { font-weight: 700; }
+
+.archive-main {
+    grid-column: 2;
+    min-width: 0;
+    padding: 18px 22px 80px;
+}
+.archive-path {
+    display: inline-block;
+    font-size: 12px;
+    color: #111;
+    background: #f1f1f1;
+    border: 1px solid #9a9a9a;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #c0c0c0;
+    padding: 4px 7px;
+    margin: 0 0 24px;
+}
+
+@media (max-width: 800px) {
+    :root { --archive-sidebar: 165px; }
+    .file-sidebar { padding: 12px 9px 30px; }
+    .file-index-title { font-size: 14px; }
+    .file-tree { font-size: 10px; }
+    .archive-main { padding: 14px 10px 60px; }
+}
+
+
+body { background:#e5e5e2 !important; }
+.archive-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3vh 2rem 7rem;
+}
+.archive-content section { margin-bottom:4rem; }
+.archive-content h2 { border-bottom:1px solid rgba(0,0,0,.12); }
+.archive-content a { color:inherit; }
+
+
+/* v3 polish */
+.file-index-title {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 1.58 !important;
+    padding-bottom: 8px !important;
+}
+/* Path labels such as /archive/projects/cv.html are intentionally removed */
+.archive-path { display: none !important; }
+
+
+/* ===== v5 hierarchy + type consistency ===== */
+.file-index-title,
+.file-tree,
+.file-tree summary,
+.file-tree summary > a,
+.file-tree .folder,
+.file-tree .file,
+.file-tree a {
+    font-size: 12px !important;
+    line-height: 1.58 !important;
+    font-weight: 400;
+}
+
+.file-index-title {
+    font-weight: 700 !important;
+}
+
+.file-tree .active {
+    font-weight: 700 !important;
+}
+
+/* The disclosure row itself must never shrink in nested folders. */
+.file-tree details,
+.file-tree details > summary,
+.file-tree details > summary > a,
+.file-tree details > summary > span {
+    font-size: 12px !important;
+}
+
+/* Future science projects placeholder should occupy no visual space yet. */
+.science-projects-placeholder:empty {
+    display: none;
+}
+
+/* No debug labels over collage items. */
+.wall-item[data-summary="true"]::after {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* ===== v6 precise directory indentation ===== */
+.file-tree {
+    --tree-indent: 18px;
+}
+
+/* Every row has the same baseline box model. */
+.file-tree > div,
+.file-tree > details,
+.file-tree .children > div,
+.file-tree .children > details {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Top-level entries all start at exactly the same x-position. */
+.file-tree > div,
+.file-tree > details > summary {
+    padding-left: 0 !important;
+}
+
+/* Children are indented by one fixed unit per nesting level. */
+.file-tree .children {
+    margin-left: var(--tree-indent) !important;
+    padding-left: 0 !important;
+}
+
+/* Nested children add one more identical unit, never an arbitrary extra offset. */
+.file-tree .children .children {
+    margin-left: var(--tree-indent) !important;
+}
+
+/* Keep disclosure triangles in a fixed-width column, so folder labels line up. */
+.file-tree summary {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 0 !important;
+}
+
+.file-tree summary::before {
+    flex: 0 0 12px !important;
+    width: 12px !important;
+    margin-right: 2px !important;
+}
+
+/* Plain top-level files (index.html) need the same icon column as folder summaries. */
+.file-tree > div > a.file {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin-left: 14px !important; /* 12px triangle column + 2px gap */
+}
+
+/* For nested files, align their document icon with nested folder icons. */
+.file-tree .children > div > a.file {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin-left: 14px !important;
+}
+
+/* Main folder names all use identical typography and line box. */
+.file-tree > details > summary > a,
+.file-tree > details > summary > span,
+.file-tree > details > summary .folder {
+    font-size: 12px !important;
+    line-height: 1.58 !important;
+    font-weight: 400 !important;
+}
+
+/* Current active main folder may be bold, but never shifted. */
+.file-tree > details > summary .folder.active {
+    font-weight: 700 !important;
+}
+
+/* Prevent links inside summary from creating browser-default spacing. */
+.file-tree summary > a {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Make folder/document icons occupy consistent width. */
+.file-tree .folder::before {
+    width: 13px !important;
+    flex: 0 0 13px !important;
+}
+.file-tree .file::before {
+    width: 10px !important;
+    flex: 0 0 10px !important;
+}
+
+
+html.tree-state-pending .file-tree { visibility: hidden !important; }
+
+
+/* v12.5 — sidebar uses exactly the page background */
+.file-sidebar,
+.sidebar,
+.archive-sidebar,
+.sidebar-shell,
+.sidebar-panel,
+.archive-tree,
+.file-tree {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+
+
+
+
+
+/* Temporarily hide Dérives everywhere in the sidebar. */
+.file-tree a[href="derives.html"] {
+  display: none !important;
+}
+.file-tree div:has(> a[href="derives.html"]) {
+  display: none !important;
+}
+
+</style>
+</head>
+<body>
+<div class="archive-shell">
+
+
+
+<aside class="file-sidebar">
+  <div class="file-index-title">/archive/ index</div>
+  <nav class="file-tree">
+    <div><a class="file" href="index.html">index.html</a></div>
+
+    <details data-tree-id="science">
+      <summary><a href="science.html"><span class="folder">science/</span></a></summary>
+      <div class="children">
+        <div><a class="file active" href="cv.html">cv.html</a></div>
+        <details data-tree-id="science-projects">
+          <summary><span class="folder">projects/</span></summary>
+          <div class="children science-projects-placeholder"></div>
+        </details>
+      </div>
+    </details>
+
+    <details data-tree-id="visual-archive">
+      <summary><a href="visual_archive.html"><span class="folder">visual_archive/</span></a></summary>
+      <div class="children">
+        <!-- Future visual-specific CV can be added here, but remains hidden for now. -->
+        <div><a href="visual_archive.html?view=escitalopram" data-archive-view="escitalopram"><span class="folder">escitalopram/</span></a></div>
+        <div><a href="visual_archive.html?view=photo" data-archive-view="photo"><span class="folder">photo/</span></a></div>
+        <div><a href="visual_archive.html?view=video" data-archive-view="video"><span class="folder">video/</span></a></div>
+      </div>
+    </details>
+
+    <details data-tree-id="blog">
+      <summary><span class="folder">blog/</span></summary>
+      <div class="children">
+        <div class="hidden-section"><a class="file" href="derives.html">derives</a></div>
+        <div><a class="file" href="source.html">source</a></div>
+          <div><a class="file" href="diary.html">diary</a></div>
+      </div>
+    </details>
+  </nav>
+</aside>
+
+
+
+<main class="archive-main">
+<div class="archive-content">
+<section id="cv">
+            <a href="img/cv/Coral_Fustero_CV_compressed.pdf" download="Coral_Fustero_CV_compressed.pdf" style="float: right; text-decoration: none; color: var(--text-color); border: 1px solid #1a1a1a; padding: 5px 10px; font-size: 0.8rem;" target="">Download PDF</a>
+            <h2>Curriculum Vitae</h2>
+            
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Postdoctoral researcher</span>
+                    <span class="cv-inst">Berlin Institute for Medical Systems Biology (BIMSB) | BIH</span>
+                    <ul class="cv-description">
+                        <li>Integrated single cell multi-omic characterization</li>
+                        <li>Clonal tracing in clonal hematopoiesis</li>
+                        <li>Development of computational frameworks for lineage analysis</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2022 — 2025</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">BSC access committee member</span>
+                    <span class="cv-inst">Barcelona Supercomputing Center (BSC)</span>
+                </div>
+                <div class="cv-date">2024 — Present</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Computational Biologist</span>
+                    <span class="cv-inst">Spanish National Cancer Research Center (CNIO)</span>
+                    <ul class="cv-description">
+                        <li>Analysis, quality control and functional characterization of NGS data</li>
+                        <li>Pipeline automation via Snakemake</li>
+                        <li>Script programming in R and bioinformatic support</li>
+                        <li>Development of Beyondcell and Bollito tools</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2015 — 2022</div>
+            </div>
+
+            <h2 style="margin-top: 3rem;">Teaching</h2>
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">Int. Master's Program in Molecular Medicine | Charité (Berlin)</span>
+                </div>
+                <div class="cv-date">2023</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">MSc in Applied Bioinformatics and Personalized Medicine | ISCIII</span>
+                    <ul class="cv-description">
+                        <li>Subject: OMICs data analysis and Interpretation</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-main">
+                    <span class="cv-role">Lecturer</span>
+                    <span class="cv-inst">MSc in Bioinformatics and Computational Biology | UAM</span>
+                    <ul class="cv-description">
+                        <li>Subject: Translational genomics</li>
+                    </ul>
+                </div>
+                <div class="cv-date">2019 — 2022</div>
+            </div>
+
+            <h2 style="margin-top: 3rem;">Additional Training</h2>
+			<div class="cv-entry">
+				<div class="cv-main">
+					<span class="cv-role">Investigative Data & Digital Tools</span>
+					<span class="cv-inst">Centre for Investigative Journalism (CIJ)</span>
+					<ul class="cv-description">
+						<li>Digital Tools for Investigation</li>
+						<li>Investigating Trade Data</li>
+					</ul>
+			</div>
+			<div class="cv-date">2026</div> </div>
+			
+			<div class="cv-entry">    
+				<div class="cv-main">
+					<span class="cv-role">4 Degrees of Simulation</span>
+					<span class="cv-inst">Institute for Postnatural Studies</span>
+					<p class="cv-description" style="font-size: 0.9rem; color: var(--light-grey);">Practice-led thematic seminar exploring postnatural landscapes and simulation.</p>
+				</div>
+				<div class="cv-date">2025</div> </div>
+				
+
+			
+			<h2 style="margin-top: 3rem;">Languages</h2>
+			<div class="skills-grid">
+				<div class="list-item">
+					<span style="font-weight: 700;">Spanish</span> 
+					<span style="color: var(--light-grey); font-size: 0.85rem; margin-left: 10px;">Native</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">English</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★★★</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">German</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★☆☆</span>
+				</div>
+				<div class="list-item">
+					<span style="font-weight: 700;">Catalan</span> 
+					<span style="color: var(--text-color); margin-left: 10px;">★★★☆☆</span>
+				</div>
+			</div>
+			
+            <h2 style="margin-top: 3rem;">Tools</h2>
+            <div class="skills-grid">
+                <div>• R 📊</div>
+                <div>• Snakemake 🐍</div>
+                <div>• Python 💻</div>
+                <div>• Linux/Shell 🐚</div>
+            </div>
+        </section>
+</div>
+</main>
+</div>
+
+<script>
+/* Persist the user's folder state. First visit = all closed. */
+(function () {
+    const KEY = "archiveTreeOpenStateV2";
+
+    function loadState() {
+        try { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+        catch { return {}; }
+    }
+
+    function saveState(state) {
+        try { localStorage.setItem(KEY, JSON.stringify(state)); }
+        catch {}
+    }
+
+    function restoreTree() {
+        const state = loadState();
+
+        document.querySelectorAll(".file-tree details[data-tree-id]").forEach(details => {
+            const id = details.dataset.treeId;
+            details.open = Object.prototype.hasOwnProperty.call(state, id)
+                ? !!state[id]
+                : false;
+
+            details.addEventListener("toggle", () => {
+                const current = loadState();
+                current[id] = details.open;
+                saveState(current);
+            });
+        });
+
+        document.documentElement.classList.remove("tree-state-pending");
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", restoreTree, {once:true});
+    } else {
+        restoreTree();
+    }
+})();
+</script>
+</body></html>
