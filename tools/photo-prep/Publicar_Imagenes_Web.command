@@ -4,8 +4,29 @@ set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
-cd "$SCRIPT_DIR/../.." || exit 1
-ROOT="$(pwd -P)"
+
+find_repo_root() {
+    local dir="$SCRIPT_DIR"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/index.html" && -d "$dir/img_originales" ]]; then
+            printf '%s\n' "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
+    return 1
+}
+
+ROOT="$(find_repo_root || true)"
+
+if [[ -z "$ROOT" ]]; then
+    echo "ERROR: no encuentro la raíz del repositorio."
+    echo "Busqué desde: $SCRIPT_DIR"
+    echo "La raíz debe contener index.html e img_originales/."
+    exit 1
+fi
+
+cd "$ROOT" || exit 1
 
 VISUAL_SOURCE="$ROOT/img_originales/visual_archive"
 VISUAL_OUTPUT="$ROOT/img/visual_archive"
@@ -33,13 +54,26 @@ if [[ ! -d "$VISUAL_SOURCE" ]]; then
 fi
 
 BREW="$(command -v brew || true)"
-if [[ -z "$BREW" ]]; then
-    echo "ERROR: Homebrew no está disponible."
-    exit 1
+
+if ! command -v magick >/dev/null 2>&1; then
+    if [[ -n "$BREW" ]]; then
+        echo "ImageMagick no encontrado; instalando con Homebrew…"
+        "$BREW" install imagemagick
+    else
+        echo "ERROR: ImageMagick (magick) no está instalado y Homebrew no está disponible."
+        exit 1
+    fi
 fi
 
-command -v magick >/dev/null 2>&1 || "$BREW" install imagemagick
-command -v ffmpeg >/dev/null 2>&1 || "$BREW" install ffmpeg
+if ! command -v ffmpeg >/dev/null 2>&1; then
+    if [[ -n "$BREW" ]]; then
+        echo "FFmpeg no encontrado; instalando con Homebrew…"
+        "$BREW" install ffmpeg
+    else
+        echo "ERROR: FFmpeg no está instalado y Homebrew no está disponible."
+        exit 1
+    fi
+fi
 
 PYTHON="$(command -v python3 || true)"
 MAGICK="$(command -v magick || true)"
