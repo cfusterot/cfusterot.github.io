@@ -75,15 +75,35 @@ if ! command -v ffmpeg >/dev/null 2>&1; then
     fi
 fi
 
+HAS_SOURCE_PDF=false
+for candidate in "$SOURCE_SOURCE_PRIMARY" "$SOURCE_SOURCE_LEGACY"; do
+    if [[ -d "$candidate" && -n "$(find "$candidate" -type f -iname '*.pdf' -print -quit 2>/dev/null)" ]]; then
+        HAS_SOURCE_PDF=true
+        break
+    fi
+done
+
+if $HAS_SOURCE_PDF && ! command -v pdftoppm >/dev/null 2>&1; then
+    if [[ -n "$BREW" ]]; then
+        echo "Poppler no encontrado; instalando para generar portadas de PDF…"
+        "$BREW" install poppler
+    else
+        echo "ERROR: se encontraron PDFs pero falta Poppler (pdftoppm)."
+        echo "Instálalo con: brew install poppler"
+        exit 1
+    fi
+fi
+
 PYTHON="$(command -v python3 || true)"
 MAGICK="$(command -v magick || true)"
 FFMPEG="$(command -v ffmpeg || true)"
+PDFTOPPM="$(command -v pdftoppm || true)"
 
 [[ -n "$PYTHON" ]] || { echo "ERROR: python3 no está disponible."; exit 1; }
 [[ -n "$MAGICK" ]] || { echo "ERROR: ImageMagick no está disponible."; exit 1; }
 [[ -n "$FFMPEG" ]] || { echo "ERROR: FFmpeg no está disponible."; exit 1; }
 
-export VISUAL_SOURCE VISUAL_OUTPUT SOURCE_SOURCE_PRIMARY SOURCE_SOURCE_LEGACY SOURCE_OUTPUT DIARY_SOURCE DIARY_OUTPUT MAGICK FFMPEG
+export VISUAL_SOURCE VISUAL_OUTPUT SOURCE_SOURCE_PRIMARY SOURCE_SOURCE_LEGACY SOURCE_OUTPUT DIARY_SOURCE DIARY_OUTPUT MAGICK FFMPEG PDFTOPPM
 
 "$PYTHON" <<'PY'
 from pathlib import Path
@@ -91,6 +111,7 @@ import os
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
 
 visual_source = Path(os.environ["VISUAL_SOURCE"]).resolve()
 visual_output = Path(os.environ["VISUAL_OUTPUT"]).resolve()
@@ -104,6 +125,7 @@ diary_output = Path(os.environ["DIARY_OUTPUT"]).resolve()
 
 magick = os.environ["MAGICK"]
 ffmpeg = os.environ["FFMPEG"]
+pdftoppm = os.environ.get("PDFTOPPM", "")
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".heic", ".heif", ".webp"}
 VIDEO_EXTS = {".mp4", ".mov", ".m4v"}
@@ -229,6 +251,47 @@ def process_tree(source: Path, output: Path, *, skip_top_level=None):
                 pass
 
 
+def publish_source_pdfs(source: Path):
+    """Copy each PDF intact and render its first page as a web preview."""
+    global processed, errors
+
+    if not source.exists():
+        return
+
+    for src in sorted(p for p in source.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"):
+        rel = src.relative_to(source)
+        dest = source_output / rel
+        preview_dir = source_output / rel.parent / "_pdf_previews"
+        preview = preview_dir / f"{src.stem}.jpg"
+
+        try:
+            if not pdftoppm:
+                raise RuntimeError("pdftoppm no está disponible")
+
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            preview_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dest)
+            print(f"PDF    {rel}")
+            subprocess.run([
+                pdftoppm,
+                "-f", "1",
+                "-l", "1",
+                "-singlefile",
+                "-scale-to", "1200",
+                "-jpeg",
+                "-jpegopt", "quality=85",
+                str(src),
+                str(preview.with_suffix("")),
+            ], check=True)
+            if not preview.exists():
+                raise RuntimeError(f"no se generó la portada: {preview}")
+            processed += 1
+        except Exception as exc:
+            errors += 1
+            print(f"ERROR procesando PDF: {src}", file=sys.stderr)
+            print(str(exc), file=sys.stderr)
+
+
 # Clean legacy mistakes from older versions.
 for bad in [visual_output / "per8", visual_output / "source"]:
     if bad.exists():
@@ -257,6 +320,7 @@ if source_inputs:
     for label, source_root in source_inputs:
         print(f"Source ({label}): {source_root}")
         process_tree(source_root, source_output)
+        publish_source_pdfs(source_root)
 else:
     print()
     print("SOURCE: no se encontró img_originales/source/ ni visual_archive/source/; se omite.")
@@ -287,7 +351,7 @@ for p in sorted(x for x in visual_output.rglob("*") if x.is_file()):
     top = parts[0] if parts else ""
 
     entry = {
-        "src": "img/visual_archive/" + rel.as_posix(),
+        "src": "img/visual_archive/" + quote(rel.as_posix(), safe="/"),
         "type": "video" if ext == ".mp4" else "img",
     }
 
@@ -328,11 +392,27 @@ if source_output.exists():
             continue
 
         rel = p.relative_to(source_output)
+        if "_pdf_previews" in rel.parts:
+            continue
         source_records.append({
-            "src": "img/source/" + rel.as_posix(),
+            # Encode each web path safely. Characters such as # and ? have a
+            # special meaning in URLs and otherwise make valid files invisible.
+            "src": "img/source/" + quote(rel.as_posix(), safe="/"),
+            "type": "image",
             "title": p.stem.replace("_", " ").replace("-", " "),
             "description": "",
             "href": "",
+        })
+
+    for p in sorted(x for x in source_output.rglob("*.pdf") if x.is_file()):
+        rel = p.relative_to(source_output)
+        preview_rel = rel.parent / "_pdf_previews" / f"{p.stem}.jpg"
+        source_records.append({
+            "src": "img/source/" + quote(preview_rel.as_posix(), safe="/"),
+            "type": "pdf",
+            "title": p.stem.replace("_", " ").replace("-", " "),
+            "description": "",
+            "href": "img/source/" + quote(rel.as_posix(), safe="/"),
         })
 
 source_manifest.write_text(

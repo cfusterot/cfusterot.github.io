@@ -379,6 +379,21 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
 .diary-post figure img{
   margin:0 auto;
 }
+.diary-image-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:10px;
+  width: 100%;
+  margin:30px auto;
+}
+.diary-image-row img{
+  display:block;
+  width:calc((100% - 20px) / 3);
+  max-width:none;
+  height:auto;
+  margin:0;
+}
 .diary-post figcaption{
   margin-top:7px;
   font-size:9px;
@@ -407,6 +422,13 @@ html.tree-state-pending .file-tree { visibility: hidden !important; }
   }
   .diary-header{
     margin-bottom:48px;
+  }
+  .diary-image-row{
+    width:100%;
+    gap:6px;
+  }
+  .diary-image-row img{
+    width:calc((100% - 12px) / 3);
   }
 }
 

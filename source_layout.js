@@ -63,8 +63,8 @@ window.SOURCE_LAYOUT = [
     "title": "maya deren amateur vs professional",
     "description": "",
     "href": "",
-    "left": "438.965px",
-    "top": "17.7656px",
+    "left": "431.496px",
+    "top": "100.684px",
     "width": "372.359px",
     "transform": "rotate(0deg)",
     "zIndex": ""
@@ -91,8 +91,8 @@ window.SOURCE_LAYOUT = [
     "title": "Vilem Flusser 1940",
     "description": "para más info:",
     "href": "https://archive.org/details/vilem-flusser-towards-a-philosophy-of-photography-ocr",
-    "left": "587.637px",
-    "top": "766.902px",
+    "left": "1016.75px",
+    "top": "1011.89px",
     "width": "103.277px",
     "transform": "rotate(0deg)",
     "zIndex": ""
@@ -122,6 +122,34 @@ window.SOURCE_LAYOUT = [
     "left": "910.48px",
     "top": "304.883px",
     "width": "111.727px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "source-mthdk9ar-ra96k",
+    "type": "image",
+    "src": "img/source/WEB_2_Press_Performing_at_Boston_Symphony_Hall_1981._Photographer_s_name_unknown.jpg",
+    "text": "",
+    "title": "WEB 2 Press Performing at Boston Symphony Hall 1981. Photographer s name unknown",
+    "description": "Fayrouz, o la voz más bonita del Líbano",
+    "href": "",
+    "left": "727.781px",
+    "top": "827.027px",
+    "width": "174.06px",
+    "transform": "rotate(0deg)",
+    "zIndex": ""
+  },
+  {
+    "id": "source-mthdkate-v1qvs",
+    "type": "image",
+    "src": "img/source/WEB_2_Press_Performing_at_Boston_Symphony_Hall_1981._Photographer_s_name_unknown.jpg",
+    "text": "",
+    "title": "WEB 2 Press Performing at Boston Symphony Hall 1981. Photographer s name unknown",
+    "description": "",
+    "href": "",
+    "left": "446.258px",
+    "top": "949.391px",
+    "width": "275.673px",
     "transform": "rotate(0deg)",
     "zIndex": ""
   }

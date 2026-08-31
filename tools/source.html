@@ -97,6 +97,19 @@ body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospac
   box-shadow:none;
   border:0
 }
+.source-item.source-pdf::after{
+  content:"PDF";
+  position:absolute;
+  right:3px;
+  bottom:3px;
+  padding:2px 4px;
+  background:rgba(229,229,226,.9);
+  border:1px solid #777;
+  color:#111;
+  font-size:8px;
+  line-height:1;
+  pointer-events:none
+}
 .source-concept{
   font-size:15px;
   line-height:1.2;
@@ -272,6 +285,18 @@ body.source-edit-mode #source-editor-toggle{
   margin-bottom:3px;
 }
 .source-library-item.used{outline:2px solid #777}
+.source-library-item{position:relative}
+.source-library-item.source-library-pdf::after{
+  content:"PDF";
+  position:absolute;
+  right:6px;
+  top:6px;
+  padding:2px 4px;
+  background:rgba(229,229,226,.92);
+  border:1px solid #777;
+  font-size:8px;
+  line-height:1
+}
 .source-library-actions{display:flex;gap:5px;flex-wrap:wrap}
 .source-library-actions button{
   border:0;
@@ -525,7 +550,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       <button id="source-library-close">[ close ]</button>
     </div>
     <div style="font-size:9px;line-height:1.35;margin-top:6px;color:#666">
-      Add files to <code>img_originales/source/</code>, run Publicar v14, then click refresh.
+      Add images or PDFs to <code>img_originales/source/</code>, run Publicar, then click refresh.
     </div>
     <div id="source-library-status" style="font-size:9px;line-height:1.35;margin-top:5px;color:#444">
       Source loader v3 · catalogue loading…
@@ -593,6 +618,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       title: el.dataset.title || "",
       description: el.dataset.description || "",
       href: el.dataset.href || "",
+      mediaType: el.dataset.mediaType || "image",
       left: el.style.left || "20px",
       top: el.style.top || "20px",
       width: el.style.width || "",
@@ -662,6 +688,8 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     el.dataset.title = item.title || "";
     el.dataset.description = item.description || "";
     el.dataset.href = item.href || "";
+    el.dataset.mediaType = item.mediaType || "image";
+    if (el.dataset.mediaType === "pdf") el.classList.add("source-pdf");
 
     el.style.left = item.left || "20px";
     el.style.top = item.top || "20px";
@@ -695,6 +723,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     const href = el.dataset.href || "";
     popLink.style.display = href ? "inline-block" : "none";
     popLink.href = href || "#";
+    popLink.textContent = el.dataset.mediaType === "pdf" ? "[ open PDF ]" : "[ open source ]";
 
     const r = el.getBoundingClientRect();
     const width = 330;
@@ -867,7 +896,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     const queue=[sourceRoot];
     const visited=new Set();
     const records=[];
-    const allowed=/\.(?:jpe?g|png|webp|gif|avif|bmp|svg)$/i;
+    const allowed=/\.(?:jpe?g|png|webp|gif|avif|bmp|svg|pdf)$/i;
 
     while(queue.length){
       const directory=queue.shift();
@@ -893,6 +922,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
         if(url.origin!==location.origin || !url.pathname.startsWith(sourceRoot.pathname)) return;
 
         if(url.pathname.endsWith("/")){
+          if(decodeURIComponent(url.pathname).split("/").includes("_pdf_previews")) return;
           if(!visited.has(url.href)) queue.push(url);
           return;
         }
@@ -902,8 +932,23 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
           ? url.pathname.slice(siteRoot.pathname.length)
           : url.pathname.replace(/^\/+/, "");
         const filename=decodeURIComponent(url.pathname.split("/").pop()||"");
+        if(/\.pdf$/i.test(filename)){
+          const slash=relativePath.lastIndexOf("/");
+          const folder=slash>=0 ? relativePath.slice(0,slash+1) : "";
+          const basename=(slash>=0 ? relativePath.slice(slash+1) : relativePath).replace(/\.pdf$/i,"");
+          records.push({
+            src:folder+"_pdf_previews/"+basename+".jpg",
+            type:"pdf",
+            title:filename.replace(/\.[^.]+$/,""),
+            description:"",
+            href:relativePath
+          });
+          return;
+        }
+        if(decodeURIComponent(url.pathname).split("/").includes("_pdf_previews")) return;
         records.push({
           src:relativePath,
+          type:"image",
           title:filename.replace(/\.[^.]+$/,"").replaceAll("_"," ").replaceAll("-"," "),
           description:"",
           href:""
@@ -935,7 +980,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
     if(libraryStatus){
       libraryStatus.textContent=
-        `${sourceMediaCatalogue().length} images detected · manifest ${manifestCount}`+
+        `${sourceMediaCatalogue().length} media items detected · manifest ${manifestCount}`+
         (LOCAL && location.protocol!=="file:" ? ` · folder scan ${live.length}` : "")+
         (manifestLoaded ? "" : " · manifest unavailable");
     }
@@ -957,7 +1002,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     if(!catalogue.length){
       const empty=document.createElement("div");
       empty.style.cssText="grid-column:1/-1;font-size:10px;line-height:1.4;padding:8px";
-      empty.textContent="No Source media found. Run Publicar_Imagenes_Web.command and press refresh.";
+      empty.textContent="No Source images or PDFs found. Run Publicar_Imagenes_Web.command and press refresh.";
       libraryGrid.appendChild(empty);
       return;
     }
@@ -966,6 +1011,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       const safeSrc=safeSourceUrl(entry.src);
       const card = document.createElement("div");
       card.className = "source-library-item";
+      if(entry.type === "pdf") card.classList.add("source-library-pdf");
       if (used.has(safeSrc)) card.classList.add("used");
 
       const img = document.createElement("img");
@@ -990,6 +1036,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
           title: entry.title || "",
           description: entry.description || "",
           href: entry.href || "",
+          mediaType: entry.type || "image",
           left: (60 + Math.random()*520) + "px",
           top: (70 + Math.random()*700) + "px",
           width: (160 + Math.random()*120) + "px",
