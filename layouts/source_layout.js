@@ -153,4 +153,4 @@ window.SOURCE_LAYOUT = [
     "transform": "rotate(0deg)",
     "zIndex": ""
   }
-];\n
+]
