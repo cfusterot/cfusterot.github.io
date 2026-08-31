@@ -670,8 +670,9 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   }
 
   function createElement(item){
+    const isMedia = item.type === "image" || item.type === "pdf";
     const el = document.createElement("div");
-    el.className = "source-item " + (item.type === "image" ? "source-image" : "source-concept");
+    el.className = "source-item " + (isMedia ? "source-image" : "source-concept");
     el.dataset.sourceId = item.id || makeId();
     el.dataset.type = item.type || "concept";
     el.dataset.title = item.title || "";
@@ -684,7 +685,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     if (item.transform !== undefined) el.style.transform = item.transform;
     if (item.zIndex !== undefined) el.style.zIndex = item.zIndex;
 
-    if (item.type === "image") {
+    if (isMedia) {
       const img = document.createElement("img");
       img.src = item.src || "";
       img.alt = item.title || "";
@@ -710,6 +711,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     const href = el.dataset.href || "";
     popLink.style.display = href ? "inline-block" : "none";
     popLink.href = href || "#";
+    popLink.textContent = el.dataset.type === "pdf" ? "[ open PDF ]" : "[ open source ]";
 
     const r = el.getBoundingClientRect();
     const width = 330;
@@ -931,7 +933,9 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
   function mergeSourceMedia(extra){
     const merged=new Map();
-    [...sourceMediaCatalogue(),...(Array.isArray(extra)?extra:[])].forEach(entry=>{
+    /* Folder scanning is a local fallback. Manifest records come last so PDF
+       metadata (type and href) cannot be replaced by a plain image record. */
+    [...(Array.isArray(extra)?extra:[]),...sourceMediaCatalogue()].forEach(entry=>{
       if(!entry?.src) return;
       const key=safeSourceUrl(entry.src);
       merged.set(key,{...entry,src:key});
@@ -988,7 +992,8 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       img.alt = entry.title || entry.src.split("/").pop();
 
       const label = document.createElement("div");
-      label.textContent = entry.title || entry.src.split("/").pop();
+      label.textContent = (entry.type === "pdf" ? "PDF · " : "") +
+        (entry.title || entry.src.split("/").pop());
 
       img.addEventListener("error", () => {
         card.classList.add("source-library-load-error");
@@ -1000,7 +1005,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       card.addEventListener("click", () => {
         const el = createElement({
           id: makeId(),
-          type: "image",
+          type: entry.type === "pdf" ? "pdf" : "image",
           src: safeSrc,
           title: entry.title || "",
           description: entry.description || "",

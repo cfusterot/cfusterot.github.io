@@ -261,7 +261,8 @@ def publish_source_pdfs(source: Path):
     for src in sorted(p for p in source.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"):
         rel = src.relative_to(source)
         dest = source_output / rel
-        preview_dir = source_output / rel.parent / "_pdf_previews"
+        # GitHub Pages/Jekyll omits directories whose name starts with `_`.
+        preview_dir = source_output / rel.parent / "pdf_previews"
         preview = preview_dir / f"{src.stem}.jpg"
 
         try:
@@ -392,7 +393,7 @@ if source_output.exists():
             continue
 
         rel = p.relative_to(source_output)
-        if "_pdf_previews" in rel.parts:
+        if "_pdf_previews" in rel.parts or "pdf_previews" in rel.parts:
             continue
         source_records.append({
             # Encode each web path safely. Characters such as # and ? have a
@@ -406,7 +407,7 @@ if source_output.exists():
 
     for p in sorted(x for x in source_output.rglob("*.pdf") if x.is_file()):
         rel = p.relative_to(source_output)
-        preview_rel = rel.parent / "_pdf_previews" / f"{p.stem}.jpg"
+        preview_rel = rel.parent / "pdf_previews" / f"{p.stem}.jpg"
         source_records.append({
             "src": "img/source/" + quote(preview_rel.as_posix(), safe="/"),
             "type": "pdf",

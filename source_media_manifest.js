@@ -134,7 +134,7 @@ window.SOURCE_MEDIA = [
     "href": ""
   },
   {
-    "src": "img/source/_pdf_previews/maya-deren-amateur-vs-professional.jpg",
+    "src": "img/source/pdf_previews/maya-deren-amateur-vs-professional.jpg",
     "type": "pdf",
     "title": "maya deren amateur vs professional",
     "description": "",
