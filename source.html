@@ -1,7 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="layouts/source_layout.js"></script><!-- published Source composition in /layouts -->
+<script>
+/* Load the published Source composition from its single authoritative path.
+   The timestamp prevents GitHub Pages/browser cache from showing an older
+   layout after layouts/source_layout.js is replaced. */
+window.__SOURCE_LAYOUT_READY__ = new Promise(resolve => {
+  const script = document.createElement("script");
+  script.src = "layouts/source_layout.js?v=" + Date.now();
+  script.onload = () => resolve(true);
+  script.onerror = () => {
+    console.error("Could not load layouts/source_layout.js");
+    resolve(false);
+  };
+  document.head.appendChild(script);
+});
+</script>
 <script>
 /* Always fetch the current Source catalogue. A normal <script src> may remain
    cached after Publicar_Imagenes_Web.command regenerates the manifest. */
@@ -550,7 +564,8 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
 
 <script>
-(function(){
+(async function(){
+  await (window.__SOURCE_LAYOUT_READY__ || Promise.resolve());
   const LOCAL = location.protocol === "file:" ||
                 location.hostname === "localhost" ||
                 location.hostname === "127.0.0.1";
@@ -1105,7 +1120,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   };
 
   document.getElementById("source-download").onclick = () => {
-    const js = "window.SOURCE_LAYOUT = " + JSON.stringify(serialize(), null, 2) + ";\\n";
+    const js = "window.SOURCE_LAYOUT = " + JSON.stringify(serialize(), null, 2) + ";\n";
     const blob = new Blob([js], {type:"text/javascript"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
