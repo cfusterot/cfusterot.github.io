@@ -65,8 +65,8 @@ document.documentElement.classList.add("tree-state-pending");
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospace;overflow-x:hidden}
-:root{--archive-sidebar:250px}
+:root{--archive-sidebar:250px;--source-background:#fff;--source-ui:rgba(255,255,255,.95)}
+html,body{margin:0;background:var(--source-background);color:#111;font-family:"Courier Prime",monospace;overflow-x:hidden}
 .archive-shell{min-height:100vh;display:grid;grid-template-columns:var(--archive-sidebar) minmax(0,1fr)}
 .file-sidebar{position:fixed;inset:0 auto 0 0;width:var(--archive-sidebar);height:100vh;overflow-y:auto;z-index:20000;background: transparent;border-right:2px solid #8b8b8b;box-shadow:inset -1px 0 0 #fff;padding:18px 14px 40px}
 .file-index-title,.file-tree,.file-tree a,.file-tree summary,.file-tree span{font-family:"Courier Prime","Courier New",monospace!important;font-size:12px;line-height:1.58}
@@ -84,13 +84,11 @@ body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospac
 .source-main{
   grid-column:2;
   position:relative;
-  min-height:1450px;
+  min-height:100vh;
   overflow:hidden;
-  background-color:#e5e5e2;
-  background-image:radial-gradient(rgba(0,0,0,.08) .45px,transparent .6px);
-  background-size:4px 4px
+  background:var(--source-background)
 }
-.source-stage{position:relative;width:100%;min-height:1450px}
+.source-stage{position:relative;width:100%;height:100vh;min-height:0;transform-origin:top left}
 .source-item{
   position:absolute;
   display:block;
@@ -120,14 +118,14 @@ body{margin:0;background:#e5e5e2;color:#111;font-family:"Courier Prime",monospac
   border-bottom:1px dotted #777;
   background:transparent
 }
-.source-concept:hover{background:rgba(229,229,226,.78)}
+.source-concept:hover{background:rgba(255,255,255,.82)}
 .source-item.selected-source{outline:1px dashed #555;outline-offset:5px}
 
 #source-popover{
   position:fixed;
   z-index:99000;
   max-width:330px;
-  background:#e5e5e2;
+  background:var(--source-background);
   border:1px solid #777;
   box-shadow:3px 3px 0 rgba(0,0,0,.12);
   padding:10px 12px;
@@ -147,9 +145,8 @@ body.source-edit-mode .source-item.selected-source .source-resize-handle{display
 
 #source-save-status{
   position:fixed;right:14px;bottom:52px;z-index:96000;
-  display:none;font-size:9px;background:#e5e5e2;border:1px solid #aaa;padding:3px 5px
+  display:none;font-size:9px;background:var(--source-background);border:1px solid #aaa;padding:3px 5px
 }
-@media(max-width:800px){:root{--archive-sidebar:165px}.file-sidebar{padding:12px 9px}.source-main{min-height:1800px}}
 
 html.tree-state-pending .file-tree { visibility: hidden !important; }
 
@@ -179,7 +176,7 @@ body.source-edit-mode .source-item.selected-source .source-resize-handle{display
   display:none;
   border:0 !important;
   padding:8px 10px !important;
-  background:rgba(229,229,226,.9) !important;
+  background:var(--source-ui) !important;
   color:#777 !important;
   font-family:"Courier Prime",monospace !important;
   font-size:.72rem !important;
@@ -206,7 +203,7 @@ body.source-edit-mode .source-item.selected-source .source-resize-handle{display
 #source-editor-controls button{
   border:0 !important;
   padding:7px 9px !important;
-  background:rgba(229,229,226,.94) !important;
+  background:var(--source-ui) !important;
   color:#666 !important;
   font-family:"Courier Prime",monospace !important;
   font-size:.7rem !important;
@@ -232,7 +229,7 @@ body.source-edit-mode #source-editor-toggle{
   display:none;
   font-family:"Courier Prime",monospace !important;
   font-size:.65rem !important;
-  background:rgba(229,229,226,.94) !important;
+  background:var(--source-ui) !important;
   color:#666 !important;
   padding:4px 6px !important;
   border:0 !important;
@@ -253,7 +250,7 @@ body.source-edit-mode #source-editor-toggle{
   width:min(390px,42vw);
   height:100vh;
   z-index:97000;
-  background:rgba(229,229,226,.985);
+  background:rgba(255,255,255,.985);
   border-left:1px solid #aaa;
   transform:translateX(102%);
   transition:transform .15s ease;
@@ -262,7 +259,7 @@ body.source-edit-mode #source-editor-toggle{
 }
 #source-library.open{transform:translateX(0)}
 #source-library-header{
-  position:sticky;top:0;z-index:2;background:rgba(229,229,226,.985);
+  position:sticky;top:0;z-index:2;background:rgba(255,255,255,.985);
   padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #bbb
 }
 #source-library-grid{
@@ -272,7 +269,7 @@ body.source-edit-mode #source-editor-toggle{
 }
 .source-library-item{
   border:1px solid #aaa;
-  background:#efefec;
+  background:#fff;
   padding:3px;
   cursor:pointer;
   font-size:8px;
@@ -289,7 +286,7 @@ body.source-edit-mode #source-editor-toggle{
 .source-library-actions{display:flex;gap:5px;flex-wrap:wrap}
 .source-library-actions button{
   border:0;
-  background:rgba(229,229,226,.94);
+  background:var(--source-ui);
   color:#666;
   font-family:"Courier Prime",monospace;
   font-size:.7rem;
@@ -303,7 +300,7 @@ body.source-edit-mode #source-editor-toggle{
   z-index:96002;
   display:none;
   width:min(420px,calc(100vw - 40px));
-  background:rgba(229,229,226,.97);
+  background:rgba(255,255,255,.97);
   border:1px solid #aaa;
   padding:8px;
   font-size:10px;
@@ -314,7 +311,7 @@ body.source-edit-mode #source-meta-editor.visible{display:block}
   width:100%;
   font-family:"Courier Prime",monospace;
   font-size:10px;
-  background:#f4f4f1;
+  background:#fff;
   border:1px solid #bbb;
   padding:5px;
   margin:3px 0 6px;
@@ -322,7 +319,7 @@ body.source-edit-mode #source-meta-editor.visible{display:block}
 #source-meta-editor textarea{min-height:68px;resize:vertical}
 #source-meta-editor .meta-row{display:flex;gap:5px}
 #source-meta-editor .meta-row button{
-  border:0;background:rgba(229,229,226,.94);color:#666;
+  border:0;background:var(--source-ui);color:#666;
   font-family:"Courier Prime",monospace;font-size:.7rem;padding:7px 9px;cursor:pointer
 }
 .source-item.selected-source::after{
@@ -348,7 +345,7 @@ body.source-edit-mode #source-meta-editor.visible{display:block}
   width:14px !important;
   height:14px !important;
   display:none !important;
-  background:#e5e5e2 !important;
+  background:var(--source-background) !important;
   border:1px solid #555 !important;
   box-sizing:border-box !important;
   z-index:100005 !important;
@@ -373,6 +370,42 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 }
 .file-tree div:has(> a[href="derives.html"]) {
   display: none !important;
+}
+
+/* Mobile: put the archive tree above the collage and scale the complete
+   desktop arrangement into the available screen width. */
+@media(max-width:800px){
+  :root{--archive-sidebar:0px}
+  .archive-shell{display:block;min-height:100vh}
+  .file-sidebar{
+    position:relative;
+    inset:auto;
+    width:100%;
+    height:auto;
+    overflow:visible;
+    padding:11px 12px 13px;
+    border-right:0;
+    border-bottom:1px solid #8b8b8b;
+    box-shadow:none;
+    background:var(--source-background) !important
+  }
+  .file-index-title{margin-bottom:8px}
+  .source-main{grid-column:auto;width:100%;min-height:100vh;overflow:hidden}
+  #source-popover{left:10px!important;right:10px!important;top:auto!important;bottom:12px;max-width:none}
+  #source-library{width:100vw}
+  #source-library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #source-editor-controls{
+    left:8px!important;
+    right:8px!important;
+    bottom:8px!important;
+    max-width:none!important;
+    max-height:38vh;
+    overflow-y:auto;
+    padding:4px!important;
+    background:rgba(255,255,255,.96)!important
+  }
+  #source-editor-toggle{right:10px!important;bottom:10px!important}
+  #source-meta-editor{left:8px;bottom:62px;width:calc(100vw - 16px)}
 }
 
 </style>
@@ -420,48 +453,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
 <main class="source-main">
 <div class="source-stage" id="source-stage">
-  <div class="source-item source-image" data-source-id="night-moods"
-       data-type="image"
-       data-title="Jean Rhys"
-       data-description="A source-object linked to Jean Rhys; image used here as a visual trigger rather than a bibliographic illustration."
-       data-href="https://en.wikipedia.org/wiki/Jean_Rhys"
-       style="left:5%;top:70px;width:250px;transform:rotate(0deg)">
-    <img src="img/source/night_moods.jpeg" alt="Night Moods of Tchaikovsky">
-  </div>
-
-  <div class="source-item source-concept" data-source-id="burning-lights"
-       data-type="concept"
-       data-title="Burning Lights"
-       data-description="Bella Chagall — memory / language / ritual / domestic light."
-       data-href="https://openlibrary.org/books/OL6500413M/Burning_lights"
-       style="left:54%;top:125px;width:235px;transform:rotate(0deg)">
-    Burning Lights
-  </div>
-
-  <div class="source-item source-image" data-source-id="petit-silence"
-       data-type="image"
-       data-title="Generation Astrology"
-       data-description="Generation astrology / Pioneer Works. Kept as a visual association rather than a boxed citation."
-       data-href="https://pioneerworks.org/broadcast/generation-astrology"
-       style="left:28%;top:310px;width:285px;transform:rotate(0deg)">
-    <img src="img/source/petit_silence.jpeg" alt="Le petit Silence illustré">
-  </div>
-
-  <div class="source-item source-concept" data-source-id="memory-language"
-       data-type="concept"
-       data-title="memory / language / ritual"
-       data-description="A loose conceptual node. Clickable concepts can sit between images without becoming cards."
-       style="left:70%;top:435px;width:220px;transform:rotate(0deg)">
-    memory / language / ritual
-  </div>
-
-  <div class="source-item source-concept" data-source-id="source-note"
-       data-type="concept"
-       data-title="source is not a bibliography"
-       data-description="things found while moving through the web."
-       style="left:14%;top:690px;width:240px;transform:rotate(0deg)">
-    source is not a bibliography
-  </div>
+  <!-- The published composition is created only from layouts/source_layout.js. -->
 </div>
 </main>
 </div>
@@ -571,6 +563,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
                 location.hostname === "127.0.0.1";
 
   const stage = document.getElementById("source-stage");
+  const main = stage.closest(".source-main");
   const controls = document.getElementById("source-editor-controls");
   const status = document.getElementById("source-save-status");
   const popover = document.getElementById("source-popover");
@@ -583,8 +576,54 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   let editing = false;
   let selected = null;
   let maxZ = 1000;
+  let stageScale = 1;
+  let geometryFrame = 0;
 
   function elements(){ return Array.from(stage.querySelectorAll(".source-item")); }
+
+  function updateStageGeometry(){
+    geometryFrame = 0;
+    const items = elements();
+    const availableWidth = Math.max(1, main.clientWidth || window.innerWidth);
+    let contentRight = availableWidth;
+    let contentBottom = 0;
+
+    items.forEach(el => {
+      const left = Number.parseFloat(el.style.left) || el.offsetLeft || 0;
+      const top = Number.parseFloat(el.style.top) || el.offsetTop || 0;
+      const width = el.offsetWidth || Number.parseFloat(el.style.width) || 0;
+      const height = el.offsetHeight || 0;
+      contentRight = Math.max(contentRight, left + width);
+      contentBottom = Math.max(contentBottom, top + height);
+    });
+
+    const canvasWidth = Math.max(960, Math.ceil(contentRight + 40));
+    const isMobile = window.matchMedia("(max-width:800px)").matches;
+    stageScale = isMobile ? Math.min(1, availableWidth / canvasWidth) : 1;
+
+    const bottomSpace = editing ? Math.max(520, window.innerHeight * .6) : 70;
+    const naturalHeight = Math.max(items.length ? contentBottom + bottomSpace : window.innerHeight, 1);
+    const renderedHeight = Math.ceil(naturalHeight * stageScale);
+
+    stage.style.width = canvasWidth + "px";
+    stage.style.height = Math.ceil(naturalHeight) + "px";
+    stage.style.transform = `scale(${stageScale})`;
+    main.style.height = renderedHeight + "px";
+    main.style.minHeight = isMobile ? "0px" : "100vh";
+  }
+
+  function scheduleStageGeometry(){
+    if (geometryFrame) cancelAnimationFrame(geometryFrame);
+    geometryFrame = requestAnimationFrame(updateStageGeometry);
+  }
+
+  function currentStageScale(){
+    return stageScale || 1;
+  }
+
+  const itemResizeObserver = "ResizeObserver" in window
+    ? new ResizeObserver(scheduleStageGeometry)
+    : null;
 
   function makeId(){
     return "source-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,7);
@@ -669,7 +708,26 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     return saved;
   }
 
-  function createElement(item){
+  function normalizeLayoutItem(rawItem){
+    const item = {...(rawItem || {})};
+    const preview = String(item.src || "").match(
+      /^(.*\/)(?:_pdf_previews|pdf_previews)\/([^/?#]+)\.(?:jpe?g|png|webp)([?#].*)?$/i
+    );
+
+    /* Migrate PDF cards saved by older editor versions. This also repairs an
+       old localStorage draft before it can be downloaded again. */
+    if (item.type === "pdf" || preview) {
+      item.type = "pdf";
+      if (preview) {
+        item.src = `${preview[1]}pdf_previews/${preview[2]}.jpg${preview[3] || ""}`;
+        if (!item.href) item.href = `${preview[1]}${preview[2]}.pdf`;
+      }
+    }
+    return item;
+  }
+
+  function createElement(rawItem){
+    const item = normalizeLayoutItem(rawItem);
     const isMedia = item.type === "image" || item.type === "pdf";
     const el = document.createElement("div");
     el.className = "source-item " + (isMedia ? "source-image" : "source-concept");
@@ -689,6 +747,8 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       const img = document.createElement("img");
       img.src = item.src || "";
       img.alt = item.title || "";
+      img.addEventListener("load", scheduleStageGeometry, {once:true});
+      img.addEventListener("error", scheduleStageGeometry, {once:true});
       el.appendChild(img);
     } else {
       el.appendChild(document.createTextNode(item.text || item.title || "concept"));
@@ -696,12 +756,14 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
     stage.appendChild(el);
     bindItem(el);
+    scheduleStageGeometry();
     return el;
   }
 
   function rebuild(layout){
     stage.innerHTML = "";
     (layout || []).forEach(createElement);
+    scheduleStageGeometry();
   }
 
   function showPopover(el){
@@ -741,13 +803,16 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       handle.setPointerCapture(ev.pointerId);
 
       const move = e => {
-        el.style.width = Math.max(55, startW + (e.clientX - startX)) + "px";
+        const scale = currentStageScale();
+        el.style.width = Math.max(55, (startW + (e.clientX - startX)) / scale) + "px";
+        scheduleStageGeometry();
       };
       const up = e => {
         try { handle.releasePointerCapture(e.pointerId); } catch {}
         handle.removeEventListener("pointermove", move);
         handle.removeEventListener("pointerup", up);
         saveLocal(false);
+        scheduleStageGeometry();
       };
 
       handle.addEventListener("pointermove", move);
@@ -757,6 +822,12 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
   function bindItem(el){
     ensureHandle(el);
+    itemResizeObserver?.observe(el);
+    const image = el.querySelector(":scope > img");
+    if (image && !image.complete) {
+      image.addEventListener("load", scheduleStageGeometry, {once:true});
+      image.addEventListener("error", scheduleStageGeometry, {once:true});
+    }
 
     el.addEventListener("click", ev => {
       if (editing) {
@@ -785,15 +856,19 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
       select(el);
 
       const r = el.getBoundingClientRect();
-      const sr = stage.getBoundingClientRect();
-      const ox = ev.clientX - r.left;
-      const oy = ev.clientY - r.top;
+      const scale = currentStageScale();
+      const ox = (ev.clientX - r.left) / scale;
+      const oy = (ev.clientY - r.top) / scale;
       el.classList.add("source-dragging");
       el.setPointerCapture(ev.pointerId);
 
       const move = e => {
-        el.style.left = Math.max(0, e.clientX - sr.left - ox) + "px";
-        el.style.top = Math.max(0, e.clientY - sr.top - oy) + "px";
+        if (e.clientY > window.innerHeight - 48) window.scrollBy(0, 18);
+        if (e.clientY < 48) window.scrollBy(0, -18);
+        const liveStageRect = stage.getBoundingClientRect();
+        el.style.left = Math.max(0, (e.clientX - liveStageRect.left) / scale - ox) + "px";
+        el.style.top = Math.max(0, (e.clientY - liveStageRect.top) / scale - oy) + "px";
+        scheduleStageGeometry();
       };
       const up = e => {
         try { el.releasePointerCapture(e.pointerId); } catch {}
@@ -801,6 +876,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
         el.removeEventListener("pointermove", move);
         el.removeEventListener("pointerup", up);
         saveLocal(false);
+        scheduleStageGeometry();
       };
 
       el.addEventListener("pointermove", move);
@@ -825,6 +901,10 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     elements().forEach(bindItem);
   }
 
+  scheduleStageGeometry();
+  window.addEventListener("load", scheduleStageGeometry, {once:true});
+  window.addEventListener("resize", scheduleStageGeometry);
+
   if (!LOCAL) {
     controls.remove();
     document.getElementById("source-editor-toggle")?.remove();
@@ -838,6 +918,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
   function setEditing(value){
     editing = !!value;
     document.body.classList.toggle("source-edit-mode", editing);
+    scheduleStageGeometry();
 
     if (!editing) {
       elements().forEach(x => x.classList.remove("selected-source"));
@@ -1073,6 +1154,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
 
     saveLocal(false);
     showSaved();
+    scheduleStageGeometry();
   };
 
   document.getElementById("source-meta-close").onclick = () => {
@@ -1108,6 +1190,7 @@ body.source-edit-mode .source-item.selected-source > .source-resize-handle{
     selected = null;
     metaEditor.classList.remove("visible");
     saveLocal(false);
+    scheduleStageGeometry();
   };
 
   document.getElementById("source-front").onclick = () => {

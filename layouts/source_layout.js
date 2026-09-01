@@ -57,14 +57,14 @@ window.SOURCE_LAYOUT = [
   },
   {
     "id": "source-mthc3swt-3s83n",
-    "type": "image",
-    "src": "img/source/_pdf_previews/maya-deren-amateur-vs-professional.jpg",
+    "type": "pdf",
+    "src": "img/source/pdf_previews/maya-deren-amateur-vs-professional.jpg",
     "text": "",
     "title": "maya deren amateur vs professional",
     "description": "",
-    "href": "",
-    "left": "431.496px",
-    "top": "100.684px",
+    "href": "img/source/maya-deren-amateur-vs-professional.pdf",
+    "left": "431.367px",
+    "top": "100.812px",
     "width": "372.359px",
     "transform": "rotate(0deg)",
     "zIndex": ""
@@ -153,4 +153,4 @@ window.SOURCE_LAYOUT = [
     "transform": "rotate(0deg)",
     "zIndex": ""
   }
-]
+];

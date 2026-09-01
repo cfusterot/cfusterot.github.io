@@ -27,11 +27,6 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
-    "src": "img/source/_pdf_previews/maya-deren-amateur-vs-professional.jpg",
-    "type": "image",
-    "project": "source"
-  },
-  {
     "src": "img/source/burninglights.jpeg",
     "type": "image",
     "project": "source"
