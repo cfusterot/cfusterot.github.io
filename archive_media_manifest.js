@@ -22,7 +22,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/1020878_w445_1500.jpeg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/24Sorrodiles#1.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/24Sorrodiles#1.jpg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -32,7 +42,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/burninglights.jpeg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/Captura de pantalla 2020-04-24 a las 11.55.43.png",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/Captura de pantalla 2020-04-24 a las 11.55.43.png.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -42,7 +62,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/Captura de pantalla 2020-04-24 a las 11.56.12.png.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/Captura de pantalla 2021-01-17 a las 20.31.50.png",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/Captura de pantalla 2021-01-17 a las 20.31.50.png.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -52,7 +82,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/Captura de pantalla 2021-01-17 a las 20.44.03.png.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/collage.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/collage.jpg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -62,12 +102,27 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/Henry_Rox2.jpg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/henryrox.jpeg",
     "type": "image",
     "project": "source"
   },
   {
+    "src": "img/source/henryrox.jpeg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/Jacqueline-Jong-Portrait-1960s.jpeg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/Jacqueline-Jong-Portrait-1960s.jpeg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -82,7 +137,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/petit_silence.jpeg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/taipeistory.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/taipeistory.jpg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -92,7 +157,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/valeska.jpg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/Vilem_Flusser_1940.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/Vilem_Flusser_1940.jpg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -102,7 +177,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/W1siZiIsIjUyNzA5MyJdLFsicCIsImNvbnZlcnQiLCItcXVhbGl0eSA5MCAtcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.webp.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/WEB_2_Press_Performing_at_Boston_Symphony_Hall_1981._Photographer_s_name_unknown.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/WEB_2_Press_Performing_at_Boston_Symphony_Hall_1981._Photographer_s_name_unknown.webp.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -112,7 +197,17 @@ window.ARCHIVE_MEDIA = [
     "project": "source"
   },
   {
+    "src": "img/source/wendy-carlos.jpeg.web.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
     "src": "img/source/wildatheart.jpg",
+    "type": "image",
+    "project": "source"
+  },
+  {
+    "src": "img/source/wildatheart.jpg.web.jpg",
     "type": "image",
     "project": "source"
   },
@@ -855,15 +950,5 @@ window.ARCHIVE_MEDIA = [
     "src": "img/visual_archive/super8/plumitas.mp4",
     "type": "video",
     "project": "video"
-  },
-  {
-    "src": "img_originales/source/W1siZiIsIjUyNzA5MyJdLFsicCIsImNvbnZlcnQiLCItcXVhbGl0eSA5MCAtcmVzaXplIDIwMDB4MjAwMFx1MDAzZSJdXQ.webp",
-    "type": "image",
-    "project": "source"
-  },
-  {
-    "src": "img_originales/source/WEB_2_Press_Performing_at_Boston_Symphony_Hall_1981._Photographer_s_name_unknown.webp",
-    "type": "image",
-    "project": "source"
   }
 ];

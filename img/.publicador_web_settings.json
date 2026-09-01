@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "max_size": 1200,
+  "jpeg_quality": 74,
+  "video_width": 1080,
+  "video_crf": 29,
+  "face_mode": "blur",
+  "author": "cft"
+}
